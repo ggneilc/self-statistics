@@ -1,0 +1,38 @@
+{% extends "./default.html" %}
+{% load static %}
+{% block main_content %}
+
+<nav id="mobile-nav" style="
+width:100%;
+display:flex;
+align-items: center;
+padding:5px;
+">
+    <div style="flex:1;"
+        hx-get="{% url 'core:get_lift'%}"
+        hx-target="#mobile-column">lift</div>
+    <div style="flex:1;"
+        hx-get="{% url 'core:get_graph'%}"
+        hx-target="#mobile-column">graph</div>
+    <div style="flex:1;"
+        hx-get="{% url 'core:get_meal'%}"
+        hx-target="#mobile-column">meal</div>
+</nav>
+
+<!-- 
+    conditionally display column 
+    based on navbar selection.
+    default to graph
+-->
+<main id="mobile-column">
+    {% include './column_graph.html'%}
+</main>
+
+{% if not user.is_authenticated %}
+<div class="modal-overlay">
+    {% include 'core/auth_modal.html'%}
+</div>
+{% endif %}
+
+
+{% endblock %}

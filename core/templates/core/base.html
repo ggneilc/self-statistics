@@ -1,0 +1,24 @@
+{% extends "./default.html" %}
+{% load static %}
+{% block main_content %}
+    {% include './column_lift.html' %}
+    {% include './column_graph.html' %}
+    {% include './column_meal.html' %}
+
+{% if not user.is_authenticated %}
+<div id="auth-modal"
+     class="modal-overlay"
+     hx-get="{% url 'core:auth_modal' %}"
+     hx-trigger="load"
+     hx-target="#auth-modal"
+     hx-swap="innerHTML">
+    <!-- Modal content loaded via HTMX -->
+</div>
+{% endif %}
+<script src="{% static 'calcounter/js/meal_entry_button.js' %}"></script>
+<script src="{% static 'calcounter/js/global_date_state.js' %}"></script>
+<script src="{% static 'calcounter/js/calendar_heatmap.js' %}"></script>
+<script src="{% static 'calcounter/js/tile_grid_load.js' %}"></script>
+</body>
+</html>
+{% endblock %}

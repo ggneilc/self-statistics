@@ -1,0 +1,40 @@
+{% load custom_filters %}
+<li class="meal" hx-on:click="this.classList.toggle('expanded')">
+    <span class="food_name">{{ food.name }}</span>
+    <div class="details">
+
+        <table style="width: 100%;  border-collapse: collapse;">
+            <tbody>
+                <tr>
+                    <th scope="row">Calories</th>
+                    <td> {{food.calories}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Protein</th>
+                    <td> {{food.protein}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Carbs</th>
+                    <td> {{food.carb | blank_check}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Fats</th>
+                    <td> {{food.fat | blank_check}}</td>
+                </tr>
+                <tr style="border: none;">
+                    <td colspan="2">
+                        <div class="button-container">
+                            <button class="delete-btn"
+                                hx-delete="{% url 'calcounter:delete_food' food.id %}" 
+                                hx-target="closest .meal" 
+                                hx-swap="outerHTML swap:0.3s">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</li>

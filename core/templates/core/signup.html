@@ -1,0 +1,13 @@
+<!-- core/templates/core/signup.html -->
+ <div id="back-btn" style="margin-top: -10px; width: 50px;"
+        hx-get="{% url 'core:auth_modal' %}" 
+        hx-target="#modal-target"
+        hx-swap="outerHTML swap:0.5s"
+        hx-trigger="click"> 
+        <i class="fa-solid fa-left-long"></i>
+    </div>
+<form hx-post="{% url 'core:signup' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Account</button>
+</form>

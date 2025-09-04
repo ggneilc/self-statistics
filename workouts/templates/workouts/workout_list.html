@@ -1,0 +1,15 @@
+<!-- 
+ workouts will probably be displayed like the 
+ 'match history' found in other stat tracking sites
+ -->
+
+
+<h1 style="font-size: 14px;">~ Workout Log ~</h1>
+
+
+<ul>
+    {% include 'workouts/start_workout.html' %}
+    {% for workout in workouts %}
+        {% include 'workouts/workout.html' with workout=workout%}
+    {% endfor %}
+</ul>

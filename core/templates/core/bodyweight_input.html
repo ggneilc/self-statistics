@@ -1,0 +1,16 @@
+<div id="weight" hx-swap-oob="innerHTML">
+    <form id="bw_entry_form" style="flex-direction: row; padding:0;margin:0;border-radius:0;gap:5px;"
+        hx-post="{% url 'core:set_bw' %}"
+        >
+        <div class="input_container" style="flex:1; margin:0;">
+            <input class="input" type="number" placeholder=" " name="weight">
+            <label style="font-size:16px;left:2px;" for="weight">Bodyweight:</label>
+        </div>
+        <div class="button-container">
+            <button class="form_btn" type="submit" 
+                    name="action" value="submit"
+                    style="padding:0;margin:0;width:40px;font-size:16px;">
+                ></button>
+        </div>
+    </form>
+</div>

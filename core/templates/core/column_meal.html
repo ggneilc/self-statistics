@@ -1,0 +1,29 @@
+{% load static %}
+<section id="meal_head" class="m_head"> 
+    <div id="meal_head__container">
+        <div id="weight" class="shadow-left"
+            hx-get="{% url 'core:get_bw' %}"
+            hx-trigger="load"
+            hx-swap-oob="True" >
+        </div>
+        <div id="totals" class="m_totals"
+            hx-get="{% url 'calcounter:sum-nuts' %}"
+            hx-trigger="load">
+            <!-- this will be filled upon page load-->
+        </div>
+    </div>
+</section>
+<section id="meal_list" class="m_list">
+    <input type="date" id="date-picker" name="date"
+        hx-post="{% url 'calcounter:list' %}" 
+        hx-trigger="change" 
+        hx-target="#meal_list__container"
+        hx-swap="innerHTML swap:0.5s">
+    <div id="meal_list__container"
+        hx-get="{% url 'calcounter:list' %}" 
+        hx-trigger="load"
+        hx-swap="innerHTML swap:0.5s"
+        hx-swap-oob="True">
+        <!-- this will be filled upon page load-->
+    </div>
+</section>

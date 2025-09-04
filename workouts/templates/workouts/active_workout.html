@@ -1,0 +1,44 @@
+<div id="workout" class="workout expanded" 
+    style="
+    height: 100%;
+    width: auto;
+    margin: 0;
+    background: linear-gradient(
+            135deg,
+            #212121 85%,
+            #1c2234 85%,
+            {{workout.workout_type.color}} 15%);
+            ">
+    {{workout}}
+    <div class="details" style="
+    display: flex; flex-direction: column;
+    max-height:100%;height:100%;
+    ">
+        <div class="horz_scroll"
+            style="
+            overflow-y: auto; width: 100%; flex: 5;
+            ">
+            <ul class="workout_list"
+                style="flex-wrap:wrap;"
+                hx-get="{% url 'workouts:listl' workout.id %}"
+                hx-trigger="load once"
+                hx-swap="innerHTML">
+
+            </ul>
+
+        </div>
+        <div id="total-{{workout.id}}" class="weight_totals"></div>
+    {% include './end_workout.html' %}
+    </div>
+</div>
+
+<!-- refresh entry -->
+<div id="lift_entry__container" hx-swap-oob="True">
+    <div class="fade-in"
+        hx-get="{% url 'workouts:load_entry' %}"
+        hx-trigger="revealed"
+        hx-target="#lift_entry__container"
+        hx-swap="innerHTML 0.4s">
+    <!-- will show correct buttons -->
+    </div> 
+</div>

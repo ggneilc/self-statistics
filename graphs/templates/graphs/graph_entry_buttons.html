@@ -1,0 +1,33 @@
+<!-- displays buttons for each type of graph -->
+ <div class="horz_scroll"
+    style="
+        height:100%;width:100%;padding:5px;
+    ">
+    <ul class="workout_list"
+        style="flex-wrap: wrap;height:100%;">
+        <div class="button-container">
+            <button id="m_entry__btn" class="form_btn"
+                    hx-trigger="click"
+                    hx-target="#graph_display__container"
+                    hx-swap="innerHTML swap:0.4s">
+                Cals / Time
+            </button>
+
+            <button id="m_entry__btn" class="form_btn"
+                    hx-get="{% url 'graphs:tile' %}"
+                    hx-trigger="click"
+                    hx-target="#graph_display__container"
+                    hx-swap="innerHTML swap:0.4s">
+                Bodyweight / Time
+            </button>
+
+            <button id="m_entry__btn" class="form_btn"
+                    hx-get="{% url 'graphs:calendar' %}"
+                    hx-trigger="click"
+                    hx-target="#graph_display__container"
+                    hx-swap="innerHTML swap:0.4s">
+                Calendar
+            </button>
+        </div>
+    </ul>
+</div>

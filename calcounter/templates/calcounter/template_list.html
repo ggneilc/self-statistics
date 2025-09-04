@@ -1,0 +1,27 @@
+
+<div id="back-btn" style=" width: 50px;"
+        hx-get="{% url 'calcounter:back' %}" 
+        hx-target="#meal_entry__container"
+        hx-trigger="click"
+        hx-swap="innerHTML swap:0.4s">
+        <i class="fa-solid fa-left-long"></i>
+</div>
+
+<div class="button-container" style="flex-direction:column; overflow-y: auto;">
+{% for food in foods %}
+<div id="template-target" style="display:flex; flex-direction: row;">
+    <button class="form_btn"style="flex: 9;"
+            hx-post="{% url 'calcounter:add_t' food.id %}"
+            hx-target="#meal_list__container">
+        {{ food.name }}
+    </button>
+    <div class="button-container">
+    <button style="flex: 1;" class="back-btn"
+            hx-delete="{% url 'calcounter:delete_t' food.id%}"
+            hx-target="closest #template-target"
+            hx-swap="outerHTML swap:0.2s">
+            <i class="fa-solid fa-trash"></i>
+    </button>
+    </div>
+</div>
+{% endfor %}

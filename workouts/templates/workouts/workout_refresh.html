@@ -1,0 +1,22 @@
+<!-- refresh list -->
+<div id="workout_list__container" hx-swap-oob="True">
+    <div
+        hx-get="{% url 'workouts:list' %}"
+        hx-trigger="revealed"
+        hx-target="#workout_list__container"
+        hx-swap="innerHTML swap:0.4s"
+        >
+    <!-- will show updated workout -->
+    </div>
+</div>
+
+<!-- refresh entry -->
+<div id="lift_entry__container" hx-swap-oob="True">
+    <div
+        hx-get="{% url 'workouts:load_entry' %}"
+        hx-trigger="revealed"
+        hx-target="#lift_entry__container"
+        hx-swap="innerHTML 0.4s">
+    <!-- will show correct buttons -->
+    </div> 
+</div>

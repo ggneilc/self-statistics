@@ -1,0 +1,9 @@
+<div id="end_workout" style="flex:1;padding-bottom:5px;">
+    <div class="button-container" style="height:100%;">
+        <button class="form_btn"style="height:100%;"
+                hx-post="{% url 'workouts:endw' %}"
+                hx-swap='innerHTML swap:0.4s'>
+            End Workout
+        </button>
+    </div>
+</div>

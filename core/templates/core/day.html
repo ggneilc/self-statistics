@@ -1,0 +1,16 @@
+<div id="day-container">
+    <div class="button-container">
+        <button class="back-btn"
+            hx-get="{% url 'graphs:calendar' %}"
+            hx-target="#graph_display__container">
+            back
+        </button>
+    </div>
+    <div id="day">
+        <div>Ate: {{day.calories_consumed}}</div>
+        <div>Goal: {{day.calorie_goal}}</div>
+        <div>BW: {{day.bodyweight}}</div>
+        <div>Ratio: {{day.calorie_ratio}} </div>
+        <div>Note: {{day.note}} </div>
+    </div>
+</div>

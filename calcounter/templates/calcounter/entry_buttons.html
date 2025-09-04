@@ -1,0 +1,17 @@
+<li id="meal_entry__container" style="
+display:flex;
+ padding: 0;
+margin: 0;
+">
+ <button class="add form_btn"
+ style="
+ padding: 5px 10px;
+margin: 5px;
+ "
+            hx-get="{% url 'calcounter:add' %}"
+            hx-trigger="click"
+            hx-target="#meal_entry__container"
+            hx-swap="innerHTML swap:0.4s">
+            + 
+ </button>
+</li>

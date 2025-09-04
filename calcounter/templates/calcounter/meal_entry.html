@@ -1,0 +1,59 @@
+<!-- oob swap to reload meal list, return to entry buttons -->
+<form id="m_entry_form"
+        hx-post="{% url 'calcounter:add' %}"
+        hx-target="#meal_entry__container"
+        hx-swap="outerHTML swap:0.5s">
+
+    {% csrf_token %}
+
+<!--
+    <div id="back-btn" style="margin-top: -10px; width: 50px;"
+        hx-get="{% url 'calcounter:back' %}" 
+        hx-target="#meal_entry__container"
+        hx-swap="innerHTML swap:0.5s"
+        hx-trigger="click"> 
+        <i class="fa-solid fa-left-long"></i>
+    </div>
+-->
+
+    <div class="main-nut">
+        <div class="input_container" style="flex:2;">
+            {{form.name}}
+            <label for="{{ form.name.id_for_label }}">Meal Name</label>
+        </div>
+
+        <div class="input_container" style="flex:1;">
+            {{form.date}}
+            <label for="{{ form.date.id_for_label }}">Date</label>
+        </div>
+    </div>
+
+    <div class="main-nut">
+        <div class="input_container">
+            {{form.calories}}
+            <label for="{{ form.calories.id_for_label }}">Calories</label>
+        </div>
+
+        <div class="input_container">
+            {{form.protein}}
+            <label for="{{ form.protein.id_for_label }}">Protein</label>
+        </div>
+        <div class="input_container">
+            {{form.fat}}
+            <label for="{{ form.fat.id_for_label }}">Fat</label>
+        </div>
+
+        <div class="input_container">
+            {{form.carb}}
+            <label for="{{ form.carb.id_for_label }}">Carbs</label>
+        </div>
+    </div>
+
+
+    <div class="button-container">
+        <!-- Standard Submit Button -->
+        <button id="sub" class="form_btn" type="submit" name="action" value="submit">Submit</button>
+        <!-- Save as Template Button -->
+        <button class="form_btn" type="submit" name="action" value="save_template">Save Template</button>
+    </div>
+</form>

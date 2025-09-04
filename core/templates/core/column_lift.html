@@ -1,0 +1,13 @@
+{% load static %}
+<section id="lift_head" class="w_head">
+    <div class="shadow" style="width:100%;">_</div>
+</section>
+<section id="workout_list" class="w_list"> 
+    <div id="workout_list__container"
+        hx-get="{% url 'workouts:list' %}"
+        hx-trigger="load"
+        hx-swap="innerHTML swap:0.4s"
+        hx-swap-oob="True">
+        <!-- Content filled on load! -->
+    </div>
+</section>

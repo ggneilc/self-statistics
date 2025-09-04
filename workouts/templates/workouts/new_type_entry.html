@@ -1,0 +1,20 @@
+<form id="t_entry_form"
+    hx-post="{% url 'workouts:addt' %}"
+    hx-target="#lift_entry__container">
+
+    {% csrf_token %}
+
+    <div class="input_container">
+        {{form.name}}
+        <label for="{{ form.name.id_for_label }}">Group</label>
+    </div>
+
+    <div class="input_container">
+        {{form.color}}
+        <label for="{{ form.color.id_for_label }}">Color</label>
+    </div>
+
+    <div class="button-container">
+        <button class="form_btn" type="submit" name="action" value="submit">Submit</button>
+    </div>
+</form>

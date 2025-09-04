@@ -1,0 +1,20 @@
+{% load custom_filters %}
+{% for lift in lifts %}
+<li class="lift">
+    <div class="lift_main">
+        <div class="lift_name">{{lift.name}}</div>
+        <div class="lift_weight">{{ lift.weight | smart_num }}</div>           
+    </div>
+    <div class="lift_set">
+        <div class="lift_sets">{{lift.sets}}</div>
+        x
+        <div class="lift_reps">{{lift.reps}}</div>
+    </div>
+</li>
+{% endfor %}
+
+<div id="total-{{id}}" class="weight_totals" hx-swap-oob="innerHTML">
+    <div class="fade-in">
+        Volume: {{total}} lbs
+    </div>
+</div>

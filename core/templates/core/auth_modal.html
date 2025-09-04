@@ -1,0 +1,18 @@
+<div id="modal-target" class="modal">
+    <div class="modal-content">
+        <h2>Welcome to Self Stats</h2>
+        <p>Please log in or sign up to get started.</p>
+
+        <a class="button"
+           href="{% url 'core:login' %}"
+           hx-get="{% url 'core:login' %}"
+           hx-target="#modal-target"
+           hx-swap="innerHTML swap:0.4s">Log In</a>
+
+        <a class="button"
+           href="{% url 'core:signup' %}"
+           hx-get="{% url 'core:signup' %}"
+           hx-target="#modal-target"
+           hx-swap="innerHTML swap:0.4s">Sign Up</a>
+    </div>
+</div>

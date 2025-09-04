@@ -1,0 +1,35 @@
+<!-- display button for push/pull/legs/etc -->
+
+<div class="horz_scroll"
+    style="
+        overflow-y: auto; width: 100%; flex: 5;
+    ">
+    <ul class="workout_list"
+        style="flex-wrap: wrap;">
+        <div class="button-container" style="display: inline-block;">
+        {% for workout_type in workout_types %}
+        <button id="m_entry__btn" class="form_btn"
+                style="background-color: {{workout_type.color}};
+                        min-width: 122px;"
+                hx-post="{% url 'workouts:set_type' workout_type.id %}"
+                hx-trigger="click"
+                hx-target="#workout_list__container"
+                hx-swap="innerHTML swap:0.4s">
+            {{workout_type.name}}
+        </button>
+        {% endfor %}
+        <button id="m_entry__btn" class="form_btn"
+                style="background-color: #10101075;
+                        min-width: 122px;
+                        color: white;
+                        opacity: 0.6;
+                        border: 1px dashed white;"
+                hx-get="{% url 'workouts:addt' %}"
+                hx-trigger="click"
+                hx-target="#lift_entry__container"
+                hx-swap="innerHTML swap:0.4s">
+            + 
+        </button>
+        </div>
+    </ul>
+</div>

@@ -1,0 +1,26 @@
+{% load static %}
+<section id="graph_head" class="s_head" style="flex-direction:row;padding:10px;text-align:center;">
+    <div class="shadow-left" style="flex:1; ">
+        <img src="{% static 'calcounter/icons/user.svg' %}"
+        style="height:25px; width:25px;">
+    <span style="padding-left: 2px;">{{ user.username }}</span>
+    </div>
+    <div class="shadow-mid" style="flex:1;"></div>
+    <div class="shadow-right"style="flex:1;">
+    <a href="{% url 'core:logout' %}"
+        hx-post="{% url 'core:logout' %}">
+        <i class="fa-solid fa-person-walking-arrow-right"></i>
+    </a>
+    </div>
+</section>
+<section id="graph_display" class="s_list"> 
+    <div id="graph_display__container"
+        hx-get="{% url 'graphs:calendar' %}"
+        hx-trigger="load"
+        hx-swap="innerHTML swap:0.4s">
+    </div>
+</section>
+<!-- <section id="graph_entry"class="s_entry"> 
+    <div id="graph_entry__container">
+    </div>
+</section> -->
