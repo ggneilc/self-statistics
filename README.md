@@ -12,6 +12,17 @@ Even if my idea for a 'digital twin' was hijacked by the government, I can still
 > Be a first and foremost *digital fitness twin*; enable robust tracking and prediction models for core health metrics. Additional focal point is making the data entry enjoyable, and aggregating/viewing/processing information as seemless as possible
 
 
+---
+# Download
+
+`git clone https://github.com/ggneilc/self-statistics.git`
+`python -m venv env`
+`. ./env/bin/activate`
+`pip install -r requirements.txt`
+
+You can now run the development server from `self-statistics/` with `python manage.py runserver`. 
+
+Keep in mind the database file (`db.sqlite3`) is only tracked for the initial repository upload so that dummy data could exist. 
 
 ---
 # Implementation
