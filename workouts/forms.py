@@ -1,5 +1,6 @@
 from django import forms
-from .models import Lift, WorkoutType
+from .models import Lift, WorkoutType, Set
+
 
 class WTypeForm(forms.ModelForm):
     class Meta:
@@ -14,10 +15,19 @@ class WTypeForm(forms.ModelForm):
 class LiftForm(forms.ModelForm):
     class Meta:
         model = Lift
-        fields = ['name', 'sets', 'reps', 'weight']
+        fields = ['exercise_name']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'input', 'placeholder': ' '}),
-            'sets': forms.NumberInput(attrs={'class': 'input', 'placeholder': ' '}),
+            'exercise_name': forms.TextInput(attrs={'class': 'input', 'placeholder': ' '}),
+        }
+
+
+class SetForm(forms.ModelForm):
+    class Meta:
+        model = Set
+        fields = ['reps', 'weight', 'rir', 'rest']
+        widgets = {
             'reps': forms.NumberInput(attrs={'class': 'input', 'placeholder': ' '}),
             'weight': forms.NumberInput(attrs={'class': 'input', 'placeholder': ' '}),
+            'rir': forms.NumberInput(attrs={'class': 'input', 'placeholder': ' '}),
+            'rest': forms.NumberInput(attrs={'class': 'input', 'placeholder': ' '}),
         }

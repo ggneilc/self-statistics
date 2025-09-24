@@ -1,0 +1,11 @@
+
+<div class="set-row">
+  <span>{{ set.reps }} reps × {{ set.weight }} lbs</span>
+  <button 
+    hx-delete="{% url 'workouts:del_set' set.id %}" 
+    hx-target="closest .set-row"
+    hx-swap="outerHTML"
+  >
+    ✕
+  </button>
+</div>

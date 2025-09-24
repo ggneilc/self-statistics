@@ -1,18 +1,19 @@
 import datetime
 from django.db import models
-from django.conf import settings
+from core.models import Day
 
 
 class Food(models.Model):
     ''' Basic Food Identity '''
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    day = models.ForeignKey(Day, on_delete=models.CASCADE,
+                            related_name="meals", null=True)
     name = models.TextField()
+    # Macros
     calories = models.IntegerField(null=True)
     protein = models.IntegerField(null=True)
     fat = models.IntegerField(blank=True, null=True)
     carb = models.IntegerField(blank=True, null=True)
-
-    date = models.DateField("Day Eaten")
+    # TODO: add Micronutrients
 
     is_template = models.BooleanField(default=False)
 

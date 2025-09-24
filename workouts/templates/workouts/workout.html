@@ -5,11 +5,11 @@
         scrollbar-width: none;        /* Firefox */
     background: linear-gradient(
             135deg,
-            #212121 85%,
-            #1c2234 85%,
+            var(--fg) 85%,
+            var(--fg) 85%,
             {{workout.workout_type.color}} 15%);
             ">
-    {{workout}} 
+  {{workout.workout_type.name.upper}} 
      <!-- Color patch -->
   <label id="color-patch-{{workout.id}}" class="color-patch" for="color-{{ workout.id }}">
     <i class="fa-solid fa-fill c-icon"></i>
@@ -29,6 +29,7 @@
     hx-swap="innerHTML"
   >
     <div class="details">
+        {{workout.day.date}} 
         <div class="horz_scroll"
             style="
             overflow-x: auto; width: 100%;
@@ -46,7 +47,7 @@
     {% if workout.is_active %}
     {% include './end_workout.html' %}
     {% endif %}
-    <div class="button-container">
+    <div class="button-container" style="position: absolute; right: 5px; bottom: 5px; width: 100px;">
         <button class="delete-btn"
                 style="flex: 1;"
                 hx-delete="{% url 'workouts:del_workout' workout.id %}"

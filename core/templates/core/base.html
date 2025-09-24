@@ -1,5 +1,11 @@
 {% extends "./default.html" %}
 {% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'calcounter/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'workouts/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'graphs/styles.css' %}">
+{% endblock %}
+
 {% block main_content %}
     {% include './column_lift.html' %}
     {% include './column_graph.html' %}
@@ -15,10 +21,12 @@
     <!-- Modal content loaded via HTMX -->
 </div>
 {% endif %}
+
 <script src="{% static 'calcounter/js/meal_entry_button.js' %}"></script>
 <script src="{% static 'calcounter/js/global_date_state.js' %}"></script>
 <script src="{% static 'calcounter/js/calendar_heatmap.js' %}"></script>
-<script src="{% static 'calcounter/js/tile_grid_load.js' %}"></script>
+<script src="{% static 'graphs/js/bw-time.js' %}"></script>
+<script src="{% static 'workouts/js/rest_timer.js' %}"></script>
 </body>
 </html>
 {% endblock %}

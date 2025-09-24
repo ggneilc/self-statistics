@@ -1,0 +1,43 @@
+<form 
+  hx-post="{% url 'workouts:adds' lift.id %}" 
+  hx-target="#set-list"
+  hx-swap="beforeend"
+  hx-on="htmx:afterRequest: this.reset(); this.querySelector('[name=reps]').focus();"
+>
+<div class="main-nut">
+	  <div class="input_container">
+	    {{ form.reps }} 
+	    <label for={{form.reps.id_for_label}}"> REPS </label>
+	  </div>
+	  <div class="input_container">
+	    {{ form.weight }} 
+	    <label for={{form.weight.id_for_label}}"> WEIGHT </label>
+	  </div>
+	  <div class="input_container">
+	    {{ form.rir }} 
+	    <label for={{form.rir.id_for_label}}"> RIR </label>
+	  </div>
+	  <div class="input_container" style="display: none;">
+	    {{ form.rest }} 
+	    <label for={{form.rest.id_for_label}}"> REST </label>
+	  </div>
+  </div>
+  <div id="rest-display"></div>
+  <div class="button-container">
+    <button class="add" name="action" type="submit" value="submit">
+	+
+    </button>
+  </div>
+</form>
+
+<script>
+(() => {
+  const repsInput = document.querySelector("#id_reps");
+  const weightInput = document.querySelector("#id_weight");
+  const form = document.querySelector("#set-form");
+
+  if (repsInput) repsInput.addEventListener("focus", startRestTimer);
+  if (weightInput) weightInput.addEventListener("focus", startRestTimer);
+  if (form) form.addEventListener("submit", stopRestTimerAndPopulate);
+})();
+</script>

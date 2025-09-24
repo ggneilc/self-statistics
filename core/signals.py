@@ -8,24 +8,24 @@ from .models import Day
 from django.db.models import Sum
 from datetime import datetime
 
+
 @receiver([post_save, post_delete], sender=Food)
 def update_day_after_meal_change(sender, instance, **kwargs):
-    user = instance.user
-    date = instance.date
-    print(instance.date)
-
-    day, _ = Day.objects.get_or_create(user=user, date=date)
+    date = instance.day.date
+    print(f"Updating {date}")
+    day = instance.day
 
     # Check if food has 01-01-0001
-    if (date == datetime(1,1,1)):
+    if (date == datetime(1, 1, 1)):
         print("flushing dead foods")
         # delete all foods that has 01-01-0001
-        _ = Food.objects.filter(user=user, date=date).delete()
-        instance.delete()
-        # delete the day
-        day.delete()
+        foods = Food.objects.filter(day=day)
+        for f in foods:
+            if not f.is_template:
+                print(f"dead food found: {f}")
+                instance.delete()
     else:
-        total = Food.objects.filter(user=user, date=date).aggregate(
+        total = Food.objects.filter(day=day).aggregate(
             total_cals=Sum('calories')
         )['total_cals'] or 0
 
@@ -33,16 +33,13 @@ def update_day_after_meal_change(sender, instance, **kwargs):
         day.save()
 
 
-
 @receiver([post_save, post_delete], sender=Workout)
 def update_day_after_workout_change(sender, instance, **kwargs):
-    user = instance.user
-    date = instance.date
-
-    day, _ = Day.objects.get_or_create(user=user, date=date)
-    exists = Workout.objects.filter(user=user, date=date).exists()
+    day = instance.day
+    exists = Workout.objects.filter(day=day).exists()
     day.workout_done = exists
     day.save()
+
 
 DEFAULT_TYPES = [
     ("Push", "#66ff66"),
@@ -50,9 +47,11 @@ DEFAULT_TYPES = [
     ("Legs", "#66ccff"),
 ]
 
+
 @receiver(post_save, sender=User)
 def create_default_workout_types(sender, instance, created, **kwargs):
     if created:
         if not WorkoutType.objects.filter(user=instance).exists():
             for name, color in DEFAULT_TYPES:
-                WorkoutType.objects.create(name=name, user=instance, color=color)
+                WorkoutType.objects.create(
+                    name=name, user=instance, color=color)

@@ -36,21 +36,26 @@ document.addEventListener('htmx:afterSwap', (e) => {
   const bgLayer = svg.append("g").attr("class", "background");
   const fgLayer = svg.append("g").attr("class", "foreground");
 
-  bgLayer.selectAll("rect")
-    .data(cells)
-    .enter()
-    .append("rect")
-    .attr("x", d => d.col * (boxSize + padding))
-    .attr("y", d => d.row * (boxSize + padding))
-    .attr("width", boxSize)
-    .attr("height", boxSize)
-//    .attr("stroke", "#555")
+bgLayer.selectAll("rect")
+  .data(cells)
+  .enter()
+  .append("rect")
+  .attr("x", d => d.col * (boxSize + padding))
+  .attr("y", d => d.row * (boxSize + padding))
+  .attr("width", boxSize)
+  .attr("height", boxSize)
+  .style("fill", "#000")
+  .style("opacity", 0)
+  .transition()
+  .duration(300)
+  .style("opacity", 1);
+
 
   const colorScale = d3.scaleLinear()
     .domain([0, 1])
     .range(["#ff3b3b", "#3bff64"]);
 
-  fgLayer.selectAll("rect")
+  const rects = fgLayer.selectAll("rect")
     .data(data)
     .enter()
     .append("rect")
@@ -63,8 +68,17 @@ document.addEventListener('htmx:afterSwap', (e) => {
     .attr("hx-trigger", "click")
     .attr("hx-target", "#graph_display__container")
     .attr("stroke", "#111")
-    .append("title")
-    .text(d => `${d.date}: ${Math.round(d.ratio * 100)}% of goal`);
+    .style("opacity", 0);  // start invisible
+
+  // Animate opacity + "pop in" scale
+  rects.transition()
+    .delay((d, i) => i * 10)  // staggered entrance
+    .duration(400)
+    .style("opacity", 1)
+  // .attrTween("transform", function () {
+      // little scale animation
+ //    return d3.interpolateString("scale(0.5)", "scale(1)");
+//    });
 
   svg.on("mousemove", function (event) {
   const [mx, my] = d3.pointer(event);
@@ -74,12 +88,12 @@ document.addEventListener('htmx:afterSwap', (e) => {
     const y = +rect.attr("y") + boxSize / 2;
     const dist = Math.hypot(mx - x, my - y);
 
-    const scale = dist < 50
-      ? 1 + (1.25 - 1) * (1 - dist / 50)
+    const scale = dist < 20
+      ? 1 + (1.15 - 1) * (1 - dist / 50)
       : 1;
     
     const mv = scale > 1
-        ? (scale===1.25) ? scale * 8 : scale * 2
+        ? (scale===1.15) ? scale * 4 : scale * 1
         : 0 ;
 
     rect

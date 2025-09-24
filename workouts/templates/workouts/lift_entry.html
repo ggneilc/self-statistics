@@ -1,28 +1,13 @@
 <form id="l_entry_form" 
     hx-post="{% url 'workouts:addl' %}"
-    hx-target="#workout_list__container">
+    hx-target="#lift_entry__container">
 
     {% csrf_token %}
 
     <div class="input_container">
-        {{form.name}}
-        <label for="{{ form.name.id_for_label }}">Lift Name</label>
+        {{form.exercise_name}}
+        <label for="{{ form.exercise_name.id_for_label }}">Lift Name</label>
     </div>
-    <div class="main-nut">
-    <div class="input_container" style="flex:1;">
-        {{form.sets}}
-        <label for="{{ form.sets.id_for_label }}">Sets</label>
-    </div>
-    <div class="input_container" style="flex:1;">
-        {{form.reps}}
-        <label for="{{ form.reps.id_for_label }}">Reps</label>
-    </div>
-    <div class="input_container" style="flex:2;">
-        {{form.weight}}
-        <label for="{{ form.weight.id_for_label }}">Weight</label>
-    </div>
-    </div>
-
     <div class="button-container">
         <!-- Standard Submit Button -->
         <button class="form_btn" type="submit" name="action" value="submit">Submit</button>

@@ -1,0 +1,89 @@
+
+
+#date-container {
+  flex: 5;
+  gap: 0.5rem;
+  background: var(--fg);
+  border-radius: 2px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  box-shadow: 0px 0px 4px 4px rgba(0,0,0, 0.3);
+  font-size: 40px;
+  z-index: 2;
+}
+
+#date-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 3px 4px 4px rgba(0,0,0, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+#hidden-date {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+  width: 0;
+}
+
+#graph_head__container {
+  flex: 1;
+  display: flex;
+}
+
+#info-container {
+  flex: 4;
+  margin: 10px 0px 10px 0px;
+  border-radius: 0px 2px 2px 0px;
+  background-color: var(--fg);
+}
+
+
+#weight {
+    user-select: none;
+    flex: 1;
+    margin: 5px;
+    text-align: center;
+    font-size: 28px;
+}
+
+#weight input {
+  border: none;
+}
+
+/*--- graphs ---*/
+
+#graph_display__container {
+    overflow:visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    height: 100%;
+}
+
+#day-container {
+    display:flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height:100%;
+    width:100%;
+    align-items: center;
+    border: 1px solid black;
+}
+
+#d3-calendar {
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+svg {
+  padding: 1px;
+}
+
+.cardstyle {
+  display: flex;
+  background-color: var(--fg);
+  padding: 10px;
+  border-radius: 2px;
+}

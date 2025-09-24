@@ -1,18 +1,6 @@
-<h1 style="font-size: 14px;">~ {{date}} Meals ~</h1>
-
-{% if bodyweight %}
-{% include 'core/bodyweight_update.html' %}
-{% else %}
-{% include 'core/bodyweight_input.html'%}
-{% endif %}
-
-
 <ul id="form_target">
 {% for food in foods %}
     {% include './meal.html' with food=food%}
 {% endfor %}
-{% include './entry_buttons.html' %}
 </ul>
 
-<!-- Meal list will always oob update totals -->
-{% include './totals.html' %}

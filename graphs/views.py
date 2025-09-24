@@ -5,7 +5,7 @@ from workouts.models import Workout, Lift
 import json
 
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
 
 
 def calendar_heatmap(request):
@@ -42,8 +42,17 @@ def get_bw_graph(request):
     '''
         displays graph of previous weights
     '''
-    day = Day.objects.filter(user=request.user)
-    pass
+    days = Day.objects.filter(user=request.user).exclude(date=date(1, 1, 1))
+    tmp = []
+    for d in days:
+        if d.bodyweight is not None and d.bodyweight > 100 and d.bodyweight < 200:
+            tmp.append({
+                "day": d.date.isoformat(),
+                "value": d.bodyweight
+            })
+        else:
+            pass
+    return render(request, 'graphs/bw-time.html', {"day_data": json.dumps(tmp)})
 
 def get_cal_graph(request):
     days = Day.objects.filter(user=request.user).order_by('-date')

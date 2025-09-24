@@ -1,0 +1,361 @@
+* {
+    box-sizing: border-box; 
+    font-family: 'Oswald';
+}
+
+:root {
+    --bg: #0D0D0F;
+    --fg: #1A1B1E;
+    --white: #f5f5f5;
+    --yellow: #FFC83D;
+    --blue: #37B8FF;
+
+    --meal: #050505;
+    --meal-hover: #060606;
+
+    --button: #28965A;
+    --button-hover: #207948;
+
+    --Push: #79ca85;
+    --Pull: #bc311c;
+    --Legs: #1c39bc;
+    --lift: #050505;
+}
+
+h1 { color: var(--yellow); text-align: center; font-size:28px;}
+
+body {
+    font-family: 'Oswald';
+    font-size:24px;
+    background-color: var(--bg);
+    color: white;
+
+    height: 100vh;
+    width: 100vw;
+    margin: 0px;
+    padding: 5px;
+    padding-bottom: 10px;
+    overflow: hidden;
+
+    display: grid;
+    grid-template-areas:
+        "w_head s_head m_head"
+        "w_list s_list m_list";
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 80px 1fr;
+
+
+    align-items: center; 
+    justify-items: center;
+}
+
+
+.w_list {grid-area: w_list;}
+.s_list {grid-area: s_list;}
+.m_list {grid-area: m_list;}
+.w_head {grid-area: w_head;}
+.s_head {grid-area: s_head;}
+.m_head {grid-area: m_head;}
+
+
+/* === Navbar === */
+
+#username {
+  font-size: 20px;
+  padding-left:5px;
+}
+
+.profile-pic-container {
+    flex: 4;
+    display: flex;
+    align-items: center;
+    margin: 10px 0px 10px 0px;
+    border-radius: 2px 0px 0px 2px;
+  background-color: var(--fg);
+}
+
+.profile-pic {
+  margin: 5px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--yellow);
+}
+
+
+/* === Floating Labels === */
+
+.input_container {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid var(--white);
+    background: transparent;
+    outline: none;
+    color: white;
+}
+
+
+.input_container label {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    background-color: var(--bg);
+    transform: translateY(-50%);
+    padding: 0 5px;
+    transition: 0.3s;
+    pointer-events: none;
+}
+
+.input:focus + label,
+.input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 12px;
+    color: var(--blue);
+}
+
+/* Remove number input spinners for all inputs */
+
+/* For WebKit browsers (Chrome, Edge, Safari, etc.) */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Double tapping doesn't highlight text */
+button {
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* IE/Edge */
+  user-select: none;         /* Standard */
+}
+
+
+/* === Button Styling === */
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.add {
+    background-color: #10101075;
+        min-width: 122px;
+        color: white;
+        opacity: 0.6;
+        border: 1px dashed white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0;
+    flex: 1;
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transition: all 0.3s ease-in-out;
+}
+
+.button-container .form_btn {
+    background-color: var(--button);
+    border: none;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 2px;
+    color: black;
+    flex: 1;
+    transition: all 0.3s ease-in-out;
+}
+
+.form_btn:active, .meal:active, .workout:active, .add:active {
+  transform: translateY(2px) translateX(-1px);
+  box-shadow: -3px 3px 2px 0px rgba(0, 0, 0, 0.5);
+  transition: all 0.05s ease-out;
+}
+
+.form_btn:hover, .add:hover {
+    background-color: var(--button-hover);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+
+.back-btn {
+    background-color: #cb0014;
+    border: none;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 2px;
+    color: black;
+    flex: 1;
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transition: all 0.3s ease-in-out;
+}
+
+.delete-btn {
+    width:100%;
+    font-size: 8px;
+    background-color: #cb0014;
+    box-shadow: 0 0 0 0 rgb(0,0,0);
+    transition: all 0.2s ease-in-out;
+    border: none;
+    cursor: pointer;
+    color: black;
+    padding: 4px 0;
+    margin-top: 4px;
+}
+
+
+.delete-btn:hover, .back-btn:hover {
+    background-color: #e70118;
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+
+
+/* === Modal Overlay === */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* === Modal Box === */
+.modal {
+    background-color: var(--entry-form);
+    padding: 2rem;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-in-out;
+    font-family: 'Spectral', serif;
+}
+
+/* === Modal Content === */
+.modal-content h2 {
+    font-family: 'Alegreya SC', serif;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.modal-content p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.modal-content .button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.modal-content .button:hover {
+    background-color: #45a049;
+}
+
+/* === Close Button (optional) === */
+.modal-content .close-btn {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #777;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.workout_list #m_entry__btn {
+    margin: 0;
+    flex: 1;
+}
+
+/* -------------- HTMX Animations ------------- */
+
+/* Element that is being swapped OUT */
+.htmx-swapping {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.2s ease;
+}
+
+/* New element being swapped IN */
+.htmx-added {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.2s ease;
+}
+
+.htmx-settling {
+  opacity: 1;
+  transform: translateY(0), scale(0);
+  transition: all 0.3s ease;
+}
+
+.fade-in {
+  opacity: 0;
+  transform: scale(0.98);
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* For WebKit browsers (Chrome, Safari) */
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: none;
+}
+
+/* For Internet Explorer and Edge */
+* {
+    -ms-overflow-style: none;
+}

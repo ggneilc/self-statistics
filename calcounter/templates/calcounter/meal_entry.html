@@ -1,20 +1,9 @@
-<!-- oob swap to reload meal list, return to entry buttons -->
 <form id="m_entry_form"
         hx-post="{% url 'calcounter:add' %}"
-        hx-target="#meal_entry__container"
+	hx-target="#meal_entry__container"
         hx-swap="outerHTML swap:0.5s">
 
     {% csrf_token %}
-
-<!--
-    <div id="back-btn" style="margin-top: -10px; width: 50px;"
-        hx-get="{% url 'calcounter:back' %}" 
-        hx-target="#meal_entry__container"
-        hx-swap="innerHTML swap:0.5s"
-        hx-trigger="click"> 
-        <i class="fa-solid fa-left-long"></i>
-    </div>
--->
 
     <div class="main-nut">
         <div class="input_container" style="flex:2;">
@@ -22,9 +11,8 @@
             <label for="{{ form.name.id_for_label }}">Meal Name</label>
         </div>
 
-        <div class="input_container" style="flex:1;">
-            {{form.date}}
-            <label for="{{ form.date.id_for_label }}">Date</label>
+        <div class="input_container" style="flex:1; display: none">
+		<input name="selected_date" value="{{date}}">
         </div>
     </div>
 

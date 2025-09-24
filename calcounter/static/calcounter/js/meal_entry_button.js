@@ -28,7 +28,9 @@ function SetupMealFormButtonState() {
 
     if (allEmpty) {
         e.preventDefault();
-        htmx.ajax('GET', "/food/back/", { target: '#meal_entry__container' });
+        htmx.ajax('GET', "/food/back/", {
+          target: '#meal_entry__container',
+          swap: 'outerHTML swap:0.5s'});
     }
     });
 }

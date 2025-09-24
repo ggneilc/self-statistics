@@ -2,7 +2,8 @@
     <div class="button-container">
         <button class="back-btn"
             hx-get="{% url 'graphs:calendar' %}"
-            hx-target="#graph_display__container">
+            hx-target="#graph_display__container"
+            hx-swap="innerHTML swap:0.5s">
             back
         </button>
     </div>

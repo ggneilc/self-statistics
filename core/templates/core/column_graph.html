@@ -1,23 +1,50 @@
 {% load static %}
-<section id="graph_head" class="s_head" style="flex-direction:row;padding:10px;text-align:center;">
-    <div class="shadow-left" style="flex:1; ">
-        <img src="{% static 'calcounter/icons/user.svg' %}"
-        style="height:25px; width:25px;">
-    <span style="padding-left: 2px;">{{ user.username }}</span>
-    </div>
-    <div class="shadow-mid" style="flex:1;"></div>
-    <div class="shadow-right"style="flex:1;">
-    <a href="{% url 'core:logout' %}"
-        hx-post="{% url 'core:logout' %}">
-        <i class="fa-solid fa-person-walking-arrow-right"></i>
-    </a>
+<section id="graph_head" class="s_head" style="text-align:center;">
+    <div id="graph_head__container">
+      <div class="profile-pic-container">
+        <div class="profile-pic"></div>
+        <span id="username">{{ user.username }}</span>
+      </div>
+      <div id="date-container">
+        <span id="current-date"></span>
+        <input type="date" id="hidden-date" name="date" value="today">
+      </div>
+      <div id="info-container">
+         <div id="weight"
+            hx-get="{% url 'core:get_bw' %}"
+            hx-trigger="load, change from:#hidden-date"
+            hx-swap="innerHTML swap:0.5s"
+            hx-swap-oob="True" >
+        </div>
+      </div>
     </div>
 </section>
 <section id="graph_display" class="s_list"> 
-    <div id="graph_display__container"
+    <div style="text-align: center; min-height: 50px; margin-top:5px;margin-bottom:-5px;">
+		model xp here
+    </div>
+    <div id="graph_display__container">
+
+      <!-- to be filled by button -->
+
+    </div>
+    <div class="button-container">
+      <button class="form_btn"
+        style="background-color: var(--yellow);"
         hx-get="{% url 'graphs:calendar' %}"
-        hx-trigger="load"
-        hx-swap="innerHTML swap:0.4s">
+        hx-trigger="click"
+        hx-target="#graph_display__container"
+        hx-swap="innerHTML swap:0.5s">
+        Heatmap
+      </button>
+      <button class="form_btn"
+        style="background-color: var(--yellow);"
+        hx-get="{% url 'graphs:bw' %}"
+        hx-trigger="click"
+        hx-target="#graph_display__container"
+        hx-swap="innerHTML swap:0.5s">
+        BW / TIME
+      </button>
     </div>
 </section>
 <!-- <section id="graph_entry"class="s_entry"> 

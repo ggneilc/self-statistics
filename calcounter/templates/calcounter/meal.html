@@ -1,6 +1,6 @@
 {% load custom_filters %}
 <li class="meal" hx-on:click="this.classList.toggle('expanded')">
-    <span class="food_name">{{ food.name }}</span>
+    <span class="food_name">{{ food.name.upper }}</span>
     <div class="details">
 
         <table style="width: 100%;  border-collapse: collapse;">

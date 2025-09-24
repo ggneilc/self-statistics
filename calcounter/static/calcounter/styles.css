@@ -1,135 +1,3 @@
-* {
-    box-sizing: border-box;
-}
-
-:root {
-    --bg: #191a23;
-    --white: #EFF6EE;
-
-    --meal: #9197AE;
-    --meal-hover: #898ea4;
-
-    --entry-form: #171819;
-
-    --button: #28965A;
-    --button-hover: #207948;
-
-    --Push: #79ca85;
-    --Pull: #bc311c;
-    --Legs: #1c39bc;
-    --lift: #050505;
-}
-
-h1, button { font-family: 'Jersey 10'}
-h1 { text-align: center; }
-
-body {
-    font-family: 'Jersey 10';
-    font-size:24px;
-    background-color: var(--bg);
-    color: white;
-
-    height: 100vh;
-    width: 100vw;
-    margin: 0px;
-    padding: 5px;
-    padding-bottom: 10px;
-    overflow: hidden;
-
-    display: grid;
-    grid-template-areas:
-        "w_head s_head m_head"
-        "w_list s_list m_list";
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 50px 1fr;
-
-
-    align-items: center; 
-    justify-items: center;
-}
-
-.w_list {grid-area: w_list;}
-.s_list {grid-area: s_list;}
-.m_list {grid-area: m_list;}
-.w_head {grid-area: w_head;}
-.s_head {grid-area: s_head;}
-.m_head {grid-area: m_head;}
-
-/* Element that is being swapped OUT */
-.htmx-swapping {
-  opacity: 0;
-  transform: scale(0.95);
-  transition: all 0.2s ease;
-}
-
-/* New element being swapped IN */
-.htmx-added {
-  opacity: 1;
-  transform: scale(1);
-  transition: all 0.2s ease;
-}
-
-.htmx-settling {
-  opacity: 1;
-  transform: translateY(0), scale(0);
-  transition: all 0.3s ease;
-}
-
-.fade-in {
-  opacity: 0;
-  transform: scale(0.98);
-  animation: fadeIn 0.3s ease forwards;
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.color-patch {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 40px;
-  height: 100%;
-  background: var(--color);
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  cursor: pointer;
-}
-
-.c-icon {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    color: black;
-}
-
-.color-patch i {
-    display: none;
-}
-
-.color-patch:hover i {
-    display: inline-block;
-}
-
-/*
-rect:hover {
-    transform: scale(1.25);
-    transform-box: fill-box;
-    transform-origin: center;
-    transition: all 0.3s ease-in-out;
-}
-
-rect:active {
-    transform: scale(0.85) translateY(5px);
-    transform-box: fill-box;
-    transform-origin: center;
-    transition: all 0.1s ease;
-}
-*/
-
 
 
 /* ----------- --------- Meal Styling ----------- --------- */
@@ -143,19 +11,11 @@ rect:active {
 }
 
 #meal_head__container {
-    flex-grow: 1;
-    padding: 5px;
-    display: flex;
-    justify-content: space-around;
-    border-radius: 5px;
-}
-
-#weight {
-    user-select: none;
-    flex: 1;
-    margin: 5px;
-    text-align: center;
-    font-size: 28px;
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-around;
+  background-color: var(--fg);
+  margin: 15px 5px 15px 0px;
 }
 
 #totals {
@@ -173,7 +33,15 @@ rect:active {
     text-align: center;
 }
 
-.calories, .protein, .weight {
+.main-nut {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+#id_date {
+  padding-top: 15px;
+  padding-bottom: 7px;
 }
 
 /* ---------- Meal List Display ---------- */
@@ -187,7 +55,6 @@ ul {
 #meal_list, #workout_list, #graph_display {
     background-color: var(--bg);
     border-radius: 5px;
-    box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.5);
     height: 100%;
     width: 100%;
     display: flex;          /* Make it a flex container */
@@ -210,12 +77,7 @@ ul {
     list-style: none;
     margin: 5px;
     box-shadow: -3px 3px 0px 0px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(
-        135deg,
-        #212121 85%,                 /* Left side background */
-        #1c2234 85%,                 /* Seam */
-        var(--meal) 15%                  /* Right side background */
-    );
+    background-color: var(--fg);
     overflow: hidden;
     cursor: pointer;
     user-select: none;
@@ -230,11 +92,6 @@ ul {
 .shadow:hover {
     box-shadow: -5px 5px 0px 0px rgba(0, 0, 0, 1);
 }
-
-.shadow-mid { box-shadow: 0px 3px 0px 0px rgba(0,0,0,0.5); }
-.shadow-mid:hover { box-shadow: 0px 5px 0px 0px rgba(0,0,0,0.5); }
-.shadow-right { box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.5); }
-.shadow-right:hover { box-shadow: 5px 5px 0px 0px rgba(0,0,0,0.5); }
 
 .meal:hover {
     transform: translateY(-2px);
@@ -270,16 +127,9 @@ ul {
 }
 
 tr {
-  border-bottom: 1px solid #000000; /* horizontal line */
+  border-bottom: 1px solid var(--white); /* horizontal line */
 }
 
-
-#date-picker {
-/*    position: absolute;*/
-    width: 2em;
-    top: 10px;
-    right: 10px;
-}
 
 /* ---------- Meal Entries ---------- */
 #lift_head,
@@ -297,7 +147,6 @@ tr {
     flex-direction: column; /* Stack items vertically */
     overflow: hidden;       /* Prevent content from escaping */
     justify-content: center;
-    box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -305,8 +154,7 @@ tr {
 #meal_entry__container,
 #lift_entry__container,
 #graph_entry__container {
-    margin: 0;
-    flex-grow: 1;        /* Takes up remaining space */
+    margin: 10px;
 }
 
 #bw_entry_form,
@@ -322,353 +170,4 @@ tr {
 .entry {
     height: 100%;
     padding: 10px;
-}
-
-
-/* --- Weight List --- */
-
-.workout {
-    position: relative;
-    display: flex;  /* Make the list item a flex container */
-    flex-direction: column;
-    padding: 5px 10px;
-    list-style: none;
-    margin: 5px;
-    box-shadow: -3px 3px 0px 0px rgba(0, 0, 0, 0.5);
-    background:
-        linear-gradient(
-        135deg,                      /* Diagonal angle */
-        #212121 50%,                 /* Left side background */
-        #1c2234 50%,                 /* Seam */
-        #bc4c1c 50%                  /* Right side background */
-    );
-    overflow: hidden;
-    cursor: pointer;
-    user-select: none;
-}
-
-.workout::-webkit-scrollbar {
-  display: none;                /* Chrome, Safari, Edge */
-}
-
-.workout_list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 5px;
-    list-style: none;
-}
-
-.lift {
-    min-width: 110px;
-    min-height: 100px;
-    background-color: #05050557;
-    padding: 5px;
-    position: relative;
-    font-size: small;
-    display: flex;
-    flex-direction: column;
-}
-
-.lift_main {
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-}
-
-.lift_name { flex: 1; }
-.lift_weight { flex: 2; font-size: medium; }
-.lift_set {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-}
-.lift_reps,
-.lift_sets{
-    flex: 1;
-    text-align: center;
-}
-
-.lift:hover {
-    transform: translateY(-2px);
-    box-shadow: -2px 2px 0px 0px rgba(0, 0, 0, 1);
-    transition: all 0.1s ease-in-out;
-}
-
-.workout .details {
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    transition:
-        max-height 0.4s ease,
-        padding 0.3s ease,
-        opacity 0.3s ease;
-}
-
-.workout.expanded .details {
-    max-height: 200px; /* set this to your known height */
-    opacity: 1;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.workout:hover {
-    transform: translateY(-2px);
-    box-shadow: -5px 5px 0px 0px rgba(0, 0, 0, 1);
-    transition: all 0.1s ease-in-out;
-}
-
-
-.main-nut {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-}
-
-/*--- graphs ---*/
-
-#graph_display__container {
-    overflow:visible;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    padding-top:20px;
-    height: 100%;
-}
-
-#day-container {
-    display:flex;
-    flex-direction: column;
-    flex-grow: 1;
-    height:100%;
-    width:100%;
-    align-items: center;
-    border: 1px solid black;
-}
-
-/* ___Floating Labels___ */
-
-.input_container {
-    position: relative;
-    margin-bottom: 10px;
-}
-
-.input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #545b5e;
-    background: transparent;
-    outline: none;
-    color: white;
-}
-
-
-.input_container label {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    background-color: var(--bg);
-    transform: translateY(-50%);
-    padding: 0 5px;
-    transition: 0.3s;
-    pointer-events: none;
-}
-
-.input:focus + label,
-.input:not(:placeholder-shown) + label {
-    top: 0;
-    font-size: 12px;
-    color: #cf3221;
-}
-
-/* Remove number input spinners for all inputs */
-
-/* For WebKit browsers (Chrome, Edge, Safari, etc.) */
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* For Firefox */
-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-/* Double tapping doesn't highlight text */
-button {
-  -webkit-user-select: none; /* Chrome/Safari */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* IE/Edge */
-  user-select: none;         /* Standard */
-}
-
-
-/* ___Button Styling___ */
-
-.button-container {
-    display: flex;
-    flex-direction: row;
-}
-
-.add {
-    background-color: #10101075;
-        min-width: 122px;
-        color: white;
-        opacity: 0.6;
-        border: 1px dashed white;
-    font-size: 24px;
-    cursor: pointer;
-    margin: 2px;
-    flex: 1;
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transition: all 0.3s ease-in-out;
-}
-
-.button-container .form_btn {
-    background-color: var(--button);
-    border: none;
-    padding: 10px 15px;
-    font-size: 24px;
-    cursor: pointer;
-    margin: 2px;
-    color: black;
-    flex: 1;
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transition: all 0.3s ease-in-out;
-}
-
-.form_btn:active, .meal:active, .workout:active {
-  transform: translateY(2px) translateX(-1px);
-  box-shadow: -3px 3px 2px 0px rgba(0, 0, 0, 0.5);
-  transition: all 0.05s ease-out;
-}
-
-.form_btn:hover {
-    background-color: var(--button-hover);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-
-
-.back-btn {
-    background-color: #cb0014;
-    border: none;
-    padding: 10px 15px;
-    font-size: 24px;
-    cursor: pointer;
-    margin: 2px;
-    color: black;
-    flex: 1;
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transition: all 0.3s ease-in-out;
-}
-
-.delete-btn {
-    width:100%;
-    font-size: 8px;
-    background-color: #cb0014;
-    box-shadow: 0 0 0 0 rgb(0,0,0);
-    transition: all 0.2s ease-in-out;
-    border: none;
-    cursor: pointer;
-    color: black;
-    padding: 4px 0;
-    margin-top: 4px;
-}
-
-
-.delete-btn:hover, .back-btn:hover {
-    background-color: #e70118;
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-
-
-
-/* === Modal Overlay === */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-/* === Modal Box === */
-.modal {
-    background-color: var(--entry-form);
-    padding: 2rem;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    animation: slideUp 0.3s ease-in-out;
-    font-family: 'Spectral', serif;
-}
-
-/* === Modal Content === */
-.modal-content h2 {
-    font-family: 'Alegreya SC', serif;
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.modal-content p {
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
-.modal-content .button {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-}
-
-.modal-content .button:hover {
-    background-color: #45a049;
-}
-
-/* === Close Button (optional) === */
-.modal-content .close-btn {
-    display: block;
-    text-align: center;
-    margin-top: 1rem;
-    color: #777;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-/* === Animations === */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.workout_list #m_entry__btn {
-    margin: 0;
 }

@@ -1,8 +1,17 @@
 {% load static %}
 <section id="lift_head" class="w_head">
-    <div class="shadow" style="width:100%;">_</div>
+    <div id="lift_head__container">
+    </div>
 </section>
 <section id="workout_list" class="w_list"> 
+
+  <h1>WORKOUT HISTORY</h1>
+
+  <!-- Add a button to sort workouts by type -->
+
+  {% include 'workouts/start_workout.html' %}
+
+
     <div id="workout_list__container"
         hx-get="{% url 'workouts:list' %}"
         hx-trigger="load"

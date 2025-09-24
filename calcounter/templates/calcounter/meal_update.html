@@ -1,0 +1,24 @@
+{% include './entry_buttons.html' %}
+
+<div id="meal_list__container" hx-swap-oob="True"> 
+	<ul id="form_target">
+	{% for food in foods %}
+	    {% include './meal.html' with food=food%}
+	{% endfor %}
+	</ul>
+</div>
+
+<div id="totals" hx-swap-oob="True">
+	<div id="calories">
+	  <span style="font-size:14px;color: var(--yellow);">Calories:</span>
+	  {{calories}}
+	  <span style="font-size:14px;"> / </span>
+	  <span style="font-size:14px;color: var(--yellow);">2000</span>
+	</div>
+	<div id="protein">
+	  <span style="font-size:14px;color: var(--blue);">Protein:</span>
+	  {{protein}}
+	  <span style="font-size:14px;"> / </span>
+	  <span style="font-size:14px;color: var(--blue);">156</span>
+	</div>
+</div>
