@@ -30,15 +30,13 @@ function stopRestTimerAndPopulate() {
 }
 
 // Reattach listeners every time HTMX swaps in the form
-document.body.addEventListener("htmx:afterSwap", (e) => {
-  // Only rebind if the swapped content contains your form
-  if (e.target.querySelector && e.target.querySelector("#set-form")) {
-    const repsInput = e.target.querySelector("#id_reps");
-    const weightInput = e.target.querySelector("#id_weight");
-    const form = e.target.querySelector("#set-form");
+//document.body.addEventListener("htmx:afterSwap", (e) => {
+//  // Only rebind if the swapped content contains your form
+//  if (e.target.querySelector && e.target.querySelector("#set-form")) {
+//    const start = e.target.querySelector("#rest_timer");
+//    const form = e.target.querySelector("#set-form");
 
-    if (repsInput) repsInput.addEventListener("focus", startRestTimer);
-    if (weightInput) weightInput.addEventListener("focus", startRestTimer);
-    if (form) form.addEventListener("submit", stopRestTimerAndPopulate);
-  }
+//    if (start) start.addEventListener("click", startRestTimer);
+//    if (form) form.addEventListener("submit", stopRestTimerAndPopulate);
+//  }
 });

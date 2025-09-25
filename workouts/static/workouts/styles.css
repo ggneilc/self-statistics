@@ -10,7 +10,6 @@
   display: flex;
   background-color: var(--bg);
   flex-direction: column;
-  height: 46px;
 }
 
 #lift_list {
@@ -21,6 +20,13 @@
 
 #lift_list * {
  margin: 0px 5px;
+}
+
+
+.set-row {
+	margin: 10px 0px;
+	display: flex;
+	text-align:center;
 }
 
 #rest-display {

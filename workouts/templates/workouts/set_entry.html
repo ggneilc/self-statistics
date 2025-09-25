@@ -7,19 +7,19 @@
 <div class="main-nut">
 	  <div class="input_container">
 	    {{ form.reps }} 
-	    <label for={{form.reps.id_for_label}}"> REPS </label>
+	    <label for="{{form.reps.id_for_label}}"> REPS </label>
 	  </div>
 	  <div class="input_container">
 	    {{ form.weight }} 
-	    <label for={{form.weight.id_for_label}}"> WEIGHT </label>
+	    <label for="{{form.weight.id_for_label}}"> WEIGHT </label>
 	  </div>
 	  <div class="input_container">
 	    {{ form.rir }} 
-	    <label for={{form.rir.id_for_label}}"> RIR </label>
+	    <label for="{{form.rir.id_for_label}}"> RIR </label>
 	  </div>
 	  <div class="input_container" style="display: none;">
 	    {{ form.rest }} 
-	    <label for={{form.rest.id_for_label}}"> REST </label>
+	    <label for="{{form.rest.id_for_label}}"> REST </label>
 	  </div>
   </div>
   <div id="rest-display"></div>
@@ -31,13 +31,11 @@
 </form>
 
 <script>
-(() => {
-  const repsInput = document.querySelector("#id_reps");
-  const weightInput = document.querySelector("#id_weight");
-  const form = document.querySelector("#set-form");
+//(() => {
+//  const start = document.querySelector("#rest_timer");
+//  const form = document.querySelector("#set-form");
 
-  if (repsInput) repsInput.addEventListener("focus", startRestTimer);
-  if (weightInput) weightInput.addEventListener("focus", startRestTimer);
-  if (form) form.addEventListener("submit", stopRestTimerAndPopulate);
-})();
+//  if (start) start.addEventListener("click", startRestTimer);
+//  if (form) form.addEventListener("submit", stopRestTimerAndPopulate);
+//})();
 </script>

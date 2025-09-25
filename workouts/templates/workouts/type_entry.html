@@ -8,7 +8,7 @@
                 style="background-color: {{workout_type.color}};"
                 hx-post="{% url 'workouts:addw' workout_type.id %}"
                 hx-trigger="click"
-                hx-target="#workout_list__container"
+                hx-target="#workout_list"
                 hx-swap="innerHTML swap:0.4s">
             {{workout_type.name}}
         </button>

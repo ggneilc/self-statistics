@@ -59,7 +59,7 @@ class Lift(models.Model):
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.exercise_name}: ({self.workout.workout_type} - {self.workout.date})"
+        return f"{self.exercise_name}: ({self.workout.workout_type} - {self.workout.day.date})"
 
 
 class Set(models.Model):
