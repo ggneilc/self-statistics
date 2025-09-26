@@ -1,0 +1,36 @@
+
+<div id="bulletin-title">DATA GOALS</div>
+{% if day.did_workout %}
+<div class="task checked">
+<div class="checkbox">
+	<i  style="color: var(--Push);font-size:17px;display:inherit;" class="fa-solid fa-square-check"></i>
+	</div> <div class="name">Track Workout</div>
+</div>
+{% else %}
+<div class="task">
+<div class="checkbox" style=""></div> <div class="name">Workout</div>
+</div>
+{% endif %}
+{% if day.entered_meal %}
+<div class="task checked">
+<div class="checkbox" style="">
+	<i  style="color: var(--Push);font-size:17px;display:inherit;" class="fa-solid fa-square-check"></i>
+	</div> <div class="name">Enter a meal</div>
+</div>
+{% else %}
+<div class="task">
+<div class="checkbox" style=""></div> <div class="name">Enter a meal</div>
+</div>
+{% endif %}
+
+{% if day.entered_bodyweight %}
+<div class="task checked">
+<div class="checkbox" style="">
+	<i  style="color: var(--Push);font-size:17px;display:inherit;" class="fa-solid fa-square-check"></i>
+	</div> <div class="name">Enter Bodyweight</div>
+</div>
+{% else %}
+<div class="task">
+<div class="checkbox" style=""></div> <div class="name">Enter Bodyweight</div>
+</div>
+{% endif %}

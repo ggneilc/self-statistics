@@ -10,11 +10,22 @@
     --yellow: #FFC83D;
     --blue: #37B8FF;
 
+    --water: #4293bf;
+    --water-bg: #26292b;
     --meal: #050505;
     --meal-hover: #060606;
 
-    --button: #28965A;
+    --button: #72b983;
+    --button-bg: #1d2322;
     --button-hover: #207948;
+
+    --button-back: #cb0014;
+    --button-back-bg: #231f1f;
+    --button-back-hover: #632e2e;
+
+    --button-yellow:#FFC83D; 
+    --button-yellow-bg:#23211a; 
+    --button-yellow-hover:#63532b; 
 
     --Push: #79ca85;
     --Pull: #bc311c;
@@ -150,6 +161,16 @@ button {
     flex-direction: row;
 }
 
+.btn {
+    background-color: var(--bg);
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 2px;
+    flex: 1;
+    transition: all 0.3s ease-in-out;
+}
+
 .add {
     background-color: #10101075;
         min-width: 122px;
@@ -158,21 +179,46 @@ button {
         border: 1px dashed white;
     font-size: 24px;
     cursor: pointer;
-    padding: 5px;
+    padding: 10px 15px;
+    font-size: 24px;
     margin: 0;
     flex: 1;
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
     transition: all 0.3s ease-in-out;
 }
 
-.button-container .form_btn {
-    background-color: var(--button);
-    border: none;
+.yellow_btn {
+    background-color: var(--button-yellow-bg);
+    color: var(--button-yellow);
+    border: 1px solid var(--button-yellow);
     padding: 10px 15px;
     font-size: 24px;
     cursor: pointer;
     margin: 2px;
-    color: black;
+    flex: 1;
+    transition: all 0.3s ease-in-out;
+}
+
+.back-btn, .delete-btn  {
+    background-color: var(--button-back-bg);
+    border: 1px solid var(--button-back);
+    color: var(--button-back);
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 2px;
+    flex: 1;
+    transition: all 0.3s ease-in-out;
+}
+
+.form_btn {
+    background-color: var(--button-bg);
+    color: var(--button);
+    border: 1px solid var(--button);
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 2px;
     flex: 1;
     transition: all 0.3s ease-in-out;
 }
@@ -183,46 +229,35 @@ button {
   transition: all 0.05s ease-out;
 }
 
-.form_btn:hover, .add:hover {
+.form_btn:hover {
     background-color: var(--button-hover);
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
     transform: translateY(-2px);
 }
-
-
-.back-btn {
-    background-color: #cb0014;
-    border: none;
-    padding: 10px 15px;
-    font-size: 24px;
-    cursor: pointer;
-    margin: 2px;
-    color: black;
-    flex: 1;
+.add:hover {
+    background-color: var(--fg);
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transition: all 0.3s ease-in-out;
+    transform: translateY(-2px);
 }
-
-.delete-btn {
-    width:100%;
-    font-size: 8px;
-    background-color: #cb0014;
-    box-shadow: 0 0 0 0 rgb(0,0,0);
-    transition: all 0.2s ease-in-out;
-    border: none;
-    cursor: pointer;
-    color: black;
-    padding: 4px 0;
-    margin-top: 4px;
-}
-
-
-.delete-btn:hover, .back-btn:hover {
-    background-color: #e70118;
+.yellow_btn:hover {
+    background-color: var(--button-yellow-hover);
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
     transform: translateY(-2px);
 }
 
+
+.delete-btn:hover, .back-btn:hover {
+    background-color: var(--button-back-hover);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+
+.btn:hover {
+    background-color: var(--fg);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
 
 
 /* === Modal Overlay === */
@@ -242,18 +277,18 @@ button {
 
 /* === Modal Box === */
 .modal {
-    background-color: var(--entry-form);
+    background-color: var(--fg);
     padding: 2rem;
     width: 90%;
     max-width: 400px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
     animation: slideUp 0.3s ease-in-out;
-    font-family: 'Spectral', serif;
+
 }
 
 /* === Modal Content === */
 .modal-content h2 {
-    font-family: 'Alegreya SC', serif;
     font-size: 1.8rem;
     margin-bottom: 1rem;
     text-align: center;

@@ -32,7 +32,11 @@ class Day(models.Model):
     protein_consumed = models.IntegerField(default=0)
     calorie_goal = models.IntegerField(default=2000)
     # protein_goal = Bodyweight !
+
+    # task stuff
     did_workout = models.BooleanField(default=False)
+    entered_meal = models.BooleanField(default=False)
+    entered_bodyweight = models.BooleanField(default=False)
 
     # Graph stuff
     bodyweight = models.FloatField(null=True, blank=True)

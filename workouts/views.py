@@ -15,6 +15,7 @@ def get_workouts(request):
         .prefetch_related("lifts__sets")
         .order_by("-day__date", "-id")
     )
+    # handle event that user has an active workout ->
     context = {
         "workouts": workouts
     }

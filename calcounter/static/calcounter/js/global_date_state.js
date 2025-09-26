@@ -6,7 +6,8 @@ document.body.addEventListener("htmx:configRequest", function (event) {
   // Fallback to today's date if no value is set
   if (!selectedDate) {
     const today = new Date();
-    selectedDate = today.toISOString().split("T")[0]; // format: YYYY-MM-DD
+    selectedDate = today.toLocaleDateString('en-CA'); // format: YYYY-MM-DD
+    console.log("falling back to new date:"+selectedDate)
   }
 
   event.detail.parameters["selected_date"] = selectedDate;
@@ -20,7 +21,7 @@ const hiddenInput = document.getElementById('hidden-date');
 let displayDate = hiddenInput?.value;
 if (!displayDate) {
   const today = new Date();
-  displayDate = today.toISOString().split("T")[0]; // format: YYYY-MM-DD
+  displayDate = today.toLocaleDateString('en-CA'); // format: YYYY-MM-DD
 }
 dateDisplay.textContent = displayDate
 

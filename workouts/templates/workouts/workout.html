@@ -47,14 +47,23 @@
     {% if workout.is_active %}
     {% include './end_workout.html' %}
     {% endif %}
-    <div class="button-container" style="position: absolute; right: 5px; bottom: 5px; width: 100px;">
-        <button class="delete-btn"
-                style="flex: 1;"
-                hx-delete="{% url 'workouts:del_workout' workout.id %}"
-                hx-target="closest #workout"
-                hx-swap="outerHTML swap:0.2s">
-            <i class="fa-solid fa-trash"></i>
-        </button>
-    </div>
+
+<div class="button-container" style="position:absolute;top:5px;right:10px;">
+
+<button class="yellow_btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
+	>
+    <i class="fa-solid fa-pen"></i>
+</button>
+    <button class="delete-btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
+	hx-delete="{% url 'workouts:del_workout' workout.id %}" 
+	hx-target="closest .workout" 
+	hx-swap="outerHTML swap:0.3s">
+	<i class="fa-solid fa-trash"></i>
+    </button>
+    <button id="tmp-btn" class="form_btn" style="font-size:12px;margin:2px; padding: 5px 10px;">
+	<i class="fa-solid fa-floppy-disk"></i>
+    </button>
+</div>
+
     </div>
 </div>

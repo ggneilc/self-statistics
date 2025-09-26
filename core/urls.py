@@ -11,6 +11,8 @@ urlpatterns = [
     path('login/', views.HTMXLoginView.as_view(template_name='core/login.html'), name='login'),
     path('logout/', views.HTMXLogoutView.as_view(next_page='core:home'), name='logout'),
     path("auth-modal/", views.auth_modal, name="auth_modal"),
+    path("profile/", views.get_profile, name="profile"),
+    path("back/", views.close_profile, name="close_profile"),
 
     path("meal/", views.get_meal_column, name="get_meal"),
     path("lift/", views.get_lift_column, name="get_lift"),
@@ -19,4 +21,5 @@ urlpatterns = [
     path("bodyweight/", views.get_bodyweight, name="get_bw"),
     path("bodyweight/set", views.add_bodyweight, name="set_bw"),
     path("day/<int:date>", views.display_day, name="day"),
+    path("day/tasks", views.daily_goals, name="tasks"),
 ]

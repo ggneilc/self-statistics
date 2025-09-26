@@ -7,9 +7,6 @@
 {% endblock %}
 
 {% block main_content %}
-    {% include './column_lift.html' %}
-    {% include './column_graph.html' %}
-    {% include './column_meal.html' %}
 
 {% if not user.is_authenticated %}
 <div id="auth-modal"
@@ -20,6 +17,10 @@
      hx-swap="innerHTML">
     <!-- Modal content loaded via HTMX -->
 </div>
+{% else %}
+    {% include './column_lift.html' %}
+    {% include './column_graph.html' %}
+    {% include './column_meal.html' %}
 {% endif %}
 
 <script src="{% static 'calcounter/js/meal_entry_button.js' %}"></script>

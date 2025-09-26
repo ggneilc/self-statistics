@@ -4,6 +4,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from .models import Day
+from calcounter.models import Food
+from workouts.models import Workout
 
 # MOBILE SPECIFICS
 
@@ -39,6 +41,14 @@ def index(request):
 
 def auth_modal(request):
     return render(request, "core/auth_modal.html")
+
+
+def close_profile(request):
+    return render(request, "core/profile_nav.html")
+
+
+def get_profile(request):
+    return render(request, "core/profile.html")
 
 
 class HTMXLogoutView(LogoutView):
@@ -99,6 +109,7 @@ def add_bodyweight(request):
     day = Day.objects.get(
         user=request.user, date=request.POST.get('selected_date'))
     day.bodyweight = request.POST.get('weight')
+    day.entered_bodyweight = True
     day.save()
     print(f"added new bodyweight: {request.POST.get('weight')}")
     return render(request, 'core/bodyweight_update.html', context={"bodyweight": day.bodyweight})
@@ -111,6 +122,15 @@ def display_day(request, date):
     print("displaying day")
     day = Day.objects.get(user=request.user, pk=date)
     return render(request, 'core/day.html', {"day": day})
+
+
+def daily_goals(request):
+    day = Day.objects.get(user=request.user, date=request.GET['selected_date'])
+    day.entered_bodyweight = True if day.bodyweight is not None else False
+    day.entered_meal = True if Food.objects.filter(day=day).exists() else False
+    day.did_workout = True if Workout.objects.filter(
+        day=day).exists() else False
+    return render(request, 'core/tasks.html', {"day": day})
 
 
 def set_calorie_goal(request):

@@ -11,6 +11,7 @@ from datetime import datetime
 
 @receiver([post_save, post_delete], sender=Food)
 def update_day_after_meal_change(sender, instance, **kwargs):
+    signal = kwargs.get('signal')  # post_save or post_delete
     date = instance.day.date
     print(f"Updating {date}")
     day = instance.day
@@ -30,14 +31,18 @@ def update_day_after_meal_change(sender, instance, **kwargs):
         )['total_cals'] or 0
 
         day.calories_consumed = total
+        if signal == post_save:
+            day.entered_meal = True
         day.save()
 
 
 @receiver([post_save, post_delete], sender=Workout)
 def update_day_after_workout_change(sender, instance, **kwargs):
     day = instance.day
+    # did the user just delete or save
     exists = Workout.objects.filter(day=day).exists()
-    day.workout_done = exists
+    print(f"found workout for day {day}: {exists}")
+    day.did_workout = exists
     day.save()
 
 

@@ -19,8 +19,39 @@ def get_food(request):
         return HttpResponse("")
     day = get_or_create_day(request.user, request.GET['selected_date'])
     foods = Food.objects.filter(day=day)
+    # dont allow saving foods that are already templates
+    for food in foods:
+        food.is_template = Food.objects.filter(
+            name=food.name, is_template=True).exists()
     context = {"foods": foods}
     return render(request, "calcounter/meal_list.html", context)
+
+
+def edit_food(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+    return render(request, 'calcounter/meal_edit.html', {"food": food})
+
+
+def render_food(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+    return render(request, 'calcounter/meal.html', {"food": food})
+
+
+def update_food(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+    food.calories = request.POST['calories']
+    food.protein = request.POST['protein']
+    food.fat = request.POST['fat']
+    food.carb = request.POST['carb']
+    food.save()
+    return render(request, 'calcounter/meal.html', {"food": food})
+
+
+def save_template(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+    food.is_template = True
+    food.save()
+    return render(request, 'calcounter/checkmark.html')
 
 
 def get_food_templates(request):

@@ -50,6 +50,55 @@
   border: none;
 }
 
+#bulletin {
+	background-color: var(--fg);
+	text-align: center;
+	min-height: 50px;
+	margin: 15px 20px;
+	display:flex;
+	align-items: center;
+	justify-content: center;
+	border-radius:2px;
+	overflow: visible;
+	position: relative;
+}
+
+#bulletin-title {
+	position: absolute;
+	top: -10px;
+	left: 5px;
+	color: var(--blue);
+	font-size: 12px;
+	text-shadow: 0px 3px 2px black;
+}
+
+.task {
+	flex:1;
+	display:flex;
+	align-items: center;
+	justify-content:center;
+
+}
+
+.checkbox {
+	width:15px;
+	height:15px;
+	border:1px solid white;
+}
+
+.checked .checkbox {
+	border: none;
+}
+.checked .name {
+	color: var(--Push);
+}
+
+
+.name {
+font-size:14px;
+margin-left:5px;
+}
+
 /*--- graphs ---*/
 
 #graph_display__container {

@@ -4,8 +4,11 @@
     style="overflow-y: auto; width: 100%; flex: 5;">
         <div class="button-container">
         {% for workout_type in workout_types %}
-        <button id="m_entry__btn" class="form_btn"
-                style="background-color: {{workout_type.color}};"
+        <button id="m_entry__btn" class="btn"
+                style="
+		color: {{workout_type.color}};
+		border: 1px solid {{workout_type.color}};
+		"
                 hx-post="{% url 'workouts:addw' workout_type.id %}"
                 hx-trigger="click"
                 hx-target="#workout_list"
@@ -13,7 +16,8 @@
             {{workout_type.name}}
         </button>
         {% endfor %}
-        <button id="m_entry__btn" class="add" style="margin: 2px; min-width:40px;"
+	<!-- will move to profile screen -->
+        <button id="m_entry__btn" class="add" style="display:none;margin: 2px; min-width:40px;"
                 hx-get="{% url 'workouts:addt' %}"
                 hx-trigger="click"
                 hx-target="#lift_entry__container"

@@ -4,12 +4,16 @@
   height: 100%;
   background-color: var(--fg);
   margin: 15px 0px 15px 5px;
+	display:flex;
 }
 
 #lift_entry__container {
   display: flex;
   background-color: var(--bg);
   flex-direction: column;
+  overflow-y: auto;
+  margin: 0px;
+  padding: 10px;
 }
 
 #lift_list {
@@ -22,6 +26,11 @@
  margin: 0px 5px;
 }
 
+
+#set-list {
+  overflow-y: auto;
+  height: 100%;
+}
 
 .set-row {
 	margin: 10px 0px;
@@ -110,6 +119,9 @@
         padding 0.3s ease,
         opacity 0.3s ease;
 }
+
+.workout .details .button-container {display:none;}
+.workout.expanded .details .button-container {display: flex;}
 
 .workout.expanded .details {
     max-height: 200px; /* set this to your known height */

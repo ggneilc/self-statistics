@@ -1,0 +1,3 @@
+<div class="profile-pic"></div>
+<span id="username" hx-post="{% url 'core:profile' %}" hx-swap="beforeend">{{ user.username }}</span>
+
