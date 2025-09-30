@@ -4,6 +4,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from .models import Day
+from .utils import get_or_create_day
+from .forms import ProfileForm
 from calcounter.models import Food
 from workouts.models import Workout
 
@@ -51,6 +53,15 @@ def get_profile(request):
     return render(request, "core/profile.html")
 
 
+def update_timezone(request):
+    profile = request.user.profile
+    form = ProfileForm(request.POST or None, instance=profile)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return get_profile(request)
+    return render(request, "core/update_timezone.html", {"form": form})
+
+
 class HTMXLogoutView(LogoutView):
     next_page = reverse_lazy("core:home")
 
@@ -95,8 +106,7 @@ def get_bodyweight(request):
         if empty : show input
     '''
     print(request.GET.get('selected_date'))
-    day = Day.objects.get(
-        user=request.user, date=request.GET.get('selected_date'))
+    day = get_or_create_day(request.user, request.GET.get('selected_date'))
     if day.bodyweight is None:
         print("no weight for the current day found")
         return render(request, 'core/bodyweight_input.html')
@@ -106,10 +116,8 @@ def get_bodyweight(request):
 
 
 def add_bodyweight(request):
-    day = Day.objects.get(
-        user=request.user, date=request.POST.get('selected_date'))
+    day = get_or_create_day(request.user, request.POST.get('selected_date'))
     day.bodyweight = request.POST.get('weight')
-    day.entered_bodyweight = True
     day.save()
     print(f"added new bodyweight: {request.POST.get('weight')}")
     return render(request, 'core/bodyweight_update.html', context={"bodyweight": day.bodyweight})

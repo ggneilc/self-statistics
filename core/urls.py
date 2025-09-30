@@ -19,6 +19,7 @@ urlpatterns = [
     path("graphs/", views.get_graph_column, name="get_graph"),
 
     path("bodyweight/", views.get_bodyweight, name="get_bw"),
+    path("profile/tz", views.update_timezone, name="set_tz"),
     path("bodyweight/set", views.add_bodyweight, name="set_bw"),
     path("day/<int:date>", views.display_day, name="day"),
     path("day/tasks", views.daily_goals, name="tasks"),

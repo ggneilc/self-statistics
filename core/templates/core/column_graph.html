@@ -41,6 +41,13 @@
       </button>
     </div>
 
+    <div id="secondary-buttons" class="button-container" style="margin: 2px 20px 0px 20px;">
+	<button class="blue_btn">YEAR</button>
+	<button class="blue_btn">3 MONTH</button>
+	<button class="blue_btn">1 MONTH</button>
+	<button class="blue_btn">1 WEEK</button>
+    </div>
+
     <div id="graph_display__container"
 	hx-get="{% url 'graphs:calendar' %}"
 	hx-trigger="load">

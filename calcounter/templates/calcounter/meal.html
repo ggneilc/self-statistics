@@ -1,8 +1,11 @@
 {% load custom_filters %}
+{% if just_updated %}
+<li class="meal expanded" hx-on:click="this.classList.toggle('expanded')">
+{% else %}
 <li class="meal" hx-on:click="this.classList.toggle('expanded')">
+{% endif %}
     <span class="food_name">{{ food.name.upper }}</span>
     <div class="details">
-
 <div class="button-container" style="position:absolute;top:5px;left:10px;">
 
 <button class="yellow_btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
@@ -17,15 +20,15 @@
 	hx-swap="outerHTML swap:0.3s">
 	<i class="fa-solid fa-trash"></i>
     </button>
-{% if not food.is_template %}
+{% if food.is_template %}
+	{% include 'calcounter/checkmark.html' %}
+{% else %}
     <button id="tmp-btn" class="form_btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
 	hx-post="{% url 'calcounter:save_template' food.id %}"
 	hx-target="closest button"
 	hx-swap="outerHTML">
 	<i class="fa-solid fa-floppy-disk"></i>
     </button>
-{% else %}
-	{% include 'calcounter/checkmark.html' %}
 {% endif %}
 </div>
 

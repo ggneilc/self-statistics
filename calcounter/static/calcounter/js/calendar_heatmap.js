@@ -1,4 +1,3 @@
-
 document.addEventListener('htmx:afterSwap', (e) => {
   if (e.target.id !== 'graph_display__container') return;
 
@@ -110,3 +109,6 @@ bgLayer.selectAll("rect")
     svg.selectAll("rect").style("transform", "scale(1)");
     });
 });
+
+
+

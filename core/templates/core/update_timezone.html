@@ -1,0 +1,24 @@
+
+<!-- templates/profile/update_timezone.html -->
+
+<form hx-post="{% url 'core:set_tz' %}"
+    hx-target="#profile">
+  {% csrf_token %}
+
+  {{ form.timezone }}
+
+  <div class="input_container">
+    {{ form.gender }}
+  </div>
+
+  <div class="input_container">
+    {{ form.height_ft }}
+    <label for="{{form.height_ft.id_for_label}}">Feet</label>
+  </div>
+  <div class="input_container">
+    {{ form.height_in }}
+    <label for="{{form.height_in.id_for_label}}">Inches</label>
+  </div>
+
+  <button type="submit" class="form_btn">Save Profile</button>
+</form>

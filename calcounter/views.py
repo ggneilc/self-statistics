@@ -34,16 +34,22 @@ def edit_food(request, food_id):
 
 def render_food(request, food_id):
     food = get_object_or_404(Food, id=food_id)
-    return render(request, 'calcounter/meal.html', {"food": food})
+    food.is_template = Food.objects.filter(
+        name=food.name, is_template=True).exists()
+    return render(request, 'calcounter/meal.html', {
+        "food": food,
+        "just_updated": True})
 
 
 def update_food(request, food_id):
     food = get_object_or_404(Food, id=food_id)
     food.calories = request.POST['calories']
     food.protein = request.POST['protein']
-    food.fat = request.POST['fat']
-    food.carb = request.POST['carb']
+    food.fat = request.POST['fat'] or None
+    food.carb = request.POST['carb'] or None
     food.save()
+    food.is_template = Food.objects.filter(
+        name=food.name, is_template=True).exists()
     return render(request, 'calcounter/meal.html', {"food": food})
 
 
@@ -122,6 +128,10 @@ def meal_update(request, day, rm=False):
         calories=Sum('calories'),
         protein=Sum('protein')
     )
+
+    for food in foods:
+        food.is_template = Food.objects.filter(
+            name=food.name, is_template=True).exists()
     print("returning meal and totals")
     context = {
         "foods": foods,

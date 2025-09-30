@@ -27,6 +27,10 @@
     --button-yellow-bg:#23211a; 
     --button-yellow-hover:#63532b; 
 
+    --button-blue:#37B8FF; 
+    --button-blue-bg:#1e2021; 
+    --button-blue-hover:#567484; 
+
     --Push: #79ca85;
     --Pull: #bc311c;
     --Legs: #1c39bc;
@@ -199,6 +203,18 @@ button {
     transition: all 0.3s ease-in-out;
 }
 
+
+.blue_btn {
+    background-color: var(--button-blue-bg);
+    color: var(--button-blue);
+    border: 1px solid var(--button-blue);
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    margin: 2px;
+    flex: 1;
+    transition: all 0.3s ease-in-out;
+}
 .back-btn, .delete-btn  {
     background-color: var(--button-back-bg);
     border: 1px solid var(--button-back);
@@ -244,6 +260,11 @@ button {
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
     transform: translateY(-2px);
 }
+.blue_btn:hover {
+    background-color: var(--button-blue-hover);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
 
 
 .delete-btn:hover, .back-btn:hover {
@@ -273,6 +294,7 @@ button {
     align-items: center;
     z-index: 1000;
     animation: fadeIn 0.3s ease-in-out;
+    click: none;
 }
 
 /* === Modal Box === */

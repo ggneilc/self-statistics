@@ -1,15 +1,23 @@
 from django.db import models
 from django.conf import settings
-import pytz
+import zoneinfo
 
 
 class Profile(models.Model):
+    GENDERS = [('M', 'Male'), ('F', 'Female')]
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     timezone = models.CharField(
         max_length=50,
         default="UTC",
-        choices=[(tz, tz) for tz in pytz.all_timezones]
+        choices=[(tz, tz) for tz in zoneinfo.available_timezones()]
+    )
+
+    height = models.FloatField(default=0)
+    gender = models.CharField(
+        max_length=1,
+        choices=GENDERS,
+        default='M',
     )
 
     def __str__(self):

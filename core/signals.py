@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from calcounter.models import Food
 from workouts.models import Workout, WorkoutType
 from django.contrib.auth.models import User
-from .models import Day
+from .models import Day, Profile
 from django.db.models import Sum
 from datetime import datetime
 
@@ -60,3 +60,9 @@ def create_default_workout_types(sender, instance, created, **kwargs):
             for name, color in DEFAULT_TYPES:
                 WorkoutType.objects.create(
                     name=name, user=instance, color=color)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
