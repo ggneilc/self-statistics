@@ -1,24 +1,37 @@
-*Date: 2025-09-15 14:37*
-#project #python #web #ai
-[[📌 Programming]]
-
-*Digital Fitness Twin*
+**Digital Fitness Twin**
 
 # Abstract
 
 Even if my idea for a 'digital twin' was hijacked by the government, I can still pursue the second brain ideology and implement a *digital fitness twin*; until we have sensors implanted in our bodies, or near perfect readings from smart watched, manually data entry (or semi-passive entry) will be a requirement for creating the best dataset to train a model on your own personal metrics.
 
 > [!fact] Mission Statement
+> 
 > Be a first and foremost *digital fitness twin*; enable robust tracking and prediction models for core health metrics. Additional focal point is making the data entry enjoyable, and aggregating/viewing/processing information as seemless as possible
+
+
+
+> [!error] Post-Research:  Dataset Issue
+> 
+> The pre requisite of using machine learning is having a large, organized data source readily available. There is no dataset that tracks (calories eaten per day | bodyweight). The **only availble metric dataset** is on calories burned during a workout session from fitbit.  
+
+Therefore, the primary responsibility of this application needs to be
+1. The creation & management of a health metric dataset
+2. The training and inference of the above
+
 
 
 ---
 # Download
 
 `git clone https://github.com/ggneilc/self-statistics.git`
+
 `python -m venv env`
+
 `. ./env/bin/activate`
+
 `pip install -r requirements.txt`
+
+`python manage.py migrate` (test to see if any changes to database has been made with most recent commit) 
 
 You can now run the development server from `self-statistics/` with `python manage.py runserver`. 
 
@@ -29,7 +42,7 @@ Keep in mind the database file (`db.sqlite3`) is only tracked for the initial re
 
 The implementation is going to be simple to ease a single developer flow: **Django** REST - HATEOS backend server that utilizes a simple **sqlite3** database and connects to a browser client written with vanilla html, css, and htmx as a javascript library.
 
-Every related to the model will be a self contained python module that is imported by the `graphs` django app. 
+Every related to the ML models will be a self contained python module `predictions` that is imported by the respective django app. `graphs` will import health metrics, `calcounter` imports food scanner, etc.  
 
 ## Model
 
@@ -90,10 +103,12 @@ The Weights sections is clearly defined for tracking workouts: the head shows 'e
 
 The Graphs section is a more typical 'home screen dashboard' column. The head shows your profile, current health score/streak information, and the selected date. The 'list' shows the current graph or information about the day. The 'Entry' section will be where you can select what kind of view you are interested in seeing statistics about (currently commented out)
 
+The Meals section is functionally complete and the most straightforward: the head depicts total nutrients eaten, the entry is where new meals/template are added, and the list shows the meals eaten for that particular day. 
+
 ### Reactive HTMX, Robust Django
 
 
-Each one of the columns is *self-contained in a django application*, with shared components being stored in `core`; such as the base webpage, everything related to a user, and day creation. 
+Each one of the columns is *self-contained in a django application*, with shared components being stored in `core`; such as the base webpage, everything related to a user, and `Day` model. 
 
 The current HTMX standard practice being used across the website is that there is a single `selected_date` state for the current day being viewed, stored in a date picker in the `graph_head`, with a js script that appends the selected date to each request.
 
@@ -101,6 +116,7 @@ Each feature which relies on the current day, e.g. `meal list` will have a liste
 
 
 > [!NOTE] 'Reactive' HTMX
+> 
 > The only adverse side-effect is with `hx-swap-oob`: this is when one returned request can update multiple parts of the html; the user deletes a meal, which would update both the list and the totals. The `hx-swap-oob` attribute does not allow the piggy-packed template (i.e., `totals.html`) to be animated in directly $\to$ it needs to be caught with javascript and have its transition applied.
 
 
@@ -132,6 +148,13 @@ $$
 $$
 
 The time and date for added food can be automatically computed from the selected global date and input time. If the user is going back to input past meals, the timing does not necessarily matter, however the edit screen can allow for corrections, but not change the date.
+
+
+
+> [!fire] Cal AI / Barcode Scanner
+> 
+> Instead of utilizing the research project for creating the predictive health metric engine, we can utilize a trained CNN (or more advanced visual classifier) on the Food101 dataset to lay the grounds for food - image - tracking
+
 
 #### User wants to add a supplement:
 $$
@@ -202,11 +225,15 @@ $$
 Grouping Workouts by dumbbell / machine / barbell allows for the background of each lift to correspond to a db/machine/bb photo. 
 
 
+
+
 > [!fact] Lift Templates
+> 
 > When hovering over the workout history and inspecting a particular lift, 'turn lift into template' can be an option, and templates are inserted into the user flow after selecting the dumbbell/machine/barbell, and once the user has a template saved, instead of immediately returning a form, it returns a list of templates, with a ghost button to access the new lift form.
 
 
 > [!fact] Supersets, Dropsets
+> 
 > Supersets can be included by allowing two active lifts to be open at once.
 >
 > Dropsets can be recognized as two individual sets with 0 rest time between.
@@ -214,13 +241,13 @@ Grouping Workouts by dumbbell / machine / barbell allows for the background of e
 
 
 > [!warning] Set Entries
+> 
 > RIR/RPE is abstract; come up with semi-definitive labels, can be recognized as a multinomial variable.
 > Ideally, the flow of the set entry is that after your set, you enter the reps/weight/rir and then the recovery time field is a timer that immediately starts counting up until you start your next set with the '+' button. The issue is that this may break up the set into two submit forms, which complicates the UI and template returns.
 
 
 ## Users
 
-This section pertains to the information regarding profile usage and realistcally just the information that should be displayed on the 'navbar'. 
 ##### Goals
 
 The user is assigned daily goals that need to be met that align with the data aggregation chart to faciliate efficient model prediction and ease of thinking when it comes to having a good day (a good day = meets all goals $\to$ I am saying that the user needs goals to meet to have a prediction target and the website needs to make meeting that goal easy; use template calorie totals to create meal plan, use autoregressive model to estimate time needed to hit a certain bodyweight.)
