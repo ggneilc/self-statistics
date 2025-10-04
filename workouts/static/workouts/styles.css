@@ -20,6 +20,7 @@
   flex: 1;
   display: flex;
   overflow-x: auto;
+	padding: 10px;
 }
 
 #lift_list * {
@@ -43,6 +44,27 @@
 }
 
 /* --- Weight List --- */
+
+#active-workout {
+	height: 100%;
+	width: auto;
+	padding: 5px 10px;
+	user-select: none;
+	border-radius: 2px;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--bg);
+	margin: 10px;
+}
+
+#active-workout label, #active-workout form {
+	background-color: var(--fg);
+}
+#active-workout #lift_entry__container {
+	background-color: var(--fg);
+	margin: 10px;
+	border-radius: 2px;
+}
 
 .workout {
     position: relative;

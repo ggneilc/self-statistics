@@ -1,7 +1,14 @@
 {% extends "./default.html" %}
 {% load static %}
+<!-- Change to mobile specific stylessheets ? -->
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'calcounter/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'workouts/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'graphs/styles.css' %}">
+{% endblock %}
 {% block main_content %}
 
+<!--
 <nav id="mobile-nav" style="
 width:100%;
 display:flex;
@@ -18,21 +25,22 @@ padding:5px;
         hx-get="{% url 'core:get_meal'%}"
         hx-target="#mobile-column">meal</div>
 </nav>
+-->
 
 <!-- 
     conditionally display column 
     based on navbar selection.
     default to graph
 -->
-<main id="mobile-column">
-    {% include './column_graph.html'%}
-</main>
 
 {% if not user.is_authenticated %}
 <div class="modal-overlay">
     {% include 'core/auth_modal.html'%}
 </div>
+{% else %}
+{% include './column_graph.html'%}
 {% endif %}
+
 
 
 {% endblock %}

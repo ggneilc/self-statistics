@@ -1,21 +1,20 @@
-<div id="workout" class="workout expanded" 
-    style="
-    height: 100%;
-    width: auto;
-    background: linear-gradient(
-            135deg,
-            var(--fg) 85%,
-            var(--fg) 85%,
-            {{workout.workout_type.color}} 15%);
-            ">
-    {{workout}}
-    <div class="details" style="
-    display: flex; flex-direction: column;
-    max-height:100%;height:100%;
-    ">
+<div id="active-workout" style="
+    border: 1px solid {{workout.workout_type.color}};
+    color: {{workout.workout_type.color}};
+    text-align: center;">
 
-    {% include './end_workout.html' %}
-    <div id="total-{{workout.id}}" class="weight_totals"></div>
+    {{workout}}
+
+
+    <div style="
+	display: flex;
+	flex-direction: column;
+	max-height: 100%;
+	height: 100%;">
+
+	{% include './end_workout.html' %}
+
+	<div id="total-{{workout.id}}" class="weight_totals"></div>
 	
 	<!-- lift selection -->
 	<div id="lift_entry__container" style="flex:4;">
@@ -23,7 +22,7 @@
 	 
 	</div>
 
-	<div id="lift_list" class="horz_scoll">
+	<div id="lift_list">
 	 <div class="button-container">
 	    <button class="add"
 		hx-get="{% url 'workouts:addl' %}"

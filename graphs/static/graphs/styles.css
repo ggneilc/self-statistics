@@ -135,4 +135,6 @@ svg {
   background-color: var(--fg);
   padding: 10px;
   border-radius: 2px;
+	flex: 1;
+	margin: 15px;
 }

@@ -1,19 +1,31 @@
-document.addEventListener('htmx:afterSwap', (e) => {
-  if (e.target.id !== 'graph_display__container') return;
+{% load custom_filters %}
+<div class="cardstyle">
+  <div id="d3-calendar" style="flex:2;" data-days='{{ day_data|safe }}'></div>
 
+	<div style="flex:1;">
+		Average calories eaten:{{ avg_cals|smart_num }}
+	</div>
+	<div style="flex:1;">
+		Average Bodyweight:{{ avg_bw|smart_num }}
+	</div>
+</div>
+
+
+<script> 
+(function() {
   const container = document.getElementById("d3-calendar");
+  if (!container) return; // safety guard
+
   const data = JSON.parse(container.dataset.days);
 
   const width = 399;
-  const boxSize = 20;
+  const boxSize = 50;
   const padding = 4;
   
 
   // Map week numbers to Y positions
-  const weeks = [...new Set(data.map(d => d.week))].sort((a, b) => a - b);
-  const weekIndex = week => weeks.indexOf(week);
-  const rows = 25;
-  const cols = 21;
+  const rows = 7;
+  const cols = 1;
 
   /* single dim array with double dim indexing */ 
   const cells = Array.from({ length: rows * cols}, (_, index) => {
@@ -22,10 +34,6 @@ document.addEventListener('htmx:afterSwap', (e) => {
     return {row, col}
   });
   
-  // TODO : 
-  // place gray tiles to cover entire graph_display__container
-  // overlay tiles 
-
 
   const svg = d3.select(container)
     .append("svg")
@@ -58,8 +66,8 @@ bgLayer.selectAll("rect")
     .data(data)
     .enter()
     .append("rect")
-    .attr("x", d => d.day * (boxSize + padding))
-    .attr("y", d => weekIndex(d.week) * (boxSize + padding))
+    .attr("x", 0)
+    .attr("y", (d,i) => i * (boxSize + padding))
     .attr("width", boxSize)
     .attr("height", boxSize)
     .attr("fill", d => colorScale(d.ratio))
@@ -67,7 +75,9 @@ bgLayer.selectAll("rect")
     .attr("hx-trigger", "click")
     .attr("hx-target", "#graph_display__container")
     .attr("stroke", "#111")
-    .style("opacity", 0);  // start invisible
+    .style("opacity", 0)  // start invisible
+    .style("cursor", "pointer")
+    .style("pointer-events", "all");
 
   // Animate opacity + "pop in" scale
   rects.transition()
@@ -100,6 +110,8 @@ bgLayer.selectAll("rect")
       .style("transform-origin", "center")
       .style("transform", `scale(${scale}) translateY(-${mv}px)`)
       .style("transition", "all 0.1s ease");
+
+    rect.append("title").text(d => d.date);
     });
     });
 
@@ -108,7 +120,9 @@ bgLayer.selectAll("rect")
     svg.on("mouseleave", () => {
     svg.selectAll("rect").style("transform", "scale(1)");
     });
-});
 
 
+    htmx.process(fgLayer.node());
 
+})();
+</script>

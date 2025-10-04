@@ -5,6 +5,7 @@ from . import views
 app_name = "graphs"
 urlpatterns = [
     path("calendar/", views.calendar_heatmap, name="calendar"),
+    path("calendar/weekly", views.weekly_calendar, name="week"),
     path("graph/bodyweight", views.get_bw_graph, name="bw"),
     path("graph/calories", views.get_cal_graph, name="cals"),
 ]
