@@ -1,5 +1,4 @@
 
-
 /* ----------- --------- Meal Styling ----------- --------- */
 
 /* ---------- Meal Header (weight & totals) ---------- */
@@ -77,27 +76,23 @@ ul {
     padding: 5px 10px;
     list-style: none;
     margin: 5px;
-    box-shadow: -3px 3px 0px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--item-shadow);
     background-color: var(--fg);
     overflow: hidden;
     cursor: pointer;
     user-select: none;
 }
 
-.shadow-left,
-.shadow {
-    box-shadow: -3px 3px 0px 0px rgba(0, 0, 0, 0.5);
-}
-
-.shadow-left:hover,
-.shadow:hover {
-    box-shadow: -5px 5px 0px 0px rgba(0, 0, 0, 1);
-}
-
 .meal:hover {
     transform: translateY(-2px);
-    box-shadow: -5px 5px 0px 0px rgba(0, 0, 0, 1);
+    box-shadow: var(--item-shadow-hover);
     transition: all 0.3s ease-in-out;
+}
+
+
+.meal.expanded:hover {
+	transform: none;
+	box-shadow: var(--item-shadow);
 }
 
 .meal .details {
@@ -151,7 +146,6 @@ tr {
     width: 100%;
     display: flex;          /* Make it a flex container */
     flex-direction: column; /* Stack items vertically */
-    overflow: hidden;       /* Prevent content from escaping */
     justify-content: center;
 }
 
@@ -177,32 +171,3 @@ tr {
     height: 100%;
     padding: 10px;
 }
-
-/* === Water Bar === */
-
-#water-meter {
-	display: flex;
-	list-style: none;
-	align-items: center;
-	justify-content: center;
-	flex:1;
-}
-
-.water-bar {
-	width:30px;
-	height:30px;
-	border:1px solid var(--water);
-	background-color: var(--water-bg);
-	margin:0px 2px;
-}
-
-.water-bar:hover{
-    transform: translateY(-2px);
-    box-shadow: -2px 2px 0px 0px rgba(0, 0, 0, 1);
-    transition: all 0.1s ease-in-out;
-}
-
-.filled {
-	background-color: var(--blue);
-}
-

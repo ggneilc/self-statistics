@@ -19,12 +19,7 @@
     </div>
 </section>
 <section id="graph_display" class="s_list"> 
-    <div id="bulletin"
-	hx-get="{% url 'core:tasks' %}"
-	hx-trigger="load, change from:#hidden-date"
-	hx-swap="innerHTML swap:0.4s">
-    </div>
-    <div class="button-container" style="margin: 6px 20px 0px 20px;">
+    <div class="button-container" style="margin: 20px 20px 0px 20px;">
       <button class="yellow_btn"
         hx-get="{% url 'graphs:calendar' %}"
         hx-trigger="click"

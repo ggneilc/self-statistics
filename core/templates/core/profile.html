@@ -1,5 +1,6 @@
 <div id="auth-modal" class="modal-overlay">
 <div id="modal-target" class="modal">
+<div class="profile-pic"></div>
 <h1>{{user.username}}</h1>
 	<div hx-get="{% url 'core:set_tz'%}"
 		hx-trigger="load"></div>

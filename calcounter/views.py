@@ -1,17 +1,17 @@
 """
-    API for calorie counter
-    get_food() -> returns list of consumed items
-
+    Calcounter manages Food
 """
 from django.shortcuts import get_object_or_404, render, HttpResponse
 from django.db.models import Sum
 from .models import Food
-from core.utils import get_or_create_day, get_or_create_today
 from .forms import FoodForm
+from core.utils import get_or_create_day
 
 from copy import copy
 from datetime import datetime
 
+
+# Listing foods
 
 def get_food(request):
     ''' Returns `meal_list.html` with the `selected_date` '''
@@ -27,39 +27,6 @@ def get_food(request):
     return render(request, "calcounter/meal_list.html", context)
 
 
-def edit_food(request, food_id):
-    food = get_object_or_404(Food, id=food_id)
-    return render(request, 'calcounter/meal_edit.html', {"food": food})
-
-
-def render_food(request, food_id):
-    food = get_object_or_404(Food, id=food_id)
-    food.is_template = Food.objects.filter(
-        name=food.name, is_template=True).exists()
-    return render(request, 'calcounter/meal.html', {
-        "food": food,
-        "just_updated": True})
-
-
-def update_food(request, food_id):
-    food = get_object_or_404(Food, id=food_id)
-    food.calories = request.POST['calories']
-    food.protein = request.POST['protein']
-    food.fat = request.POST['fat'] or None
-    food.carb = request.POST['carb'] or None
-    food.save()
-    food.is_template = Food.objects.filter(
-        name=food.name, is_template=True).exists()
-    return render(request, 'calcounter/meal.html', {"food": food})
-
-
-def save_template(request, food_id):
-    food = get_object_or_404(Food, id=food_id)
-    food.is_template = True
-    food.save()
-    return render(request, 'calcounter/checkmark.html')
-
-
 def get_food_templates(request):
     ''' Returns `template_list.html` with `request.user` templates '''
     if not request.user.is_authenticated:
@@ -72,22 +39,7 @@ def get_food_templates(request):
     return render(request, "calcounter/template_list.html", context)
 
 
-def calculate_totals(request):
-    ''' Sum total nutrients for `selected_date` '''
-    if not request.user.is_authenticated:
-        return HttpResponse("")
-    day = get_or_create_day(request.user, request.GET['selected_date'])
-    foods = Food.objects.filter(day=day)
-    totals = foods.aggregate(
-        calories=Sum('calories'),
-        protein=Sum('protein')
-    )
-    context = {
-        "calories": totals['calories'] or 0,
-        "protein": totals['protein'] or 0,
-    }
-    return render(request, "calcounter/totals.html", context)
-
+# CRUD : Adding Food
 
 def add_food(request):
     '''
@@ -114,6 +66,76 @@ def add_food(request):
             "date": request.GET.get('selected_date')
         }
     return render(request, "calcounter/meal_entry.html", context)
+
+
+def add_food_template(request, food_id):
+    '''
+        Add a new food from a template to today
+    '''
+    food = get_object_or_404(Food, id=food_id)
+    if food.is_template:
+        food_duplicate = copy(food)
+        food_duplicate.pk = None  # don't overwrite existing food
+        food_duplicate.is_template = False  # don't make multiple templates
+        # update the date to today
+        food_duplicate.day = get_or_create_day(
+            request.user, request.POST['selected_date'])
+        food_duplicate.save()
+        return meal_update(request, food_duplicate.day)
+
+
+# CRUD : Update a food
+
+def edit_food(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+    return render(request, 'calcounter/meal_edit.html', {"food": food})
+
+
+def update_food(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+    food.calories = request.POST['calories']
+    food.protein = request.POST['protein']
+    food.fat = request.POST['fat'] or None
+    food.carb = request.POST['carb'] or None
+    food.save()
+    food.is_template = Food.objects.filter(
+        name=food.name, is_template=True).exists()
+    return render(request, 'calcounter/meal.html', {"food": food})
+
+
+def save_template(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+    food.is_template = True
+    food.save()
+    return render(request, 'calcounter/checkmark.html')
+
+
+# Properly Display Meals
+
+def calculate_totals(request):
+    ''' Sum total nutrients for `selected_date` '''
+    if not request.user.is_authenticated:
+        return HttpResponse("")
+    day = get_or_create_day(request.user, request.GET['selected_date'])
+    foods = Food.objects.filter(day=day)
+    totals = foods.aggregate(
+        calories=Sum('calories'),
+        protein=Sum('protein')
+    )
+    context = {
+        "calories": totals['calories'] or 0,
+        "protein": totals['protein'] or 0,
+    }
+    return render(request, "calcounter/totals.html", context)
+
+
+def render_food(request, food_id):
+    food = get_object_or_404(Food, id=food_id)
+    food.is_template = Food.objects.filter(
+        name=food.name, is_template=True).exists()
+    return render(request, 'calcounter/meal.html', {
+        "food": food,
+        "just_updated": True})
 
 
 def meal_update(request, day, rm=False):
@@ -144,29 +166,7 @@ def meal_update(request, day, rm=False):
         return render(request, 'calcounter/meal_update.html', context)
 
 
-def add_food_template(request, food_id):
-    '''
-        Add a new food from a template to today
-    '''
-    food = get_object_or_404(Food, id=food_id)
-    if food.is_template:
-        food_duplicate = copy(food)
-        food_duplicate.pk = None  # don't overwrite existing food
-        food_duplicate.is_template = False  # don't make multiple templates
-        # update the date to today
-        food_duplicate.day = get_or_create_day(
-            request.user, request.POST['selected_date'])
-        food_duplicate.save()
-        return meal_update(request, food_duplicate.day)
-
-
-def cancel_form(request):
-    ''' Returns `entry_buttons` template '''
-    return render(request, "calcounter/entry_buttons.html")
-
-# TODO:
-#  create method to delete all foods with date '0001-01-01'
-#  and food.is_template = false
+# CRUD : Deleteing food
 
 
 def delete_food(request, food_id):
@@ -193,3 +193,8 @@ def delete_food_template(request, food_id):
     food.is_template = False
     food.save()
     return HttpResponse("")
+
+
+def cancel_form(request):
+    ''' Returns `entry_buttons` template '''
+    return render(request, "calcounter/entry_buttons.html")

@@ -1,5 +1,5 @@
 <div class="button-container" style="align-items: center;"
-	hx-post="{% url 'core:profile' %}"
+	hx-get="{% url 'core:profile' %}"
 	hx-swap="outerHTML"> 
 <div class="profile-pic"></div>
 <span id="username">{{ user.username }}</span>

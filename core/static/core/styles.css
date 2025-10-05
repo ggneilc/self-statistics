@@ -4,17 +4,32 @@
 }
 
 :root {
-    --bg: #0D0D0F;
-    --fg: #1A1B1E;
+/*    --bg: #0D0D0F; */
+/*    --fg: #1A1B1E; */
+    --bg: #252527; 
+    --fg: #3d3d3f;  
     --white: #f5f5f5;
+
+/* 0%, 10%, 20% tints */
+	/* --bg-dark: #0D0D0F; 	*/
+	/* --bg: #252527; 	*/
+	/* --bg-light: #3d3d3f; */
+
+/* Monochromatic Woodsmoke */
+/*	--bg-dark: #0D0D0F;	*/
+/*	--bg: #575764;		*/
+/*	--bg-light: #a0a0b9;	*/
+
+/* accent colors */
     --yellow: #FFC83D;
     --blue: #37B8FF;
 
-    --water: #4293bf;
-    --water-bg: #26292b;
-    --meal: #050505;
-    --meal-hover: #060606;
+/* shadows */
+	--item-shadow: -3px 3px 0px 0px #0d0d0f;
+	--item-shadow-hover: -5px 5px 0px 0px #0d0d0f;
+	--inset-shadow: 0px 0px 6px 2px #0d0d0f inset;
 
+/* Button colors */
     --button: #72b983;
     --button-bg: #1d2322;
     --button-hover: #207948;
@@ -31,13 +46,19 @@
     --button-blue-bg:#1e2021; 
     --button-blue-hover:#567484; 
 
+/* Workout types coloring */
     --Push: #79ca85;
     --Pull: #bc311c;
     --Legs: #1c39bc;
     --lift: #050505;
 }
 
-h1 { color: var(--yellow); text-align: center; font-size:28px;}
+h1 {
+  color: var(--yellow);
+  text-align: center;
+  font-size:28px;
+  text-shadow: 0px 5px 5px #0d0d0f;
+}
 
 body {
     font-family: 'Oswald';
@@ -65,6 +86,8 @@ body {
 }
 
 
+/* === Grid Areas ===*/
+
 .w_list {grid-area: w_list;}
 .s_list {grid-area: s_list;}
 .m_list {grid-area: m_list;}
@@ -72,6 +95,37 @@ body {
 .s_head {grid-area: s_head;}
 .m_head {grid-area: m_head;}
 
+#lift_head,
+#graph_head,
+#meal_head,
+#meal_entry,
+#lift_entry,
+#graph_entry {
+    min-height:0;
+    flex-grow:0;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    display: flex;  
+    flex-direction: column;
+    justify-content: center;
+}
+
+#meal_entry__container,
+#lift_entry__container,
+#graph_entry__container {
+    margin: 10px;
+}
+
+#bw_entry_form,
+#t_entry_form,
+#l_entry_form,
+#m_entry_form {
+    background-color: var(--bg);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
 
 /* === Navbar === */
 
@@ -87,6 +141,8 @@ body {
     margin: 10px 0px 10px 0px;
     border-radius: 2px 0px 0px 2px;
   background-color: var(--fg);
+  z-index: 5;
+  box-shadow: -3px 0px 6px 0px #0d0d0f;
 }
 
 .profile-pic {
@@ -136,7 +192,6 @@ body {
 }
 
 /* Remove number input spinners for all inputs */
-
 /* For WebKit browsers (Chrome, Edge, Safari, etc.) */
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button {
@@ -297,6 +352,7 @@ button {
     click: none;
 }
 
+/*** WARNING: From here on out is pretty much vibecoded (profile screen) ***/
 /* === Modal Box === */
 .modal {
     background-color: var(--fg);
@@ -359,11 +415,6 @@ button {
 @keyframes slideUp {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
-}
-
-.workout_list #m_entry__btn {
-    margin: 0;
-    flex: 1;
 }
 
 /* -------------- HTMX Animations ------------- */

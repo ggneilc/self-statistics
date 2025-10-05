@@ -9,8 +9,8 @@ from .forms import ProfileForm
 from calcounter.models import Food
 from workouts.models import Workout
 
-# MOBILE SPECIFICS
 
+# MOBILE SPECIFICS
 
 def is_mobile(request):
     ua = request.META.get('HTTP_USER_AGENT', '').lower()
@@ -100,6 +100,8 @@ def signup_view(request):
     return render(request, 'core/signup.html', {'form': form})
 
 
+# === Day Stuff ===
+
 def get_bodyweight(request):
     '''
         Display user's bodyweight for the selected day
@@ -133,7 +135,7 @@ def display_day(request, date):
 
 
 def daily_goals(request):
-    day = Day.objects.get(user=request.user, date=request.GET['selected_date'])
+    day = get_or_create_day(request.user, request.GET.get('selected_date'))
     day.entered_bodyweight = True if day.bodyweight is not None else False
     day.entered_meal = True if Food.objects.filter(day=day).exists() else False
     day.did_workout = True if Workout.objects.filter(

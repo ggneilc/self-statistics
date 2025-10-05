@@ -9,7 +9,7 @@
   cursor: pointer;
   box-shadow: 0px 0px 4px 4px rgba(0,0,0, 0.3);
   font-size: 40px;
-  z-index: 2;
+  z-index: 10;
 }
 
 #date-container:hover {
@@ -35,6 +35,8 @@
   margin: 10px 0px 10px 0px;
   border-radius: 0px 2px 2px 0px;
   background-color: var(--fg);
+  z-index: 5;
+  box-shadow: 3px 0px 6px 0px #0d0d0f;
 }
 
 
@@ -51,10 +53,10 @@
 }
 
 #bulletin {
+	flex: 1;
 	background-color: var(--fg);
 	text-align: center;
 	min-height: 50px;
-	margin: 15px 20px;
 	display:flex;
 	align-items: center;
 	justify-content: center;
@@ -113,11 +115,6 @@ margin-left:5px;
 #day-container {
     display:flex;
     flex-direction: column;
-    flex-grow: 1;
-    height:100%;
-    width:100%;
-    align-items: center;
-    border: 1px solid black;
 }
 
 #d3-calendar {
@@ -131,10 +128,10 @@ svg {
 }
 
 .cardstyle {
+  box-shadow: var(--inset-shadow);
   display: flex;
   background-color: var(--fg);
   padding: 10px;
   border-radius: 2px;
-	flex: 1;
-	margin: 15px;
+  margin: 0px 15px;
 }

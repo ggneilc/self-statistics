@@ -1,20 +1,11 @@
 {% load static %}
 <section id="lift_head" class="w_head">
     <div id="lift_head__container">
-	<ul id="water-meter">
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-		<li class="water-bar" hx-on:click="this.classList.toggle('filled')"></li>
-	</ul>
+      <div id="bulletin"
+	hx-get="{% url 'core:tasks' %}"
+	hx-trigger="load, change from:#hidden-date"
+	hx-swap="innerHTML swap:0.4s">
+      </div>
     </div>
 </section>
 <section id="workout_list" class="w_list"> 

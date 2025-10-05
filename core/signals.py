@@ -31,8 +31,6 @@ def update_day_after_meal_change(sender, instance, **kwargs):
         )['total_cals'] or 0
 
         day.calories_consumed = total
-        if signal == post_save:
-            day.entered_meal = True
         day.save()
 
 

@@ -1,14 +1,18 @@
-from django.shortcuts import render, HttpResponse
+"""
+    Graphs interact solely with Day objects and display them
+    - Calendar  : shows high level overview and averages of metrics
+    - Graphs    : displays simple d3 line graphs of x over time
+"""
+from django.shortcuts import render
 from core.models import Day
-from calcounter.models import Food
-from workouts.models import Workout, Lift
 import json
+from datetime import date
 
-import pandas as pd
-from datetime import datetime, date
 
+# === Calendars ===
 
 def calendar_heatmap(request):
+    ''' displays AMDAP calendar : 25x21 grid of rects '''
     days = Day.objects.filter(user=request.user)
     days = [d for d in days if d.date.isoformat() != "0001-01-01"]
     structured = []
@@ -51,6 +55,8 @@ def weekly_calendar(request):
                   {"day_data": json.dumps(structured),
                    "avg_cals": avg_cals,
                    "avg_bw": avg_bw})
+
+# === Line Graphs ===
 
 
 def get_bw_graph(request):
