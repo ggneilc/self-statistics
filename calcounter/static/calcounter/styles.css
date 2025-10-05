@@ -1,7 +1,4 @@
-
-/* ----------- --------- Meal Styling ----------- --------- */
-
-/* ---------- Meal Header (weight & totals) ---------- */
+/* === Meal Header (totals) === */
 
 #meal_head {
     width: 100%;
@@ -43,31 +40,7 @@
   padding-bottom: 7px;
 }
 
-/* ---------- Meal List Display ---------- */
-
-
-ul {
-    margin:0px;
-    padding:5px;
-}
-
-#meal_list, #workout_list, #graph_display {
-    background-color: var(--bg);
-    border-radius: 5px;
-    height: 100%;
-    width: 100%;
-    display: flex;          /* Make it a flex container */
-    flex-direction: column; /* Stack items vertically */
-    overflow: hidden;       /* Prevent content from escaping */
-}
-
-#meal_list__container, #workout_list__container, #graph_display__container {
-    flex-grow: 1;        /* Takes up remaining space */
-    overflow-y: auto;    /* Enables scrolling when content exceeds height */
-    margin: 0;
-    max-height: 100%;    /* Ensures it doesn't grow beyond the parent */
-    position: relative;
-}
+/* === Meal List Display === */
 
 .meal {
     position: relative;
@@ -81,19 +54,9 @@ ul {
     overflow: hidden;
     cursor: pointer;
     user-select: none;
+    border-radius: 2px;
 }
 
-.meal:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--item-shadow-hover);
-    transition: all 0.3s ease-in-out;
-}
-
-
-.meal.expanded:hover {
-	transform: none;
-	box-shadow: var(--item-shadow);
-}
 
 .meal .details {
     max-height: 0;
@@ -114,14 +77,19 @@ ul {
   padding-bottom: 5px;
 }
 
-.meal .food_name {
-    transition: transform 0.3s ease;
+.meal:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--item-shadow-hover);
+    transition: all 0.3s ease-in-out;
 }
 
-.meal.expanded .food_name{
-    transform: translateX(30%)
+.meal.expanded:hover {
+	transform: none;
+	box-shadow: var(--item-shadow);
 }
 
+.meal .food_name {transition: transform 0.3s ease;}
+.meal.expanded .food_name{transform: translateX(30%)}
 
 .meal .details .button-container {display:none;}
 .meal.expanded .details .button-container {display: flex;}
@@ -129,45 +97,4 @@ ul {
 
 tr {
   border-bottom: 1px solid var(--white); /* horizontal line */
-}
-
-
-/* ---------- Meal Entries ---------- */
-#lift_head,
-#graph_head,
-#meal_head,
-#meal_entry,
-#lift_entry,
-#graph_entry {
-    min-height:0;
-    flex-grow:0;
-    border-radius: 10px;
-    height: 100%;
-    width: 100%;
-    display: flex;          /* Make it a flex container */
-    flex-direction: column; /* Stack items vertically */
-    justify-content: center;
-}
-
-
-
-#meal_entry__container,
-#lift_entry__container,
-#graph_entry__container {
-    margin: 10px;
-}
-
-#bw_entry_form,
-#t_entry_form,
-#l_entry_form,
-#m_entry_form {
-    background-color: var(--bg);
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-.entry {
-    height: 100%;
-    padding: 10px;
 }

@@ -11,9 +11,39 @@
   display: flex;
   background-color: var(--bg);
   flex-direction: column;
-  overflow-y: auto;
   margin: 0px;
   padding: 10px;
+}
+
+/* === Active Workout === */
+
+#active-workout {
+	height: 100%;
+	width: auto;
+	padding: 5px 10px;
+	user-select: none;
+	border-radius: 2px;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--bg);
+	margin: 10px;
+}
+
+#active-workout label, #active-workout form {
+	background-color: var(--fg);
+}
+#active-workout #lift_entry__container {
+	background-color: var(--fg);
+	margin: 10px;
+	border-radius: 2px;
+}
+
+.workout_list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 5px;
+    list-style: none;
 }
 
 #lift_list {
@@ -43,55 +73,8 @@
 	text-align: center;
 }
 
-/* --- Weight List --- */
 
-#active-workout {
-	height: 100%;
-	width: auto;
-	padding: 5px 10px;
-	user-select: none;
-	border-radius: 2px;
-	display: flex;
-	flex-direction: column;
-	background-color: var(--bg);
-	margin: 10px;
-}
-
-#active-workout label, #active-workout form {
-	background-color: var(--fg);
-}
-#active-workout #lift_entry__container {
-	background-color: var(--fg);
-	margin: 10px;
-	border-radius: 2px;
-}
-
-.workout {
-    position: relative;
-    display: flex;  /* Make the list item a flex container */
-    flex-direction: column;
-    padding: 5px 10px;
-    list-style: none;
-    margin: 5px;
-    box-shadow: -3px 3px 0px 0px rgba(0, 0, 0, 0.5);
-    background-color: var(--fg); 
-    overflow: hidden;
-    cursor: pointer;
-    user-select: none;
-    border-radius: 2px;
-}
-
-.workout::-webkit-scrollbar {
-  display: none;                /* Chrome, Safari, Edge */
-}
-
-.workout_list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 5px;
-    list-style: none;
-}
+/* === Lift display === */
 
 .lift {
     min-width: 110px;
@@ -130,6 +113,23 @@
     transition: all 0.1s ease-in-out;
 }
 
+/* === Workout History === */
+
+.workout {
+    position: relative;
+    display: flex;  /* Make the list item a flex container */
+    flex-direction: column;
+    padding: 5px 10px;
+    list-style: none;
+    margin: 5px;
+    box-shadow: var(--item-shadow);
+    background-color: var(--fg); 
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 2px;
+}
+
 .workout .details {
     max-height: 0;
     overflow: hidden;
@@ -142,9 +142,6 @@
         opacity 0.3s ease;
 }
 
-.workout .details .button-container {display:none;}
-.workout.expanded .details .button-container {display: flex;}
-
 .workout.expanded .details {
     max-height: 200px; /* set this to your known height */
     opacity: 1;
@@ -152,10 +149,18 @@
     padding-bottom: 5px;
 }
 
+.workout .details .button-container {display:none;}
+.workout.expanded .details .button-container {display: flex;}
+
 .workout:hover {
     transform: translateY(-2px);
-    box-shadow: -5px 5px 0px 0px rgba(0, 0, 0, 1);
+    box-shadow: var(--item-shadow-hover);
     transition: all 0.1s ease-in-out;
+}
+
+.workout.expanded:hover {
+  transform: none;
+  box-shadow: var(--item-shadow);
 }
 
 

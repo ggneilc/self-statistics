@@ -127,6 +127,33 @@ body {
     flex-direction: column;
 }
 
+/* --- List Areas --- */
+
+ul {
+    margin:0px;
+    padding:5px;
+}
+
+#meal_list, #workout_list, #graph_display {
+    background-color: var(--bg);
+    border-radius: 5px;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;       /* Prevent content from escaping */
+}
+
+#meal_list__container, #workout_list__container, #graph_display__container {
+    flex-grow: 1;        /* Takes up remaining space */
+    overflow-y: auto;    /* Enables scrolling when content exceeds height */
+    margin: 0;
+    max-height: 100%;    /* Ensures it doesn't grow beyond the parent */
+    position: relative;
+}
+
+
+
 /* === Navbar === */
 
 #username {
