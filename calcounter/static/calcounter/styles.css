@@ -1,3 +1,9 @@
+@keyframes scroll-left {
+  0% { transform: translateX(0);}
+  40% { transform: translateX(0);}
+  60% {transform: translateX(-25%);}
+  100% {transform: translateX(0);}
+}
 /* === Meal Header (totals) === */
 
 #meal_head {
@@ -52,6 +58,7 @@
     box-shadow: var(--item-shadow);
     background-color: var(--fg);
     overflow: hidden;
+    white-space: nowrap;
     cursor: pointer;
     user-select: none;
     border-radius: 2px;
@@ -66,10 +73,10 @@
 .inline_cals {
   font-size: 1rem;
   color: var(--blue);
-  margin-left: 20px;
   background: var(--button-blue-hover);
   border-radius: 10px;
   padding: 4px 10px;
+  width: 60px;
 }
 .inline_protein{
   font-size: 1rem;
@@ -78,6 +85,7 @@
   background: var(--button-yellow-hover);
   border-radius: 10px;
   padding: 4px 10px;
+  width: 50px;
 }
 
 .meal .details {
@@ -113,6 +121,17 @@
 .meal.expanded:hover {
 	transform: none;
 	box-shadow: var(--item-shadow);
+}
+
+.scroll-container {
+  position: relative;
+  width:clamp(250px, 100%, 100%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scroll-text {
+  display:inline-block;
 }
 
 .meal .food_name {transition: transform 0.3s ease;}

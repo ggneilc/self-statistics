@@ -181,6 +181,7 @@
   display: flex;
   align-items: center;
 }
+.workout-name { width: 100px; }
 .workout-date {
   margin-left: 20px;
   font-size: 1rem;

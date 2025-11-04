@@ -6,7 +6,9 @@
 {% endif %}
 
 <div class="meal-inline">
-    <span class="food_name">{{ food.name.upper }}</span>
+    <span class="food_name scroll-container"> 
+	<span class="scroll-text">{{ food.name.upper }}</span>
+    </span>
     <span class="inline_cals">{{ food.calories }}</span>
     <span class="inline_protein">{{ food.protein }}</span>
 </div>
