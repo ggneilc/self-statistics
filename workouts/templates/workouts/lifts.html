@@ -1,21 +1,16 @@
 {% load custom_filters %}
 {% for lift in lifts %}
-<li class="lift">
-    <div class="lift_main">
-        <div class="lift_name">{{lift.exercise_name}}</div>
-    </div>
-    {% for set in lift.sets.all %}
-    <div class="lift_set">
-        <div class="lift_sets">{{set.reps}}</div>
-        x
-        <div class="lift_reps">{{set.weight}}</div>
-    </div>
-    {% endfor %}
-</li>
+{% include './lift.html' with lift=lift %}
 {% endfor %}
 
 <div id="total-{{id}}" class="weight_totals" hx-swap-oob="innerHTML">
     <div class="fade-in">
-        Total Workout Volume: {{total}} lbs
+        Total Volume: {{total}} lbs
     </div>
 </div>
+
+<script>
+document.querySelector('.lift').addEventListener('click', function(event){
+  event.stopPropagation();
+  });
+</script>

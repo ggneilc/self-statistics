@@ -48,15 +48,53 @@ class Workout(models.Model):
         return f"{self.workout_type} | {self.day.date}"
 
 
+# Can add bodyweight & banded
+LIFT_TYPES = [
+    ('M', 'Machine'),
+    ('C', 'Cable'),
+    ('B', 'Barbell'),
+    ('D', 'Dumbbell')]
+
+BODYPARTS = [
+    # Pull
+    ('BI', 'Bicep'),
+    ('TR', 'Trap'),
+    ('LT', 'Lat'),
+    # Push
+    ('CH', 'Chest'),
+    ('TI', 'Tricep'),
+    ('SH', 'Shoulder'),
+    # Legs
+    ('QD', 'Quadricep'),
+    ('HM', 'Hamstring'),
+    ('CV', 'Calf'),
+    ('HP', 'Ad/Abuctor'),
+    # misc
+    ('AB', 'Abs')
+]
+
+
 class Lift(models.Model):
     '''
         Represents a movement performed, i.e. 'barbell bench press'
         - exercise_name
     '''
     workout = models.ForeignKey(
-        Workout, on_delete=models.CASCADE, related_name='lifts')
+        Workout,
+        on_delete=models.CASCADE,
+        related_name='lifts')
     exercise_name = models.CharField(max_length=100)
+    is_template = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
+
+    lift_type = models.CharField(
+        max_length=1,
+        choices=LIFT_TYPES,
+        null=True)
+    bodypart = models.CharField(
+        max_length=2,
+        choices=BODYPARTS,
+        null=True)
 
     def __str__(self):
         return f"{self.exercise_name}: ({self.workout.workout_type} - {self.workout.day.date})"

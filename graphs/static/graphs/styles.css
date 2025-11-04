@@ -8,7 +8,7 @@
   padding: 0.4rem 0.6rem;
   cursor: pointer;
   box-shadow: 0px 0px 4px 4px rgba(0,0,0, 0.3);
-  font-size: 40px;
+  font-size: 2.7rem;
   z-index: 10;
 }
 
@@ -45,7 +45,7 @@
     flex: 1;
     margin: 5px;
     text-align: center;
-    font-size: 28px;
+    font-size: 2rem;
 }
 
 #weight input {
@@ -70,7 +70,7 @@
 	top: -10px;
 	left: 5px;
 	color: var(--blue);
-	font-size: 12px;
+	font-size: 0.8rem;
 	text-shadow: 0px 3px 2px black;
 }
 
@@ -97,18 +97,19 @@
 
 
 .name {
-font-size:14px;
+font-size:0.8em;
 margin-left:5px;
 }
 
 /*--- graphs ---*/
 
+#secondary-buttons .blue_btn {
+  margin: 0px 2px;
+}
+
 #graph_display__container {
     overflow:visible;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px;
     height: 100%;
 }
 
@@ -118,9 +119,6 @@ margin-left:5px;
 }
 
 #d3-calendar {
-  padding: 5px;
-  display: flex;
-  align-items: center;
 }
 
 svg {
@@ -128,10 +126,12 @@ svg {
 }
 
 .cardstyle {
+  flex-grow: 1;
   box-shadow: var(--inset-shadow);
-  display: flex;
   background-color: var(--fg);
-  padding: 10px;
   border-radius: 2px;
-  margin: 0px 15px;
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -1,0 +1,21 @@
+<div id="lift_templates" class="list-container">
+  {% for lift in lifts %}
+	<div class="lift"
+	hx-post="{% url 'workouts:addlt' lift.id %}"
+	hx-trigger="click"
+	hx-target="#lift_templates"
+	hx-swap="outerHTML swap:0.4s"
+	>
+		{{lift}} 
+	</div>
+  {% endfor %}
+  <div class="button-container">
+	<button class="add"
+		hx-get="{% url 'workouts:addl'%}"
+		hx-trigger="click"
+		hx-target="#lift_templates"
+		hx-swap="outerHTML swap:0.4s"
+		hx-vals='{"machine": "{{ machine }}", "bodypart": "{{bodypart}}"}'>
+		+</button>
+  </div>
+</div>

@@ -1,10 +1,29 @@
 <form 
+{% if not editing %}
   hx-post="{% url 'workouts:adds' lift.id %}" 
-  hx-target="#set-list"
-  hx-swap="beforeend"
-  hx-on="htmx:afterRequest: this.reset(); this.querySelector('[name=reps]').focus();"
->
+{% else %}
+  hx-post="{% url 'workouts:edit_set' set.id %}" 
+{% endif %}
+  hx-swap="outerHTML">
+
+<!-- if not editing, the set doesn't exist yet; just clear. -->
 <div class="main-nut">
+  <div class="button-container">
+  <button class="back-btn" style="background-color:var(--bg);
+  color: #cb0014; font-size:12px;
+  box-shadow: 0px 0px 0px 0px rgba(0,0,0,0);" 
+{% if not editing %}
+    hx-get="{% url 'workouts:clear'%}" 
+{% else %}
+    hx-delete="{% url 'workouts:del_set' set.id %}" 
+{% endif %}
+    hx-target="closest form"
+    hx-swap="outerHTML"
+  >
+    ✕
+  </button>
+  </div>
+
 	  <div class="input_container">
 	    {{ form.reps }} 
 	    <label for="{{form.reps.id_for_label}}"> REPS </label>
@@ -13,29 +32,11 @@
 	    {{ form.weight }} 
 	    <label for="{{form.weight.id_for_label}}"> WEIGHT </label>
 	  </div>
-	  <div class="input_container">
-	    {{ form.rir }} 
-	    <label for="{{form.rir.id_for_label}}"> RIR </label>
+
+	  <div class="button-container">
+	    <button class="form_btn" name="action" type="submit" value="submit">
+		>
+	    </button>
 	  </div>
-	  <div class="input_container" style="display: none;">
-	    {{ form.rest }} 
-	    <label for="{{form.rest.id_for_label}}"> REST </label>
-	  </div>
-  </div>
-  <div id="rest-display"></div>
-  <div class="button-container">
-    <button class="add" name="action" type="submit" value="submit">
-	+
-    </button>
   </div>
 </form>
-
-<script>
-//(() => {
-//  const start = document.querySelector("#rest_timer");
-//  const form = document.querySelector("#set-form");
-
-//  if (start) start.addEventListener("click", startRestTimer);
-//  if (form) form.addEventListener("submit", stopRestTimerAndPopulate);
-//})();
-</script>

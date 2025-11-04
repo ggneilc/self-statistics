@@ -7,14 +7,16 @@
 """
 from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.db.models import F, Sum
-from .models import Workout, WorkoutType, Lift, Set
+from .models import Workout, WorkoutType, Lift, Set, BODYPARTS, LIFT_TYPES
 from core.utils import get_or_create_today
 from .forms import LiftForm, WTypeForm, SetForm
 from random import randint
+from copy import copy
 
 
 # get_x : returns list of x
 
+# --- Workout History
 def get_workouts(request):
     ''' returns a list of users workouts '''
     workouts = (
@@ -54,8 +56,76 @@ def get_lifts(request, workout_id):
     }
     return render(request, 'workouts/lifts.html', context)
 
+# --- Active Workout
+
+
+def filterBodyparts(request, workout_type):
+    if (workout_type.name == 'Push'):
+        return ('Chest', 'Tricep', 'Shoulder')
+    elif (workout_type.name == 'Pull'):
+        return ('Bicep', 'Trap', 'Lat')
+    elif (workout_type.name == 'Legs'):
+        return ('Quadricep', 'Hamstring', 'Calf', 'Ad/Abductor')
+    else:
+        form = LiftForm()
+        return render(request, 'workouts/lift_entry.html', {"form": form})
+
+
+def get_bodyparts(request, workout_type_id):
+    workout_type = WorkoutType.objects.get(pk=workout_type_id)
+    bodyparts = filterBodyparts(request, workout_type)
+    return render(request, 'workouts/bodypart_buttons.html', {'bodyparts': bodyparts})
+
+
+def get_machines(request):
+    bodypart = request.GET.get("bodypart")
+    return render(request,
+                  'workouts/machines.html',
+                  {'machines': ('Machine', 'Cable', 'Barbell', 'Dumbbell'),
+                   'bodypart': bodypart})
+
+
+LIFT_TYPES_MAP = {label: code for code, label in LIFT_TYPES}
+BODYPARTS_MAP = {label: code for code, label in BODYPARTS}
+
+
+def get_lift_templates(request):
+    bodypart = request.GET.get("bodypart")
+    machine = request.GET.get("machine")
+    print(f"bodypart: {bodypart} | machine: {machine}")
+
+    bp_code = BODYPARTS_MAP.get(bodypart)
+    lift_code = LIFT_TYPES_MAP.get(machine)
+
+    lifts = Lift.objects.filter(bodypart=bp_code,
+                                lift_type=lift_code,
+                                is_template=True)
+    context = {
+        "lifts": lifts,
+        "machine": lift_code,
+        "bodypart": bp_code
+    }
+
+    return render(request, 'workouts/lift_templates.html', context)
+# TODO: allow supersets
+
+
+# --- Inspecting Lift
+def get_lift_details(request, lift_id):
+    lift = Lift.objects.get(pk=lift_id)
+    workout = lift.workout
+    # determine if there exists a template of a left -> don't allow user to save
+    lift.is_template = Lift.objects.filter(workout__day__user=request.user,
+       exercise_name=lift.exercise_name, is_template=True)
+    return render(request, 'workouts/lift_details.html', {"lift": lift, "workout": workout})
+
+
+def get_workout(request, workout_id):
+    workout = Workout.objects.get(pk=workout_id)
+    return render(request, 'workouts/workout.html', {"workout": workout, "expanded": True})
 
 # CRUD : Adding new x
+
 
 def add_workout(request, workout_type_id):
     '''
@@ -72,6 +142,37 @@ def add_workout(request, workout_type_id):
                   context={"workout": workout})
 
 
+# Populate new lift with old benchmarks
+def add_lift_from_template(request, lift_id):
+    lift = get_object_or_404(Lift, pk=lift_id)
+    previous_sets = lift.sets.all()
+    # -- create new lift
+    lift_duplicate = copy(lift)
+    lift_duplicate.pk = None             # don't overwite previous lift
+    lift_duplicate.is_template = False   # don't create another template
+    lift_duplicate.workout = Workout.objects.get(
+        day__user=request.user, is_active=True)
+    lift_duplicate.save()
+    # -- duplicate previous sets
+    forms = []
+    for s in previous_sets:
+        form = SetForm(instance=s)
+        forms.append(form)
+    return render(request,
+                  'workouts/active_lift.html',
+                  {"lift": lift_duplicate,
+                   "templated": True,
+                   "sets": forms})
+
+
+# button on lift list to turn into template
+def add_lift_template(request, lift_id):
+    lift = Lift.objects.get(pk=lift_id)
+    lift.is_template = True
+    lift.save()
+    return render(request, 'calcounter/checkmark.html')
+
+
 def add_lift(request):
     '''
         POST: adds a lift to the current workout
@@ -83,15 +184,26 @@ def add_lift(request):
             cur_workout = Workout.objects.get(
                 day__user=request.user, is_active=True)
             new_lift = f.save(commit=False)
+
+            bodypart = request.POST.get("bodypart")
+            machine = request.POST.get("machine")
+            print(f"creating lift with {bodypart} , {machine}")
             new_lift.workout = cur_workout
+            new_lift.lift_type = machine
+            new_lift.bodypart = bodypart
             new_lift.save()
             context = {
                 "lift": new_lift,
+                "templated": False,
                 "set_form": SetForm()
             }
             return render(request, 'workouts/active_lift.html', context)
+
+    bodypart = request.GET.get("bodypart")
+    machine = request.GET.get("machine")
     form = LiftForm()
-    return render(request, 'workouts/lift_entry.html', {"form": form})
+    context = {"form": form, "bodypart": bodypart, "machine": machine}
+    return render(request, 'workouts/lift_entry.html', context)
 
 
 def add_set(request, lift_id):
@@ -108,18 +220,30 @@ def add_set(request, lift_id):
             set_obj = form.save(commit=False)
             set_obj.lift = lift
             set_obj.save()
-            # Return just the new row HTML
             return render(request,
                           "workouts/set_row.html",
                           {"set": set_obj}, status=201)
-    # If GET or invalid POST, return blank form for user to try again
     form = SetForm()
     return render(request,
                   "workouts/set_entry.html",
-                  {"form": form, "lift": lift})
+                  {"form": form, "lift": lift, "editing": False})
 
+
+def edit_set(request, set_id):
+    set_obj = get_object_or_404(Set, pk=set_id)
+    if request.method == "POST":
+        form = SetForm(request.POST, instance=set_obj)
+        if form.is_valid():
+            upt_set = form.save()
+            return render(request,
+                          "workouts/set_row.html",
+                          {"set": upt_set}, status=201)
+    form = SetForm(instance=set_obj)
+    return render(request, 'workouts/set_entry.html',
+                  {"form": form, "set": set_obj, "editing": True})
 
 # CRUD : Deleting / Ending active x
+
 
 def end_lift(request, lift_id):
     '''
@@ -127,12 +251,13 @@ def end_lift(request, lift_id):
     '''
     lift = get_object_or_404(
         Lift, pk=lift_id, workout__day__user=request.user)
-    return render(request, 'workouts/end_lift.html', {"lift": lift})
+    workout = Workout.objects.get(lifts=lift)
+    return render(request, 'workouts/end_lift.html', {"lift": lift, "workout": workout})
 
 
 def delete_set(request, set_id):
-    set = Set.objects.get(pk=set_id)
-    set.delete()
+    set_obj = Set.objects.get(pk=set_id)
+    set_obj.delete()
     return HttpResponse("")
 
 
@@ -153,6 +278,11 @@ def del_workout(request, workout_id):
 def back(request):
     ''' cancels the workout '''
     return render(request, 'workouts/start_workout.html')
+
+
+def clear(request):
+    '''returns empty'''
+    return HttpResponse()
 
 
 # TODO: user can create new workout types, i.e. 'Upper'

@@ -1,6 +1,7 @@
 <form id="l_entry_form" 
     hx-post="{% url 'workouts:addl' %}"
-    hx-target="#lift_entry__container">
+    hx-target="#lift_entry__container"
+    hx-vals='{"machine": "{{ machine }}", "bodypart": "{{bodypart}}"}'>
 
     {% csrf_token %}
 

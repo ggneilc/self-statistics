@@ -57,6 +57,28 @@
     border-radius: 2px;
 }
 
+.meal-inline {
+  display: flex;
+  flex-direction: row; 
+  justify-items: space-evenly;
+  align-items: center;
+}
+.inline_cals {
+  font-size: 1rem;
+  color: var(--blue);
+  margin-left: 20px;
+  background: var(--button-blue-hover);
+  border-radius: 10px;
+  padding: 4px 10px;
+}
+.inline_protein{
+  font-size: 1rem;
+  color: var(--yellow);
+  margin-left: 20px;
+  background: var(--button-yellow-hover);
+  border-radius: 10px;
+  padding: 4px 10px;
+}
 
 .meal .details {
     max-height: 0;
@@ -75,6 +97,11 @@
   opacity: 1;
   padding-top: 5px;
   padding-bottom: 5px;
+}
+
+.meal.expanded .inline_cals,
+.meal.expanded .inline_protein {
+  display: none;
 }
 
 .meal:hover {

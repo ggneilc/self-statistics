@@ -1,6 +1,5 @@
 
 <div class="set-row">
-  <span style="flex:1;">{{ set.reps }} reps × {{ set.weight }} lbs</span>
   <div class="button-container">
   <button class="back-btn" style="background-color:var(--bg);
   color: #cb0014; font-size:12px;
@@ -10,6 +9,16 @@
     hx-swap="outerHTML"
   >
     ✕
+  </button>
+  </div>
+  <span style="flex:1;">{{ set.reps }} reps × {{ set.weight }} lbs</span>
+  <div class="button-container">
+  <button class="yellow_btn"
+    hx-get="{% url 'workouts:edit_set' set.id %}" 
+    hx-target="closest .set-row"
+    hx-swap="outerHTML"
+  >
+    <i class="fa-solid fa-pen"></i>
   </button>
   </div>
 </div>

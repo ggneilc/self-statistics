@@ -4,7 +4,14 @@
 {% else %}
 <li class="meal" hx-on:click="this.classList.toggle('expanded')">
 {% endif %}
+
+<div class="meal-inline">
     <span class="food_name">{{ food.name.upper }}</span>
+    <span class="inline_cals">{{ food.calories }}</span>
+    <span class="inline_protein">{{ food.protein }}</span>
+</div>
+
+
     <div class="details">
 <div class="button-container" style="position:absolute;top:5px;left:10px;">
 

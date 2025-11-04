@@ -1,0 +1,12 @@
+<div id="bodyparts" class="list-container">
+  {% for bodypart in bodyparts %}
+	<div class="lift"
+	hx-get="{% url 'workouts:machines' %}"
+	hx-trigger="click"
+	hx-target="#bodyparts"
+	hx-swap="outerHTML swap:0.4s"
+	hx-vals='{"bodypart": "{{bodypart}}"}'>
+		{{bodypart}} 
+	</div>
+  {% endfor %}
+</div>

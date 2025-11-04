@@ -1,20 +1,23 @@
 <!-- horizontal scroll of each lift done -->
+{% if expanded %}
+<div class="workout expanded" hx-on:click="this.classList.toggle('expanded')"
+{% else %}
 <div class="workout" hx-on:click="this.classList.toggle('expanded')"
-    style="
-        --color: {{workout_type.color}}
-        scrollbar-width: none;        /* Firefox */
-    background: linear-gradient(
-            135deg,
-            var(--fg) 85%,
-            var(--fg) 85%,
-            {{workout.workout_type.color}} 15%);
-            ">
-  {{workout.workout_type.name.upper}} 
-     <!-- Color patch -->
+{% endif %}
+    style="--color: {{workout_type.color}};
+	   background: linear-gradient(135deg, var(--fg) 85%, var(--fg) 85%,
+           {{workout.workout_type.color}} 15%);">
+
+  <div class="workout-header">
+	<div class="workout-name">{{workout.workout_type.name.upper}} </div>
+	<div class="workout-date">{{workout.day.date}}</div>
+        <div id="total-{{workout.id}}" class="weight_totals"></div>
+  </div>
+
+  <!-- Color patch -->
   <label id="color-patch-{{workout.id}}" class="color-patch" for="color-{{ workout.id }}">
     <i class="fa-solid fa-fill c-icon"></i>
   </label>
-
   <!-- Hidden color input -->
   <input 
     id="color-{{ workout.id }}"
@@ -28,42 +31,25 @@
     hx-vals='{"workout_id": "{{ workout.id }}"}'
     hx-swap="innerHTML"
   >
-    <div class="details">
-        {{workout.day.date}} 
-        <div class="horz_scroll"
-            style="
-            overflow-x: auto; width: 100%;
-            ">
-            <ul class="workout_list"
-                hx-get="{% url 'workouts:listl' workout.id %}"
-                hx-trigger="load once"
-                hx-swap="innerHTML">
-
-            </ul>
-
-        </div>
-        <div id="total-{{workout.id}}" class="weight_totals">
+  <div class="details">
+    <div class="horz_scroll" style="overflow-x: auto; width: 100%;">
+	<ul class="workout_list"
+              hx-get="{% url 'workouts:listl' workout.id %}"
+              hx-trigger="load once"
+              hx-swap="innerHTML">
+	</ul>
     </div>
-    {% if workout.is_active %}
-    {% include './end_workout.html' %}
-    {% endif %}
-
-<div class="button-container" style="position:absolute;top:5px;right:10px;">
-
-<button class="yellow_btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
-	>
-    <i class="fa-solid fa-pen"></i>
-</button>
-    <button class="delete-btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
+    <div class="button-container" style="position:absolute;top:5px;right:10px;">
+      <button class="delete-btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
 	hx-delete="{% url 'workouts:del_workout' workout.id %}" 
 	hx-target="closest .workout" 
 	hx-swap="outerHTML swap:0.3s">
 	<i class="fa-solid fa-trash"></i>
-    </button>
-    <button id="tmp-btn" class="form_btn" style="font-size:12px;margin:2px; padding: 5px 10px;">
-	<i class="fa-solid fa-floppy-disk"></i>
-    </button>
-</div>
-
+      </button>
     </div>
+  </div>
+  {% if workout.is_active %}
+  {% include './end_workout.html' %}
+  {% endif %}
+
 </div>

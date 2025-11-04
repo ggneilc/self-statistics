@@ -5,6 +5,6 @@
 
 <ul>
     {% for workout in workouts %}
-        {% include 'workouts/workout.html' with workout=workout%}
+        {% include 'workouts/workout.html' with workout=workout expanded=False%}
     {% endfor %}
 </ul>

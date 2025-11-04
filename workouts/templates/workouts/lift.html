@@ -1,4 +1,8 @@
-<li class="lift">
+<li class="lift"
+    hx-get="{% url 'workouts:lift_details' lift.id %}"
+    hx-trigger="click"
+    hx-target="closest .workout"
+    hx-swap="outerHTML swap:0.4s">
     <div class="lift_main">
         <div class="lift_name">{{lift.exercise_name}}</div>
     </div>

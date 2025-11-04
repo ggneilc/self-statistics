@@ -1,0 +1,11 @@
+<div class="button-container">
+	    <button class="add"
+		  hx-target="#lift_entry__container"
+		  hx-get='{% url 'workouts:bpb' workout.workout_type.id %}'
+		  hx-trigger='click'
+		  hx-swap='innerHTML swap:0.4s'>
+		New Lift</button></div>
+<div class="timer"> - duration - </div>
+<div class="active_lift_info"> - some info - </div>
+
+
