@@ -4,7 +4,12 @@
   60% {transform: translateX(-25%);}
   100% {transform: translateX(0);}
 }
+
+
 /* === Meal Header (totals) === */
+
+
+
 
 #meal_head {
     width: 100%;
@@ -73,7 +78,7 @@
 .inline_cals {
   font-size: 1rem;
   color: var(--blue);
-  background: var(--button-blue-hover);
+  background: var(--blue-chip-bg);
   border-radius: 10px;
   padding: 4px 10px;
   width: 60px;
@@ -82,7 +87,7 @@
   font-size: 1rem;
   color: var(--yellow);
   margin-left: 20px;
-  background: var(--button-yellow-hover);
+  background: var(--yellow-chip-bg);
   border-radius: 10px;
   padding: 4px 10px;
   width: 50px;

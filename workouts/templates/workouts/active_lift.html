@@ -29,7 +29,7 @@
 <div class="button-container">
   <button class="back-btn"
 	hx-get="{% url 'workouts:end_l' lift.id %}"
-	hx-target="#lift_list"
-	hx-swap="beforeend swap:0.4s"
+	hx-target="#lift_entry__container"
+	hx-swap="innerHTML swap:0.4s"
 	>FINISHED</button>
 </div>

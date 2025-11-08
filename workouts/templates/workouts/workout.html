@@ -39,7 +39,7 @@
               hx-swap="innerHTML">
 	</ul>
     </div>
-    <div class="button-container" style="position:absolute;top:5px;right:10px;">
+    <div class="button-container right-crud-buttons">
       <button class="delete-btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
 	hx-delete="{% url 'workouts:del_workout' workout.id %}" 
 	hx-target="closest .workout" 

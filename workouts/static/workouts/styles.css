@@ -13,6 +13,7 @@
   flex-direction: column;
   margin: 0px;
   padding: 10px;
+  overflow:hidden;
 }
 
 /* === Active Workout === */
@@ -25,7 +26,7 @@
 	border-radius: 2px;
 	display: flex;
 	flex-direction: column;
-	background-color: var(--bg);
+	background-color: var(--fg);
 	margin: 10px;
 }
 
@@ -70,14 +71,18 @@
 
 
 #set-list {
+  flex:3;
   overflow-y: auto;
   height: 100%;
+  margin:5px;
+  padding:5px
 }
 
 .set-row {
-	margin: 10px 0px;
+	margin: 5px;
 	display: flex;
 	text-align:center;
+  gap:0.7rem;
 }
 
 #rest-display {
@@ -96,6 +101,27 @@
     font-size: 0.7em;
     display: flex;
     flex-direction: column;
+    cursor: grab;
+    transition: transform 0.2s ease;
+}
+
+.lift.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+}
+
+
+.dropzone {
+  border: 2px dashed #888;
+  border-radius: 10px;
+  padding: 20px;
+  min-height: 150px;
+  transition: background-color 0.2s ease;
+}
+
+.dropzone.drag-over {
+  background-color: rgba(255, 255, 0, 0.1);
+  border-color: #ffb300;
 }
 
 .lift_main {
@@ -186,7 +212,7 @@
   margin-left: 20px;
   font-size: 1rem;
   color: var(--blue);
-  background: var(--button-blue-hover);
+  background: var(--blue-chip-bg);
   border-radius: 10px;
   padding: 4px 10px;
 }
@@ -195,7 +221,7 @@
   margin-left: 20px;
   font-size: 1rem;
   color: var(--yellow);
-  background: var(--button-yellow-hover);
+  background: var(--yellow-chip-bg);
   border-radius: 10px;
   padding: 4px 10px;
 
@@ -261,4 +287,3 @@
 .color-patch:hover i {
     display: inline-block;
 }
-

@@ -1,4 +1,8 @@
 <li class="lift"
+	{% if drag %}
+	draggable="true"
+	data-lift-id="{{ lift.id }}"
+	{% endif %}
     hx-get="{% url 'workouts:lift_details' lift.id %}"
     hx-trigger="click"
     hx-target="closest .workout"

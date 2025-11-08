@@ -25,6 +25,9 @@
     --yellow: #FFC83D;
     --blue: #37B8FF;
 
+  --blue-chip-bg: #182d38;
+  --yellow-chip-bg: #2a2312;
+
 /* shadows */
 	--item-shadow: -3px 3px 0px 0px #0d0d0f;
 	--item-shadow-hover: -5px 5px 0px 0px #0d0d0f;
@@ -244,10 +247,26 @@ button {
 
 /* === Button Styling === */
 
+
+
+
 .button-container {
     display: flex;
     flex-direction: row;
 }
+
+
+.right-crud-buttons {
+  position:absolute;
+  top:5px;
+  right:10px;
+} .right-crud-buttons * { border-radius: 2px; }
+.left-crud-buttons {
+  position:absolute;
+  top:8px;
+  left:10px;
+} .left-crud-buttons * { border-radius: 2px; }
+
 
 .btn {
     background-color: var(--bg);
@@ -452,20 +471,26 @@ button {
 .htmx-swapping {
   opacity: 0;
   transform: scale(0.95);
-  transition: all 0.2s ease;
+/*  transition: all 0.2s ease; */
+  transition: all 2s ease; /* slower for testing */
+  outline: 2px solid red;  /* visualize the old element */
 }
 
 /* New element being swapped IN */
 .htmx-added {
   opacity: 1;
   transform: scale(1);
-  transition: all 0.2s ease;
+/*  transition: all 0.2s ease; */
+  transition: all 2s ease; /* slower for testing */
+  outline: 2px solid blue;  /* visualize the new element */
 }
 
 .htmx-settling {
   opacity: 1;
   transform: translateY(0), scale(0);
-  transition: all 0.3s ease;
+/*  transition: all 0.3s ease; */
+  transition: all 2s ease; /* slower for testing */
+  outline: 2px solid green;  /* visualize the new element */
 }
 
 .fade-in {

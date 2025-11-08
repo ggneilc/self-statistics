@@ -12,18 +12,19 @@
 	max-height: 100%;
 	height: 100%;">
 
-	<div id="total-{{workout.id}}" class="weight_totals"></div>
-	
 	<!-- Main lift section -->
 	<!-- initially displays bodypart buttons -->
 	<div id="lift_entry__container" style="flex:4;">
+	<div id="total-{{workout.id}}" class="weight_totals"></div>
+	
 	{% include './active_lift_info.html' with workout=workout %}
 	</div>
 
-	<div id="lift_list"">
+	<div id="lift_list">
 	</div>
 
 	{% include './end_workout.html' %}
 
     </div>
 </div>
+

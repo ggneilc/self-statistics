@@ -1,7 +1,6 @@
-<div id="lift_entry__container" hx-swap-oob="True">
-  {% include './active_lift_info.html' with workout=workout %}
-  <!-- cleared -->
+{% include './active_lift_info.html' with workout=workout total=total %}
+
+
+<div id="lift_list" hx-swap-oob="True">
+	{{ lift_list_html|safe }}
 </div>
-
-
-{% include 'workouts/lift.html' with lift=lift %}

@@ -1,13 +1,22 @@
 {% load custom_filters %}
-{% for lift in lifts %}
-{% include './lift.html' with lift=lift %}
-{% endfor %}
 
-<div id="total-{{id}}" class="weight_totals" hx-swap-oob="innerHTML">
+
+{% if active %} {# lift list on active workout #}
+  {% for lift in lifts %}
+  {% include './lift.html' with lift=lift drag=True %}
+  {% endfor %}
+{% else %} {# lift list in workout history #}
+  {% for lift in lifts %}
+  {% include './lift.html' with lift=lift drag=False %}
+  {% endfor %}
+  <div id="total-{{id}}" class="weight_totals" hx-swap-oob="innerHTML">
     <div class="fade-in">
         Total Volume: {{total}} lbs
     </div>
-</div>
+  </div>
+{% endif %}
+
+
 
 <script>
 document.querySelector('.lift').addEventListener('click', function(event){

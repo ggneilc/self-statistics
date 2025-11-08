@@ -16,7 +16,7 @@
     {% endfor %}
   </div>
 
-<div class="button-container" style="position:absolute;top:8px;left:10px;">
+<div class="button-container left-crud-buttons" >
     <button class="delete-btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
       hx-get="{% url 'workouts:get_workout' workout.id %}"
       hx-trigger="click"

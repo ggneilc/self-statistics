@@ -6,6 +6,7 @@
     - Sets              : reps x weight belonging to a lift
 """
 from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.template.loader import render_to_string
 from django.db.models import F, Sum
 from .models import Workout, WorkoutType, Lift, Set, BODYPARTS, LIFT_TYPES
 from core.utils import get_or_create_today
@@ -107,16 +108,29 @@ def get_lift_templates(request):
     }
 
     return render(request, 'workouts/lift_templates.html', context)
-# TODO: allow supersets
 
+
+# TODO: this function is literally get_lifts(), DRY
+def get_active_lift_list(request, workout_id):
+    workout = Workout.objects.get(pk=workout_id)
+    lifts = workout.lifts.all()
+    context = {
+        "active": True,
+        "id": workout_id,
+        "lifts": lifts,
+        "total": int(total),
+    }
+    return render(request, "workouts/lifts.html", context)
 
 # --- Inspecting Lift
+
+
 def get_lift_details(request, lift_id):
     lift = Lift.objects.get(pk=lift_id)
     workout = lift.workout
     # determine if there exists a template of a left -> don't allow user to save
     lift.is_template = Lift.objects.filter(workout__day__user=request.user,
-       exercise_name=lift.exercise_name, is_template=True)
+                                           exercise_name=lift.exercise_name, is_template=True)
     return render(request, 'workouts/lift_details.html', {"lift": lift, "workout": workout})
 
 
@@ -206,6 +220,20 @@ def add_lift(request):
     return render(request, 'workouts/lift_entry.html', context)
 
 
+def edit_active_workout_lift(request, lift_id):
+    '''
+    GET : return lift
+    POST : save lift
+    '''
+    lift = get_object_or_404(Lift, pk=lift_id)
+    context = {
+        "lift": lift,
+        "templated": False,
+        "set_form": SetForm()
+    }
+    return render(request, 'workouts/active_lift.html', context)
+
+
 def add_set(request, lift_id):
     '''
         POST: adds a set to the current lift, displays set
@@ -251,8 +279,21 @@ def end_lift(request, lift_id):
     '''
     lift = get_object_or_404(
         Lift, pk=lift_id, workout__day__user=request.user)
-    workout = Workout.objects.get(lifts=lift)
-    return render(request, 'workouts/end_lift.html', {"lift": lift, "workout": workout})
+    workout = lift.workout
+    lifts = workout.lifts.all()
+    total = 0
+    for lift in lifts:
+        total += (Set.objects.filter(lift=lift)
+                  .aggregate(total_volume=Sum(F("reps") * F("weight")))
+                  )['total_volume'] or 0
+    lift_list = render_to_string('workouts/lifts.html',
+                                 {"lifts": lifts,
+                                  "active": True, }, request=request)
+    return render(request,
+                  'workouts/end_lift.html',
+                  {"workout": workout,
+                   "total": total,
+                   "lift_list_html": lift_list})
 
 
 def delete_set(request, set_id):
