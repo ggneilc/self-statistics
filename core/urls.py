@@ -20,7 +20,13 @@ urlpatterns = [
 
     path("bodyweight/", views.get_bodyweight, name="get_bw"),
     path("profile/tz", views.update_timezone, name="set_tz"),
+    path("profile/personal", views.info_setting, name="info_setting"),
+    path("profile/theme", views.theme_setting, name="theme_setting"),
+    path("profile/food", views.food_setting, name="food_setting"),
+    path("profile/graphs", views.graph_setting, name="graph_setting"),
+    path("profile/workout", views.workout_setting, name="workout_setting"),
     path("bodyweight/set", views.add_bodyweight, name="set_bw"),
+    path("bodyweight/edit", views.edit_bodyweight, name="edit_bw"),
     path("day/<int:date>", views.display_day, name="day"),
     path("day/tasks", views.daily_goals, name="tasks"),
 ]

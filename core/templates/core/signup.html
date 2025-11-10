@@ -1,13 +1,30 @@
 <!-- core/templates/core/signup.html -->
- <div id="back-btn" style="margin-top: -10px; width: 50px;"
+<div class="signup">
+<form 
+	hx-post="{% url 'core:signup' %}"
+	hx-target="#modal-target">
+  {% csrf_token %}
+  {% for field in form %}
+    <div class="input_container{% if field.errors %} has-error{% endif %}">
+      {{ field }}
+      <label for="{{ field.id_for_label }}">{{ field.label|upper }}</label>
+
+      {% if field.help_text %}
+        <small class="help-text">{{ field.help_text }}</small>
+      {% endif %}
+
+      {% for error in field.errors %}
+        <small class="error">{{ error }}</small>
+      {% endfor %}
+    </div>
+  {% endfor %}
+  <div class="button-container">
+  <button class="back-btn"
         hx-get="{% url 'core:auth_modal' %}" 
         hx-target="#modal-target"
-        hx-swap="outerHTML swap:0.5s"
-        hx-trigger="click"> 
-        <i class="fa-solid fa-left-long"></i>
-    </div>
-<form hx-post="{% url 'core:signup' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create Account</button>
+        hx-swap="innerHTML swap:0.5s"
+        hx-trigger="click">BACK</button>
+  <button type="submit" class="form_btn">Create Account</button>
+  </div>
 </form>
+</div>

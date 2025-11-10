@@ -217,14 +217,22 @@
   padding: 4px 10px;
 }
 
-.weight_totals {
+.weight_totals, .weight_total {
   margin-left: 20px;
   font-size: 1rem;
   color: var(--yellow);
   background: var(--yellow-chip-bg);
   border-radius: 10px;
   padding: 4px 10px;
-
+} .weight_total { margin: 10px; flex:1;}
+.timer {
+  flex: 1;
+  font-size: 1rem;
+  background-color: var(--bg);
+  color: white;
+  border-radius: 10px;
+  padding: 4px 10px;
+  margin:10px;
 }
 
 .workout .details {

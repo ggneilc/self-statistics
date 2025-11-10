@@ -54,12 +54,34 @@ def get_profile(request):
 
 
 def update_timezone(request):
-    profile = request.user.profile
+    #    profile = request.user.profile
+    profile = getattr(request.user, 'profile', None)
+    print(profile)
     form = ProfileForm(request.POST or None, instance=profile)
     if request.method == "POST" and form.is_valid():
         form.save()
         return get_profile(request)
     return render(request, "core/update_timezone.html", {"form": form})
+
+
+def info_setting(request):
+    return render(request, 'core/personal_info.html', {"user": request.user})
+
+
+def theme_setting(request):
+    return render(request, 'core/theme.html')
+
+
+def food_setting(request):
+    return render(request, 'core/food_settings.html')
+
+
+def graph_setting(request):
+    return render(request, 'core/graph_settings.html')
+
+
+def workout_setting(request):
+    return render(request, 'core/workout_settings.html')
 
 
 class HTMXLogoutView(LogoutView):
@@ -115,6 +137,13 @@ def get_bodyweight(request):
     else:
         print("weight already set")
         return render(request, 'core/bodyweight_update.html', context={"bodyweight": day.bodyweight})
+
+
+def edit_bodyweight(request):
+    day = get_or_create_day(request.user, request.GET.get('selected_date'))
+    return render(request,
+                  'core/bodyweight_input.html',
+                  {"edit": True, "bw": day.bodyweight})
 
 
 def add_bodyweight(request):

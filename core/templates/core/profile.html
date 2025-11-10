@@ -1,18 +1,57 @@
 <div id="auth-modal" class="modal-overlay">
 <div id="modal-target" class="modal">
-<div class="profile-pic"></div>
-<h1>{{user.username}}</h1>
-	<div hx-get="{% url 'core:set_tz'%}"
-		hx-trigger="load"></div>
-	<div class="button-container">
-		<button class="back-btn"
-			hx-post="{% url 'core:logout' %}">
-			logout</button>
-		<button class="back-btn"
+<div id="profile-container">
+	<ul id="profile-list" >
+		<li class="profile-item">
+			<div class="button-container">
+				<button class="profile-btn"
+					hx-get="{% url 'core:info_setting' %}"
+					hx-trigger="click"
+					hx-swap="innerHTML"
+					hx-target="#profile-main">PERSONAL INFO</button></div></li>
+		<li class="profile-item">
+			<div class="button-container">
+				<button class="profile-btn"
+					hx-get="{% url 'core:theme_setting' %}"
+					hx-trigger="click"
+					hx-swap="innerHTML"
+					hx-target="#profile-main">THEME</button></div></li>
+		<li class="profile-item">
+			<div class="button-container">
+				<button class="profile-btn"
+					hx-get="{% url 'core:food_setting' %}"
+					hx-trigger="click"
+					hx-swap="innerHTML"
+					hx-target="#profile-main">FOODS</button></div></li>
+		<li class="profile-item">
+			<div class="button-container">
+				<button class="profile-btn"
+					hx-get="{% url 'core:graph_setting' %}"
+					hx-trigger="click"
+					hx-swap="innerHTML"
+					hx-target="#profile-main">GRAPHS</button></div></li>
+		<li class="profile-item">
+			<div class="button-container">
+				<button class="profile-btn"
+					hx-get="{% url 'core:workout_setting' %}"
+					hx-trigger="click"
+					hx-target="#profile-main">WORKOUTS</button></div></li>
+		<li class="profile-item">
+		  <div class="button-container">
+		    <button class="back-btn" style="margin:0;"
+			hx-post="{% url 'core:logout' %}">LOGOUT</button>
+		  </div></li>
+		<li class="profile-item">
+		  <div class="button-container">
+		    <button class="back-btn" style="margin:0;"
 			hx-get="{% url 'core:close_profile' %}"
 			hx-swap="innerHTML"
-			hx-target="#profile">
-			close</button>
+			hx-target="#profile">CLOSE</button>
+		  </div></li>
+	</ul>
+	<div id="profile-main">
+		{% include './personal_info.html' with user=user %}
 	</div>
+</div>
 </div>
 </div>

@@ -9,6 +9,7 @@
 --bg: #252527; 
 /*    --fg: #3d3d3f;  */
     --white: #f5f5f5;
+    --text: #f5f5f5;
 --fg: #1a1a1f;
 
 /* 0%, 10%, 20% tints */
@@ -56,6 +57,24 @@
     --Legs: #1c39bc;
     --lift: #050505;
 }
+/* Dark theme */
+[data-theme="dark"] {
+  --fg: #f5f5f5;
+  --bg: #121212;
+  --main: #5b8aff;
+  --accent: #ff884d;
+  --text: #101010;
+}
+
+/* Custom theme */
+[data-theme="midnight"] {
+  --fg: #d7e1ff;
+  --bg: #0a0a1f;
+  --main: #6c63ff;
+  --accent: #ff6584;
+  --text: #232327;
+}
+
 
 h1 {
   color: var(--yellow);
@@ -68,7 +87,7 @@ body {
     font-family: 'Oswald';
     font-size:1.5rem;
     background-color: var(--bg);
-    color: white;
+    color: var(--text);
 
     height: 100vh;
     width: 100vw;
@@ -126,10 +145,11 @@ body {
 #t_entry_form,
 #l_entry_form,
 #m_entry_form {
-    background-color: var(--bg);
+    background-color: var(--fg);
     padding: 10px;
     display: flex;
     flex-direction: column;
+  box-shadow: var(--item-shadow);
 }
 
 /* --- List Areas --- */
@@ -186,6 +206,22 @@ ul {
   border: 2px solid var(--yellow);
 }
 
+.profile-pic-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--yellow);
+}
+
+
+/** -- profile -- **/
+
+.signup {
+  margin: 1rem;
+  min-height:200px;
+  display:flex;
+}
 
 /* === Floating Labels === */
 
@@ -204,12 +240,21 @@ ul {
     color: white;
 }
 
+.input_container input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid var(--white);
+    background: transparent;
+    outline: none;
+    color: white;
+}
 
 .input_container label {
     position: absolute;
     top: 50%;
     left: 10px;
-    background-color: var(--bg);
+    background-color: var(--fg);
     transform: translateY(-50%);
     padding: 0 5px;
     transition: 0.3s;
@@ -217,7 +262,9 @@ ul {
 }
 
 .input:focus + label,
-.input:not(:placeholder-shown) + label {
+.input:not(:placeholder-shown) + label,
+input:focus + label,
+input:not(:placeholder-shown) + label {
     top: 0;
     font-size: 12px;
     color: var(--blue);
@@ -270,6 +317,7 @@ button {
 
 .btn {
     background-color: var(--bg);
+    border: 0;
     padding: 10px 15px;
     font-size: 24px;
     cursor: pointer;
@@ -306,6 +354,32 @@ button {
     transition: all 0.3s ease-in-out;
 }
 
+.profile-btn {
+    background-color: #121216;
+  color: white;
+  border: 0px;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    flex: 1;
+    transition: all 0.3s ease-in-out;
+} .profile-btn:hover {
+    background-color: var(--button-blue-hover);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+.light:hover {
+    background-color: var(--white);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+.dark:hover {
+    background-color: var(--fg);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
 
 .blue_btn {
     background-color: var(--button-blue-bg);
@@ -400,17 +474,59 @@ button {
     click: none;
 }
 
+#profile-container {
+  display: flex;
+  height:100%;
+
+}
+#profile-list {
+  flex:1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+#profile-list .profile-item {
+  flex:1;
+  list-style: none;
+  box-shadow: var(--inset-shadow);
+  font-size: 2rem;
+}
+.profile-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--item-shadow-hover);
+    transition: all 0.1s ease-in-out;
+}
+
+#profile-main {
+  flex:3;
+  display:flex;
+}
+
+.personal-left, .personal-right {
+  flex:1;
+  display:flex;
+  flex-direction: column;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: var(--fg);
+  border-radius: 4px;
+  align-items: center;
+}
+
 /*** WARNING: From here on out is pretty much vibecoded (profile screen) ***/
 /* === Modal Box === */
 .modal {
-    background-color: var(--fg);
-    padding: 2rem;
-    width: 90%;
-    max-width: 400px;
+    background-color: var(--bg);
+    width: 50%;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     border-radius: 2px;
     animation: slideUp 0.3s ease-in-out;
 
+}
+
+.modal-content {
+  padding: 1rem;
+  
 }
 
 /* === Modal Content === */

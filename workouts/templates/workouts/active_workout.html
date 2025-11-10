@@ -14,10 +14,9 @@
 
 	<!-- Main lift section -->
 	<!-- initially displays bodypart buttons -->
-	<div id="lift_entry__container" style="flex:4;">
-	<div id="total-{{workout.id}}" class="weight_totals"></div>
+	<div id="lift_entry__container" style="flex:4; display:flex; flex-direction:column;">
 	
-	{% include './active_lift_info.html' with workout=workout %}
+	{% include './active_lift_info.html' with workout=workout total=0%}
 	</div>
 
 	<div id="lift_list">

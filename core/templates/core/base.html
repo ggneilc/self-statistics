@@ -11,11 +11,13 @@
 {% if not user.is_authenticated %}
 <div id="auth-modal"
      class="modal-overlay"
+    >
+<div id="modal-target" class="modal"
      hx-get="{% url 'core:auth_modal' %}"
      hx-trigger="load"
-     hx-target="#auth-modal"
      hx-swap="innerHTML">
     <!-- Modal content loaded via HTMX -->
+</div>
 </div>
 {% else %}
     {% include './column_lift.html' %}
@@ -26,6 +28,7 @@
 <script src="{% static 'calcounter/js/meal_entry_button.js' %}"></script>
 <script src="{% static 'calcounter/js/scrolling_text.js' %}"></script>
 <script src="{% static 'core/js/global_date_state.js' %}"></script>
+<script src="{% static 'core/js/theme.js' %}"></script>
 <script src="{% static 'graphs/js/bw-time.js' %}"></script>
 <script src="{% static 'workouts/js/rest_timer.js' %}"></script>
 <script src="{% static 'workouts/js/draggable_lifts.js' %}"></script>

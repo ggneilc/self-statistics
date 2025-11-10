@@ -1,14 +1,19 @@
 
 <!-- templates/profile/update_timezone.html -->
 
-<form hx-post="{% url 'core:set_tz' %}"
+<form 
+    hx-post="{% url 'core:set_tz' %}"
     hx-target="#profile">
   {% csrf_token %}
 
-  {{ form.timezone }}
+  <div class="input_container">
+    {{ form.timezone }}
+    <label for="{{form.timezone.id_for_label}}">TIMEZONE</label>
+  </div>
 
   <div class="input_container">
     {{ form.gender }}
+    <label for="{{form.gender.id_for_label}}">GENDER</label>
   </div>
 
   <div class="input_container">
