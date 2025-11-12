@@ -5,11 +5,22 @@
 """
 from django.shortcuts import render
 from core.models import Day
+from workouts.models import Workout
 import json
 from datetime import date
 
 
+# === Graph Display Container === #
+
+def calendar_container(request):
+    return render(request, 'graphs/calendar_area.html')
+
+
+def trend_container(request):
+    return render(request, 'graphs/trend_area.html')
+
 # === Calendars ===
+
 
 def calendar_heatmap(request):
     ''' displays AMDAP calendar : 25x21 grid of rects '''
@@ -76,11 +87,28 @@ def get_bw_graph(request):
 
 def get_cal_graph(request):
     '''Time series of Calories / Day'''
-    days = Day.objects.filter(user=request.user).excluse(date=date(1, 1, 1))
+    days = Day.objects.filter(user=request.user).exclude(date=date(1, 1, 1))
     tmp = []
     for d in days:
+        if d.calories_consumed == 0:
+            continue
         tmp.append({
             "day": d.date.isoformat(),
             "value": d.calories_consumed
+        })
+    return render(request, 'graphs/cal-time.html', {"day_data": json.dumps(tmp)})
+
+
+def get_volume_graph(request):
+    '''Time series of Volume / Day'''
+    days = Day.objects.filter(user=request.user).exclude(date=date(1, 1, 1))
+    tmp = []
+    for d in days:
+        total = sum(w.total_volume() for w in d.workouts.all())
+        if total == 0:
+            continue
+        tmp.append({
+            "day": d.date.isoformat(),
+            "value": total
         })
     return render(request, 'graphs/cal-time.html', {"day_data": json.dumps(tmp)})

@@ -172,7 +172,6 @@ ul {
 #meal_list__container, #workout_list__container, #graph_display__container {
     flex-grow: 1;        /* Takes up remaining space */
     overflow-y: auto;    /* Enables scrolling when content exceeds height */
-    margin: 0;
     max-height: 100%;    /* Ensures it doesn't grow beyond the parent */
     position: relative;
 }
@@ -314,6 +313,21 @@ button {
   left:10px;
 } .left-crud-buttons * { border-radius: 2px; }
 
+.graph-btn {
+  background-color: var(--fg);
+  border: 1px solid var(--white);
+  color: var(--yellow);
+  border-radius: 2px;
+  flex: 1;
+  padding: 10px 15px;
+  margin: 2px;
+  font-size: 24px;
+  transition: all 0.3s ease-in-out;
+} .graph-btn:hover {
+    background-color: #000;
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
 
 .btn {
     background-color: var(--bg);
@@ -389,7 +403,6 @@ button {
     font-size: 14px;
     cursor: pointer;
     margin: 2px;
-    flex: 1;
     transition: all 0.3s ease-in-out;
 }
 .back-btn, .delete-btn  {

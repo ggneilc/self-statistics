@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from core.models import Day
+from django.db.models import F, Sum
 
 
 class WorkoutType(models.Model):
@@ -46,6 +47,18 @@ class Workout(models.Model):
 
     def __str__(self):
         return f"{self.workout_type} | {self.day.date}"
+
+    def total_volume(self):
+        """
+        Computes total volume lifted in this workout:
+        sum of (weight * reps) across all sets of all lifts.
+        """
+        return (
+            self.lifts
+            .values('sets__weight', 'sets__reps')
+            .aggregate(total=Sum(F('sets__weight') * F('sets__reps')))['total']
+            or 0
+        )
 
 
 # Can add bodyweight & banded

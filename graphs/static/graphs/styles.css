@@ -110,7 +110,54 @@ margin-left:5px;
 #graph_display__container {
     overflow:visible;
     display: flex;
+    flex-direction: column;
     height: 100%;
+}
+
+#graph-controls{
+  flex: 4;
+  display: flex;
+  width:100%;
+  padding: 10px 10px 0px 10px;
+  margin-bottom: -5px;
+}
+#time-buttons{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left:5px;
+}
+#time-buttons .blue_btn {
+  margin: 15px 0px 15px 0px;
+}
+#graph-container{flex: 3;}
+
+#trend-buttons{  flex:1;display: flex; width:95%;}
+#summary-stats{ 
+  flex: 5;
+  background-color: var(--bg);
+  width:95%;
+  margin:10px;
+  border-radius:4px;
+  position:relative;
+  padding: 10px;
+  display: flex;
+}
+#summary-label {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  color: var(--blue);
+  font-size:0.8rem;
+  text-shadow: 0px 3px 2px black;
+}
+.statistic {
+  background-color: var(--fg);
+  margin: 5px 5px 5px 0px;
+}
+.goal-statistic {
+  background-color: var(--button-yellow-bg);
+  margin: 5px 0px 5px 5px;
 }
 
 #day-container {
@@ -118,12 +165,8 @@ margin-left:5px;
     flex-direction: column;
 }
 
-#d3-calendar {
-}
-
-svg {
-  padding: 1px;
-}
+#d3-calendar {}
+svg {padding: 1px;}
 
 .cardstyle {
   flex-grow: 1;

@@ -69,8 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Draw Line ---
     svg.append("path")
       .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "var(--accent, #ffc83d)")
+      .attr("fill", "none") .attr("stroke", "var(--accent, #ffc83d)")
       .attr("stroke-width", 2)
       .attr("d", line);
 
@@ -91,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Optional: re-render whenever HTMX swaps #graph_display__container
   document.body.addEventListener("htmx:afterSwap", (evt) => {
-    if (evt.target.id === "graph_display__container") {
+    if (evt.target.id === "graph-container") {
       renderBWGraph();
     }
   });

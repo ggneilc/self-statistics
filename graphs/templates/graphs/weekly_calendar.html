@@ -1,13 +1,11 @@
 {% load custom_filters %}
-<div id="main-graph" class="cardstyle">
-  <div id="d3-calendar" style="flex:2;" data-days='{{ day_data|safe }}'></div>
+<div id="d3-calendar" style="flex:2;" data-days='{{ day_data|safe }}'></div>
 
-	<div style="flex:1;">
-		Average calories eaten:{{ avg_cals|smart_num }}
-	</div>
-	<div style="flex:1;">
-		Average Bodyweight:{{ avg_bw|smart_num }}
-	</div>
+<div style="flex:1;">
+	Average calories eaten:{{ avg_cals|smart_num }}
+</div>
+<div style="flex:1;">
+	Average Bodyweight:{{ avg_bw|smart_num }}
 </div>
 
 
