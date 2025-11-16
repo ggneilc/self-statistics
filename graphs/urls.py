@@ -9,6 +9,8 @@ urlpatterns = [
     path("calendar/", views.calendar_heatmap, name="calendar"),
     path("calendar/weekly", views.weekly_calendar, name="week"),
     path("graph/bodyweight", views.get_bw_graph, name="bw"),
+    path("graph/bodyweight/weekly", views.get_bw_weekly, name="bw-weekly"),
+    path("graph/bodyweight/monthly", views.get_bw_monthly, name="bw-monthly"),
     path("graph/calories", views.get_cal_graph, name="cals"),
     path("graph/volume", views.get_volume_graph, name="vol"),
 ]

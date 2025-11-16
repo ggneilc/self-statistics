@@ -16,7 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Parse dates and sort
     data = data.map(d => ({
       date: new Date(d.day),
-      value: +d.value
+      value: +d.value,
+      ma7: +d.ma7
     })).sort((a, b) => a.date - b.date);
 
     // Remove any previous SVG if re-rendering
@@ -66,12 +67,32 @@ document.addEventListener("DOMContentLoaded", () => {
       .y(d => y(d.value))
       .curve(d3.curveMonotoneX);
 
+    const maline = d3.line()
+	.x(d => x(d.date))
+	.y(d => y(d.ma7))
+	.curve(d3.curveBasis);
+
     // --- Draw Line ---
     svg.append("path")
       .datum(data)
       .attr("fill", "none") .attr("stroke", "var(--accent, #ffc83d)")
       .attr("stroke-width", 2)
       .attr("d", line);
+    const path = svg.append("path")
+      .datum(data)
+      .attr("fill", "none") .attr("stroke", "var(--blue, #ffc83d)")
+      .attr("stroke-width", 2)
+      .attr("d", maline);
+// Animation
+const totalLength = path.node().getTotalLength();
+
+path
+    .attr("stroke-dasharray", totalLength + " " + totalLength)
+    .attr("stroke-dashoffset", totalLength)
+    .transition()
+    .duration(2000)
+    .ease(d3.easeLinear)
+    .attr("stroke-dashoffset", 0);
 
     // --- Draw Points ---
     svg.selectAll(".dot")
@@ -81,8 +102,11 @@ document.addEventListener("DOMContentLoaded", () => {
       .attr("class", "dot")
       .attr("cx", d => x(d.date))
       .attr("cy", d => y(d.value))
-      .attr("r", 4)
-      .attr("fill", "var(--accent, #ffc83d)");
+      .attr("fill", "var(--accent, #ffc83d)")
+.transition()
+    .delay((d, i) => i * 30)
+    .duration(500)
+    .attr("r", 3);
   }
 
   // Run on initial load

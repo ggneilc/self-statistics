@@ -1,42 +1,46 @@
-	<div id="graph-controls">
-	  <div id="time-buttons">
-	<button class="blue_btn">DAILY</button>
-	<button class="blue_btn">WEEKLY</button>
-	<button class="blue_btn">MONTHLY</button>
-	  </div>
-	  <div id="graph-container"
-		hx-get="{% url 'graphs:bw' %}"
-		hx-trigger="load">
-	  <!-- default calendar loads on page --> 
-	  </div>
-	</div>
-	<div id="trend-buttons">
-	  <button class="yellow_btn"
-		hx-get="{% url 'graphs:cals' %}"
-		hx-target="#graph-container"
-		hx-trigger="click"
-    hx-swap="innerHTML swap:0.4s">CALORIES</button>
-	  <button class="yellow_btn"
-		hx-get="{% url 'graphs:vol' %}"
-		hx-target="#graph-container"
-		hx-trigger="click"
-    hx-swap="innerHTML swap:0.4s">VOLUME</button>
-	  <button class="yellow_btn"
-		hx-get="{% url 'graphs:bw' %}"
-		hx-target="#graph-container"
-		hx-trigger="click"
-    hx-swap="innerHTML swap:0.4s">BODYWEIGHT</button>
-	</div>
-	<div id="summary-stats">
-		<div id="summary-label">SUMMARY</div>
-	  <div id="stats" style="flex:1;">
-	    <div class="statistic">mean</div>
-	    <div class="statistic">std dev</div>
-	    <div class="statistic">slope</div>
-	    <div class="statistic">avg change / day</div>
-	  </div>
-	  <div id="goal-stats" style="flex:1;">
-	    <div class="goal-statistic">alignment</div>
-	  </div>
-	</div>
+<div id="trend-buttons">
+  <button class="yellow_btn"
+	hx-get="{% url 'graphs:cals' %}"
+	hx-target="#graph-container"
+	hx-trigger="click"
+hx-swap="innerHTML swap:0.4s">CALORIES</button>
+  <button class="yellow_btn"
+	hx-get="{% url 'graphs:vol' %}"
+	hx-target="#graph-container"
+	hx-trigger="click"
+hx-swap="innerHTML swap:0.4s">VOLUME</button>
+  <button class="yellow_btn"
+	hx-get="{% url 'graphs:bw' %}"
+	hx-target="#graph-container"
+	hx-trigger="click"
+hx-swap="innerHTML swap:0.4s">BODYWEIGHT</button>
+</div>
+<div id="graph-controls">
+  <div id="time-buttons">
+<button class="blue_btn"
+	hx-target="#graph-container"
+	hx-get="{% url 'graphs:bw' %}"
+	hx-trigger="click">DAILY</button>
+<button class="blue_btn"
+	hx-target="#graph-container"
+	hx-get="{% url 'graphs:bw-weekly'%}"
+	hx-trigger="click">WEEKLY</button>
+<button class="blue_btn"
+	hx-target="#graph-container"
+	hx-get="{% url 'graphs:bw-monthly'%}"
+	hx-trigger="click">MONTHLY</button>
+  </div>
+  <div id="graph-container"
+	hx-get="{% url 'graphs:bw' %}"
+	hx-trigger="load">
+  <!-- default calendar loads on page --> 
+  </div>
+</div>
+
+<div id="summary-stats">
+	<div id="summary-label">SUMMARY</div>
+  <div id="stats" style="flex:1;display:flex;flex-direction:column;">
+	<!-- summary stats filled by button -->
+  </div>
+</div>
 

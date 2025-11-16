@@ -68,7 +68,7 @@ bgLayer.selectAll("rect")
     .attr("fill", d => colorScale(d.ratio))
     .attr("hx-get", d => `/day/${d.id}`)
     .attr("hx-trigger", "click")
-    .attr("hx-target", "#main-graph")
+    .attr("hx-target", "#graph_display__container")
     .attr("hx-swap", "innerHTML swap:0.4s")
     .attr("stroke", "#111")
     .style("opacity", 0)  // start invisible

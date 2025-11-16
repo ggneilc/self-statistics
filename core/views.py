@@ -40,6 +40,7 @@ def home(request):
 def index(request):
     return redirect('home/')
 
+# === User Profile / Settings Screen ===
 
 def auth_modal(request):
     return render(request, "core/auth_modal.html")
@@ -52,11 +53,9 @@ def close_profile(request):
 def get_profile(request):
     return render(request, "core/profile.html")
 
-
+#TODO: kinda jank
 def update_timezone(request):
-    #    profile = request.user.profile
     profile = getattr(request.user, 'profile', None)
-    print(profile)
     form = ProfileForm(request.POST or None, instance=profile)
     if request.method == "POST" and form.is_valid():
         form.save()
@@ -81,7 +80,8 @@ def graph_setting(request):
 
 
 def workout_setting(request):
-    return render(request, 'core/workout_settings.html')
+    types = request.user.workout_types.all()
+    return render(request, 'core/workout_settings.html', {"workout_types": types})
 
 
 class HTMXLogoutView(LogoutView):
