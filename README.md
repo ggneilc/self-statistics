@@ -2,16 +2,14 @@
 
 # Abstract
 
-Even if my idea for a 'digital twin' was hijacked by the government, I can still pursue the second brain ideology and implement a *digital fitness twin*; until we have sensors implanted in our bodies, or near perfect readings from smart watched, manually data entry (or semi-passive entry) will be a requirement for creating the best dataset to train a model on your own personal metrics.
+until we have sensors implanted in our bodies, or near perfect readings from smart watched, manually data entry (or semi-passive entry) will be a requirement for creating the best dataset to train a model on your own personal metrics.
 
-> [!fact] Mission Statement
-> 
-> Be a first and foremost *digital fitness twin*; enable robust tracking and prediction models for core health metrics. Additional focal point is making the data entry enjoyable, and aggregating/viewing/processing information as seemless as possible
+> Mission Statement
+> Enable robust tracking and prediction models for core health metrics. Additional focal point is making the data entry enjoyable, and aggregating/viewing/processing information as seemless as possible
 
 
 
 > [!error] Post-Research:  Dataset Issue
-> 
 > The pre requisite of using machine learning is having a large, organized data source readily available. There is no dataset that tracks (calories eaten per day | bodyweight). The **only availble metric dataset** is on calories burned during a workout session from fitbit.  
 
 Therefore, the primary responsibility of this application needs to be
@@ -25,11 +23,15 @@ Therefore, the primary responsibility of this application needs to be
 
 `git clone https://github.com/ggneilc/self-statistics.git`
 
+`cd self-statistics/`
+
 `python -m venv env`
 
 `. ./env/bin/activate`
 
 `pip install -r requirements.txt`
+
+`. ./load_env dev`
 
 `python manage.py migrate` (test to see if any changes to database has been made with most recent commit) 
 
