@@ -46,7 +46,9 @@
 		    <button class="back-btn" style="margin:0;"
 			hx-get="{% url 'core:close_profile' %}"
 			hx-swap="innerHTML"
-			hx-target="#profile">CLOSE</button>
+			hx-target="#profile"
+			onclick="event.stopPropagation()"
+			>CLOSE</button>
 		  </div></li>
 	</ul>
 	<div id="profile-main">

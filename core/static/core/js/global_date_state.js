@@ -1,35 +1,52 @@
-document.body.addEventListener("htmx:configRequest", function (event) {
-  const dateInput = document.querySelector("#hidden-date");
+function setSelectedDate(isoDate) {
+    const hiddenInput = document.getElementById('hidden-date');
+    const prev_edit = document.querySelector("#editing-date");
 
-  let selectedDate = dateInput?.value;
+    // Update hidden input (used by HTMX)
+    hiddenInput.value = isoDate;
+    console.log("updated hiddenInput to " + hiddenInput.value);
+    const d = isoDate.split("-");
+    const month = d[1];
+    const day = d[2];
+	console.log(""+month+"/"+day);
 
-  // Fallback to today's date if no value is set
-  if (!selectedDate) {
-    const today = new Date();
-    selectedDate = today.toLocaleDateString('en-CA'); // format: YYYY-MM-DD
-    console.log("falling back to new date:"+selectedDate)
-  }
-
-  event.detail.parameters["selected_date"] = selectedDate;
-});
-
-
-const container = document.getElementById('date-container');
-const dateDisplay = document.getElementById('current-date');
-const hiddenInput = document.getElementById('hidden-date');
-
-let displayDate = hiddenInput?.value;
-if (!displayDate) {
-  const today = new Date();
-  displayDate = today.toLocaleDateString('en-CA'); // format: YYYY-MM-DD
+    // User-facing display: MM/DD
+    var today = new Date().toLocaleDateString("en-CA");
+    if (isoDate !== today) {
+	if (prev_edit) {prev_edit.textContent = `VIEWING: ${isoDate}`;}
+    } else {
+	if (prev_edit) {prev_edit.textContent = '';}
+    }
+    hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
 }
-dateDisplay.textContent = displayDate
 
-container.addEventListener('click', () => hiddenInput.showPicker?.()); // Chrome supports .showPicker()
 
-hiddenInput.addEventListener('input', () => {
-  dateDisplay.textContent = hiddenInput.value;
-  // You could also trigger HTMX here to update your backend
+(function initDatePicker() {
+    const hiddenInput = document.getElementById('hidden-date');
 
+    if (!hiddenInput.value) {
+        // default to today
+        const todayISO = new Date().toLocaleDateString("en-CA");
+        setSelectedDate(todayISO);
+    } else {
+        setSelectedDate(hiddenInput.value);
+    }
+})();
+
+
+
+document.body.addEventListener("htmx:configRequest", function (event) {
+    const hiddenInput = document.getElementById("hidden-date");
+    let selectedDate = hiddenInput?.value;
+	console.log("sending request, found : "+ selectedDate);
+
+    // If missing or invalid → default to today
+    if (!selectedDate) {
+        selectedDate = new Date().toLocaleDateString("en-CA"); // forced ISO
+	console.log("missing date, set to : "+ selectedDate);
+    }
+
+
+    // Always send ISO date to backend
+    event.detail.parameters["selected_date"] = selectedDate;
 });
-

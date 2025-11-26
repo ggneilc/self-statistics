@@ -1,5 +1,5 @@
 <form id="t_entry_form"
-    hx-post="{% url 'core:addt' %}"
+    hx-post="{% url 'core:edit_type' type_id %}"
     hx-target="#profile-main">
 
     {% csrf_token %}
@@ -17,8 +17,8 @@
 </div>
     <div class="button-container">
 	<button class="back-btn"
-		hx-target="#type_entry__container"
-		hx-get="{% url 'workouts:clear' %}">CANCEL</button>
-        <button class="form_btn" type="submit" name="action" value="submit">Submit</button>
+		hx-target="#profile-main"
+		hx-get="{% url 'core:del_type' type_id %}">DELETE</button>
+        <button class="form_btn" type="submit" name="action" value="submit">SAVE</button>
     </div>
 </form>

@@ -1,13 +1,27 @@
-<!-- refresh list -->
-<section id="workout_list" class="w_list" hx-swap-oob="True">
-	
-  <h1>WORKOUT HISTORY</h1>
-  {% include 'workouts/start_workout.html' %}
-    <div id="workout_list__container"
+  <div class="button-container main-button">
+      <button class="graph-btn left-btn"
+	hx-get="{% url 'workouts:list' %}"
+	hx-target="#workout_list__container"
+        hx-swap="innerHTML swap:0.5s">
+        WORKOUT LOG
+      </button>
+      <button class="graph-btn"
+        hx-swap="innerHTML swap:0.5s">
+        LIFT OVERVIEWS
+      </button>
+    </div>
+
+
+  <!-- Add a button to sort workouts by type -->
+
+
+    <div id="workout_list__container" class="cardstyle"
         hx-get="{% url 'workouts:list' %}"
-        hx-trigger="load"
-        hx-swap="innerHTML swap:0.4s"
-        hx-swap-oob="True">
+        hx-trigger="revealed"
+        hx-swap="innerHTML swap:0.4s">
         <!-- Content filled on load! -->
     </div>
-</section>
+
+  
+{% include 'workouts/start_workout.html' %}
+

@@ -9,9 +9,8 @@ from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.template.loader import render_to_string
 from django.db.models import F, Sum
 from .models import Workout, WorkoutType, Lift, Set, BODYPARTS, LIFT_TYPES
-from core.utils import get_or_create_today
-from .forms import LiftForm, WTypeForm, SetForm
-from random import randint
+from core.utils import get_or_create_day
+from .forms import LiftForm, SetForm
 from copy import copy
 
 
@@ -141,7 +140,7 @@ def add_workout(request, workout_type_id):
     '''
         Creates a Workout of workout_type for the current day
     '''
-    day = get_or_create_today(request.user)
+    day = get_or_create_day(request.user, request.POST['selected_date'])
     workout_type = WorkoutType.objects.get(pk=workout_type_id)
     workout = Workout(day=day,
                       workout_type=workout_type,
@@ -295,11 +294,11 @@ def delete_set(request, set_id):
     return HttpResponse()
 
 
-# TODO: this is jank
 def end_workout(request):
     cur_workout = Workout.objects.get(is_active=True, day__user=request.user)
     cur_workout.is_active = False
     cur_workout.save()
+#    workouts = Workout.objects.get(day__user=request.user)
     return render(request, 'workouts/workout_refresh.html')
 
 
@@ -319,37 +318,6 @@ def clear(request):
     '''returns empty'''
     return HttpResponse()
 
-
-def add_workout_type(request):
-    '''
-        POST: adds the type
-        GET: returns entry form
-    '''
-    if request.POST:
-        f = WTypeForm(request.POST)
-        if f.is_valid():
-            new_type = f.save(commit=False)
-            new_type.user = request.user
-            if new_type.color is None:
-                new_type.color = random_color()
-            new_type.save()
-            types = request.user.workout_types.all()
-            return render(request, 'core/workout_settings.html', {"workout_types": types})
-        else:
-            form = WTypeForm()
-    else:
-        form = WTypeForm()
-    return render(request, 'workouts/new_type_entry.html', {"form": form})
-
-
-def del_workout_type(request, workout_tid):
-    workout_t = WorkoutType.objects.get(pk=workout_tid)
-    workout_t.delete()
-    return HttpResponse()
-
-
-def random_color():
-    return "#{:06x}".format(randint(0, 0xFFFFFF))
 
 
 def change_color(request):

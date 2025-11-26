@@ -2,121 +2,180 @@
 
 <script> 
 (function() {
-  const container = document.getElementById("d3-calendar");
-  if (!container) return; // safety guard
+  const node = document.querySelector("#d3-calendar");
+  if (!node) return;
 
-  const data = JSON.parse(container.dataset.days);
+  // Parse day data (expect array of {id, date, ratio})
+  // Accept either ISO date strings or Date objects serialized as strings.
+  let dayData;
+  try {
+    dayData = JSON.parse(node.dataset.days);
+  } catch (err) {
+    console.error("Failed to parse day data:", err);
+    return;
+  }
 
-  const width = 399;
-  const boxSize = 20;
-  const padding = 4;
-  
-
-  // Map week numbers to Y positions
-  const weeks = [...new Set(data.map(d => d.week))].sort((a, b) => a - b);
-  const weekIndex = week => weeks.indexOf(week);
-  const rows = 25;
-  const cols = 21;
-
-  /* single dim array with double dim indexing */ 
-  const cells = Array.from({ length: rows * cols}, (_, index) => {
-    const col = index % cols;
-    const row = Math.floor(index / cols)
-    return {row, col}
+  // map date-strings (YYYY-MM-DD) -> ratio
+  const byIso = new Map();
+  dayData.forEach(d => {
+    // tolerate datetime strings, and ensure YYYY-MM-DD
+    let iso;
+    if (!d.date) return;
+    // If incoming date looks like '2025-11-16T00:00:00' or '2025-11-16', extract YYYY-MM-DD
+    iso = (typeof d.date === "string") ? d.date.slice(0, 10) : new Date(d.date).toLocatelDateString("en-CA").slice(0,10);
+    byIso.set(iso, { id: d.id, ratio: d.ratio });
   });
-  
-  // TODO : 
-  // place gray tiles to cover entire graph_display__container
-  // overlay tiles 
 
+  // Determine the month from the dayData if possible, else use today.
+  // We'll compute window_end as last day of that month (or today if no data),
+  // and window_start = end - 27 days => a 28-day window.
+  let monthDate = null;
+  if (dayData.length) {
+    // pick the first entry's date as a month anchor
+    monthDate = new Date(dayData[0].date);
+  } else {
+    monthDate = new Date();
+  }
+  // normalize to midnight, use local dates
+  const year = monthDate.getFullYear();
+  const month = monthDate.getMonth(); // 0-based
+  // last day of month
+  const lastOfMonth = new Date(year, month + 1, 0); // day 0 of next month -> last day of current
+  // end = lastOfMonth
+  const end = new Date(lastOfMonth.getFullYear(), lastOfMonth.getMonth(), lastOfMonth.getDate());
+  // start = end - 27 days
+  const start = new Date(end);
+  start.setDate(end.getDate() - 27);
 
-  const svg = d3.select(container)
+  // Build array of 28 days from start..end (inclusive)
+  const days = [];
+  for (let i = 0; i < 28; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    // iso string YYYY-MM-DD
+    const iso = d.toLocaleDateString("en-CA").slice(0,10);
+    days.push({
+      date: d,
+      iso,
+      data: byIso.get(iso) || null
+    });
+  }
+
+  const container = d3.select("#d3-calendar");
+  // D3 layout constants
+  const cellGap = 10;
+  const cols = 7, rows = 4;
+//  const width = cols * (cellSize + cellGap);
+//  const height = rows * (cellSize + cellGap);
+  const width = container.node().clientWidth;
+  const height = width * 0.6;
+  const cellSize = width / 7;
+  // remove previous svg if present
+  d3.select(node).selectAll("svg").remove();
+
+  const svg = d3.select(node)
     .append("svg")
-    .attr("width", (boxSize + padding) * cols)
-    .attr("height", (boxSize + padding) * rows);
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", `0 0 ${width+60} ${height}`)
+    .attr("role", "img")
+    .attr("aria-label", "Monthly calendar heatmap");
 
-  const bgLayer = svg.append("g").attr("class", "background");
-  const fgLayer = svg.append("g").attr("class", "foreground");
+  // color scale: ratio 0 -> red, 1 -> green (via RdYlGn)
+  const color = d3.scaleLinear()
+    .domain([0, 0.5, 1])
+    .range(["#cb0014", "#ffd966", "#207948"])  // red -> yellow -> green
 
-bgLayer.selectAll("rect")
-  .data(cells)
-  .enter()
-  .append("rect")
-  .attr("x", d => d.col * (boxSize + padding))
-  .attr("y", d => d.row * (boxSize + padding))
-  .attr("width", boxSize)
-  .attr("height", boxSize)
-  .style("fill", "#000")
-  .style("opacity", 0)
-  .transition()
-  .duration(300)
-  .style("opacity", 1);
+  // tooltip
+  const tooltip = d3.select(node)
+    .append("div")
+    .attr("class", "calendar-tooltip")
+    .style("position", "absolute")
+    .style("pointer-events", "none")
+    .style("padding", "6px 8px")
+    .style("background", "#222")
+    .style("color", "white")
+    .style("border-radius", "4px")
+    .style("font-size", "12px")
+    .style("display", "none");
 
+  // draw cells
+  const g = svg.append("g").attr("transform", `translate(0,0)`);
 
-  const colorScale = d3.scaleLinear()
-    .domain([0, 1])
-    .range(["#ff3b3b", "#3bff64"]);
+  g.selectAll("rect.day")
+    .data(days)
+    .join("rect")
+      .attr("class", "day")
+      .attr("x", (d,i) => (i % cols) * (cellSize + cellGap))
+      .attr("y", (d,i) => Math.floor(i / cols) * (cellSize + cellGap))
+      .attr("width", cellSize)
+      .attr("height", cellSize)
+      .attr("rx", 2)
+      .attr("ry", 2)
+      .attr("fill", "#0f0f0f")
+      .style("stroke-width", 1)
+      .style("stroke", d => {
+         if (!d.data) {
+           // no data: black/dark box (future/not-tracked)
+           return "#0f0f0f";
+         }
+      if (d.data.ratio >= 1.0){ return "var(--accent)"; }
+         // with data: color by ratio (0..1)
+         const r = +d.data.ratio;
+         // clamp r
+         const rr = Math.max(0, Math.min(1, isNaN(r) ? 0 : r));
+         return color(rr);
+      })
+      .on("mouseenter", (e, d) => {
+         const iso = d.iso;
+         const dd = d.data;
+         const dayLabel = `${iso}`;
+         const html = dd
+            ? `<strong>${dayLabel}</strong><div>ratio: ${dd.ratio}</div>`
+            : `<strong>${dayLabel}</strong><div>No data</div>`;
+         tooltip.style("display", "block")
+                .html(html);
+      })
+      .on("mousemove", (e) => {
+         tooltip
+           .style("left", (e.offsetX) + "px")
+           .style("top", (e.offsetY) + "px");
+      })
+      .on("mouseleave", () => tooltip.style("display", "none"))
+      .on("click", (e, d) => {
+         setSelectedDate(d.iso);
+         // highlightSelectedCell(d.date)
+         htmx.ajax('GET', `/day/${d.iso}`, {target: '#day-info'})
+         console.log("clicked day", d.iso);
+      });
 
-  const rects = fgLayer.selectAll("rect")
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("x", d => d.day * (boxSize + padding))
-    .attr("y", d => weekIndex(d.week) * (boxSize + padding))
-    .attr("width", boxSize)
-    .attr("height", boxSize)
-    .attr("fill", d => colorScale(d.ratio))
-    .attr("hx-get", d => `/day/${d.id}`)
-    .attr("hx-trigger", "click")
-    .attr("hx-target", "#graph_display__container")
-    .attr("hx-swap", "innerHTML swap:0.4s")
-    .attr("stroke", "#111")
-    .style("opacity", 0)  // start invisible
-    .style("cursor", "pointer")
-    .style("pointer-events", "all");
+  // optionally add day numbers (small text)
+  g.selectAll("text.daynum")
+    .data(days)
+    .join("text")
+      .attr("class", "daynum")
+      .attr("x", (d,i) => (i % cols) * (cellSize + cellGap) + 6)
+      .attr("y", (d,i) => Math.floor(i / cols) * (cellSize + cellGap) + 14)
+      .text(d => d.date.getDate())
+      .style("font-size", "11px")
+      .style("fill", d => d.data ? "#fff" : "#666");
 
-  // Animate opacity + "pop in" scale
-  rects.transition()
-    .delay((d, i) => i * 10)  // staggered entrance
-    .duration(400)
-    .style("opacity", 1)
-  // .attrTween("transform", function () {
-      // little scale animation
- //    return d3.interpolateString("scale(0.5)", "scale(1)");
-//    });
+  // small legend
+//  const legendW = 120;
+//  const legend = svg.append("g").attr("transform", `translate(${width - legendW - 4}, ${height+4})`);
+//  legend.append("rect").attr("width", legendW).attr("height", 14).attr("rx", 6).attr("ry", 6).style("fill", "transparent");
+  // gradient squares legend (3 stops)
+//  const stops = [0, 0.5, 1];
+//  legend.selectAll("rect.stop")
+//    .data(stops)
+//    .join("rect")
+//    .attr("x", (s,i) => i*36)
+//    .attr("y", 0)
+//    .attr("width", 36)
+//    .attr("height", 12)
+//    .style("fill", s => color(s));
 
-  svg.on("mousemove", function (event) {
-  const [mx, my] = d3.pointer(event);
-  svg.selectAll("rect").each(function () {
-    const rect = d3.select(this);
-    const x = +rect.attr("x") + boxSize / 2;
-    const y = +rect.attr("y") + boxSize / 2;
-    const dist = Math.hypot(mx - x, my - y);
-
-    const scale = dist < 20
-      ? 1 + (1.15 - 1) * (1 - dist / 50)
-      : 1;
-    
-    const mv = scale > 1
-        ? (scale===1.15) ? scale * 4 : scale * 1
-        : 0 ;
-
-    rect
-      .style("transform-box", "fill-box")
-      .style("transform-origin", "center")
-      .style("transform", `scale(${scale}) translateY(-${mv}px)`)
-      .style("transition", "all 0.1s ease");
-    rect.append("title").text(d => d.date);
-    });
-    });
-
-
-    svg.style("overflow", "visible");
-
-    svg.on("mouseleave", () => {
-    svg.selectAll("rect").style("transform", "scale(1)");
-    });
-    htmx.process(fgLayer.node());
+//  legend.append("text").attr("x", 0).attr("y", -4).text("calorie ratio (0→1)").style("font-size","10px").style("fill","#aaa");
 
 })();
 </script>

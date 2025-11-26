@@ -6,7 +6,47 @@ from workouts.models import Workout, WorkoutType
 from django.contrib.auth.models import User
 from .models import Day, Profile
 from django.db.models import Sum
-from datetime import datetime
+from datetime import datetime, timedelta
+
+
+@receiver([post_save], sender=Day)
+def set_macro_goal(sender, instance, created, **kwargs):
+    # instance.date = YYYY-MM-DD
+    user = instance.user
+    today = instance.date
+    if (today == '0001-01-01'):
+        return
+    yesterday = today - timedelta(days=1)
+
+    yesterday_obj = user.days.filter(date=yesterday).first()
+
+    # if no bodyweight or day, just use default
+    if not yesterday_obj:
+        return
+    bw = yesterday_obj.bodyweight
+    if not bw:
+        return
+
+    print(f"Setting macros for {instance.date} for user {user}:")
+    # Calories determined with Harris-Benedict
+    if user.profile.gender == "M":
+        bw_kg = bw * 0.45359237
+        BMR = 66.5 + (13.75 * bw_kg) + (5.003 *
+                                        user.profile.height) - (6.75 * user.profile.age)
+        cals = BMR * 1.725
+        pro = bw * 0.8
+    elif user.profile.gender == "W":
+        bw_kg = bw * 0.45359237
+        BMR = 655.1 + (9.563 * bw_kg) + (1.850 *
+                                         user.profile.height) - (4.676 * user.profile.age)
+        cals = BMR * 1.725
+        pro = bw * 0.8
+
+    print(f"{cals=}, {pro=}")
+    Day.objects.filter(pk=instance.pk).update(
+        calorie_goal=cals,
+        protein_goal=pro
+    )
 
 
 @receiver([post_save, post_delete], sender=Food)
@@ -26,12 +66,17 @@ def update_day_after_meal_change(sender, instance, **kwargs):
                 print(f"dead food found: {f}")
                 instance.delete()
     else:
-        total = Food.objects.filter(day=day).aggregate(
+        total_c = Food.objects.filter(day=day).aggregate(
             total_cals=Sum('calories')
         )['total_cals'] or 0
+        total_p = Food.objects.filter(day=day).aggregate(
+            total_pro=Sum('protein')
+        )['total_pro'] or 0
 
-        day.calories_consumed = total
-        day.save()
+        Day.objects.filter(pk=day.id).update(
+            calories_consumed = total_c,
+            protein_consumed = total_p
+        )
 
 
 @receiver([post_save, post_delete], sender=Workout)

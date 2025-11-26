@@ -1,9 +1,6 @@
 {% extends "./default.html" %}
 {% load static %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'calcounter/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'workouts/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'graphs/styles.css' %}">
 {% endblock %}
 
 {% block main_content %}
@@ -20,10 +17,14 @@
 </div>
 </div>
 {% else %}
+<div id="app-columns">
     {% include './column_lift.html' %}
     {% include './column_graph.html' %}
     {% include './column_meal.html' %}
+</div>
 {% endif %}
+
+
 
 <script src="{% static 'calcounter/js/meal_entry_button.js' %}"></script>
 <script src="{% static 'calcounter/js/scrolling_text.js' %}"></script>

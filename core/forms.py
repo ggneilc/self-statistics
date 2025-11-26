@@ -18,10 +18,11 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ['timezone', 'gender', 'height_ft', 'height_in']
+        fields = ['timezone', 'age', 'gender', 'height_ft', 'height_in']
         widgets = {
             'timezone': forms.Select(attrs={'class': 'input'}),
-            'gender': forms.Select(attrs={'class': 'input'})
+            'gender': forms.Select(attrs={'class': 'input'}),
+            'age': forms.NumberInput(attrs={'class': 'input'})
         }
 
     def __init__(self, *args, **kwargs):

@@ -1,6 +1,12 @@
 <ul id="form_target">
+{% if foods %}
 {% for food in foods %}
     {% include './meal.html' with food=food%}
 {% endfor %}
+{% else %}
+	<div style="text-align: center;">
+		
+	</div>
+{% endif %}
 </ul>
 

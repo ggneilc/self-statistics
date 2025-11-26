@@ -8,7 +8,7 @@ class WTypeForm(forms.ModelForm):
         fields = ['name', 'color']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'input', 'placeholder': ' '}),
-            'color': forms.TextInput(attrs={'class': 'input', 'placeholder': ' '}),
+            'color': forms.ColorInput(attrs={'class': 'color-input', 'placeholder': ' '}),
         }
 
 

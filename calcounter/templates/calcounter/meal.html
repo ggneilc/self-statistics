@@ -15,7 +15,8 @@
 
 
     <div class="details">
-<div class="button-container left-crud-buttons">
+<div class="button-container left-crud-buttons"
+		onclick="event.stopPropagation()">
 
 <button class="yellow_btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
 	hx-get="{% url 'calcounter:edit_food' food.id %}"

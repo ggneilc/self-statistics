@@ -19,6 +19,7 @@ class Profile(models.Model):
         choices=GENDERS,
         default='M',
     )
+    age = models.IntegerField(default=18)
 
     def __str__(self):
         return f"{self.user.username} Profile"
@@ -39,6 +40,7 @@ class Day(models.Model):
     calories_consumed = models.IntegerField(default=0)
     protein_consumed = models.IntegerField(default=0)
     calorie_goal = models.IntegerField(default=2000)
+    protein_goal = models.IntegerField(default=120)
     # protein_goal = Bodyweight !
 
     # task stuff

@@ -1,0 +1,35 @@
+<section id="graph_head" class="s_head" style="text-align:center;">
+
+<div id="top-runner"></div>
+
+<div id="graph_head__container">
+
+  <div id="profile" class="profile-pic-container">
+    <div class="profile-pic"></div>
+  </div>
+
+  <div id="profile-info">
+     <!-- global date storage -->
+     <input type="date" id="hidden-date" name="date" value="today">
+     <div id="top-hud"
+        hx-get="{% url 'core:hud' %}"
+        hx-trigger="load">
+     </div>
+     <div id="exp-area">
+        <span id="current-level">Lv. 20</span>
+        <div id="exp-bar">
+          <div id="exp1"></div>
+          <div id="exp2"></div>
+          <div id="exp3"></div>
+          <div id="exp4"></div>
+          <div id="exp5"></div>
+          <div id="exp6"></div>
+          <div id="exp7"></div>
+        </div>
+        <span id="next-level">Lv. 21</span>
+     </div>
+  </div>
+
+</div>
+
+</section>

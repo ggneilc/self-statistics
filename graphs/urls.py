@@ -12,5 +12,8 @@ urlpatterns = [
     path("graph/bodyweight/weekly", views.get_bw_weekly, name="bw-weekly"),
     path("graph/bodyweight/monthly", views.get_bw_monthly, name="bw-monthly"),
     path("graph/calories", views.get_cal_graph, name="cals"),
+    path("graph/calories/weekly", views.get_cals_weekly, name="cals-weekly"),
+    path("graph/calories/monthly", views.get_cals_monthly, name="cals-monthly"),
     path("graph/volume", views.get_volume_graph, name="vol"),
+    path("graph/volume/<int:type_id>", views.get_type_stats, name="w_type_graph"),
 ]

@@ -1,0 +1,19 @@
+<div id="trend-buttons">
+  <button class="yellow_btn">3 MONTH</button>
+  <button class="yellow_btn"
+    hx-get="{% url 'graphs:calendar' %}"
+    hx-trigger="click"
+    hx-target="#calendar-container">1 MONTH</button>
+  <button class="yellow_btn">1 WEEK</button>
+</div>
+
+<div id="calendar-container"
+      hx-get="{% url 'graphs:calendar' %}"
+      hx-trigger="load">
+
+</div>
+
+<div id="day-info"
+    hx-get="{% url 'core:today' %}"
+    hx-trigger="load">
+</div>

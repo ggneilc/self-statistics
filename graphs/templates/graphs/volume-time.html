@@ -1,0 +1,17 @@
+<div id="time-buttons">
+  {% for w in workout_types %}
+  <button class="blue_btn" 
+    style="border: 1px solid {{w.color}}; color: {{w.color}};"
+    hx-get="{% url 'graphs:w_type_graph' w.id %}"
+    hx-target="#graph-controls" 
+    hx-trigger="click"> {{w}}</button>
+  {% endfor %}
+</div>
+<div id="graph-container">
+  <div id="d3-line" data-days='{{ day_data|safe }}'></div>
+</div>
+
+
+<div id="stats" hx-swap-oob="True">
+  {{ summary }}
+</div>

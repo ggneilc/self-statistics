@@ -114,7 +114,7 @@ path
 
   // Optional: re-render whenever HTMX swaps #graph_display__container
   document.body.addEventListener("htmx:afterSwap", (evt) => {
-    if (evt.target.id === "graph-container") {
+    if (evt.target.id === "graph-container" || evt.target.id === "graph-controls") {
       renderBWGraph();
     }
   });
