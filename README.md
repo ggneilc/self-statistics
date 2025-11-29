@@ -306,11 +306,5 @@ There will be different views depending on the timeframe:
 	1. can add meal classification (breakfast/lunch/dinner) and create timed mealplan
 2. barcode scanning for faster meal entry, ai calorie photo prediction
 3. Smart watch integration for additional biometrics & sleep
-4. Food camera ; manual 2 camera setup in kitchen similar to smart scale
-
----
-# Todo
- - [ ] `hx-swap-oob` animations on meal add / delete 
-
 
 ---
