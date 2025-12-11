@@ -10,6 +10,7 @@
 	      hx-trigger="load"
 	      hx-swap="innerHTML swap:0.5s">
 	    </div>
+	    <i class="fa-solid fa-weight-scale"></i>
 	  </div>
     </div>
     <div id="day-macros">
@@ -27,7 +28,7 @@
     <div id="day-tasks">
     {% for t in tasks %}
     {% if t.done %}
-    <div class="main-chip done task">
+    <div class="main-chip done task" style="font-size:0.8rem;">
       {{t.name}}
     </div>
     {% else %}

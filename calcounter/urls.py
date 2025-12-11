@@ -12,6 +12,7 @@ urlpatterns = [
     path("add/buttons/ingred", views.get_auto_buttons, name="auto_buttons"),
     path("add/ingred/search", views.get_search_area, name="ingred_search"),
     path("search/ingred/", views.query_ingredient, name="search_ingred"),
+    path("search/ingred/<int:fdcId>", views.get_specific_usda_item, name="get_ingred"),
     path("add/<int:food_id>/", views.add_food_template, name="add_t"),
     path("edit/<int:food_id>/", views.edit_food, name="edit_food"),
     path("update/<int:food_id>/", views.update_food, name="update_food"),

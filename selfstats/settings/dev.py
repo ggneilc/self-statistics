@@ -8,7 +8,13 @@ print(f"found : {os.getenv('SECRET_KEY')}")
 print(f"found : {os.getenv('DEBUG')}")
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG')
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*',
+                 'archlinux.tail71809f.ts.net'
+                 ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://archlinux.tail71809f.ts.net',
+]
+print(f"{ALLOWED_HOSTS=}")
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

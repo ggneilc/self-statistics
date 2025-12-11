@@ -7,7 +7,6 @@
 """
 from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.template.loader import render_to_string
-from django.db.models import F, Sum
 from .models import Workout, WorkoutType, Lift, Set, BODYPARTS, LIFT_TYPES
 from core.utils import get_or_create_day
 from .forms import LiftForm, SetForm
@@ -130,6 +129,7 @@ def get_lift_details(request, lift_id):
 
 def get_workout(request, workout_id):
     '''workout to remain expanded'''
+    # prefetch lifts
     workout = Workout.objects.get(pk=workout_id)
     return render(request, 'workouts/workout.html', {"workout": workout, "expanded": True})
 

@@ -105,56 +105,111 @@ def query_ingredient(request):
     r = requests.get(url)
     foods = r.json().get("foods", [])
 
-#    results = []
+    results = []
     for food in foods:
-        nutrients = {n["nutrientName"]: n["value"]
-                     for n in food.get("foodNutrients", [])}
-
-
         # Only foundational foods
         if food.get("dataType") not in ("Foundation", "SR Legacy"):
             continue
 
-#        f = Food.objects.create(
-#            fdc_id=food["fdcId"],
-#            name=food["description"],
-#            calories=nutrients.get("Energy", 0),
-#            protein=nutrients.get("Protein", 0),
-#            carbs=nutrients.get("Carbohydrate, by difference", 0),
-#            fat=nutrients.get("Total lipid (fat)", 0),
-#            source="usda",
-#        )
         print(f"{food["description"]=}")
-        print(f"{nutrients["Energy"]=}")
-        print(f"{nutrients["Protein"]=}")
-        print(f"{nutrients["Total lipid (fat)"]=}")
-        print(f"{nutrients["Carbohydrate, by difference"]=}")
-        print(f"{food["fdcId"]=}")
-#        results.append({
-#            "id": f.id,
-#            "name": f.name,
-#            "calories": f.calories,
-#            "protein": f.protein,
-#            "carbs": f.carbs,
-#            "fat": f.fat,
-#        })
+        print(f"{food["fdcId"]=}\n")
+        results.append({
+            "name": food["description"],
+            "fdcId": food["fdcId"]
+        })
 
-    return get_search_area(request)
+    return render(request, 'calcounter/ingred_search.html', {"foods": results})
+
+
+# USDA Nutrient ID Mapping (using common NDB numbers for accuracy)
+NUTRIENT_MAP = {
+    # Macros
+    "Energy":        208,   # calories
+    "Protein":       203,
+    "Fat":           204,
+    "Carbohydrates": 205,
+    "Sugar":         269,
+    "Fiber":         291,
+    "Cholesterol":   601,
+
+    # Minerals
+    "Calcium":      301,
+    "Iron":         303,
+    "Magnesium":    304,
+    "Potassium":    306,
+    "Sodium":       307,
+    "Zinc":         309,
+
+    # Vitamins (A-E Complex)
+    "Vitamin A":    320,
+    "Vitamin B-6":  415,
+    "Vitamin B-12": 418,
+    "Vitamin C":    401,
+    "Vitamin D":    328,
+    "Vitamin E":    323,
+
+    # Alcohol: 221
+    # Caffiene: 262
+}
+ID_NAME = {id: name for name, id in NUTRIENT_MAP.items()}
+MACRO = [208, 203, 204, 205, 269, 291, 601]
+MINERAL = [301, 303, 304, 306, 307, 309]
+VITAMIN = [320, 415, 418, 401, 328, 323]
+
 
 def get_specific_usda_item(request, fdcId):
-        single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={
-            USDA_KEY}"
-        single_item = requests.get(single_url).json()
-        serving_sizes = single_item.get("foodPortions", [])
-        liquid = False
-        for serving in serving_sizes:
-            if serving['modifier'] in "oz":
-                print(f"{serving['gramWeight']=} in {serving['modifier']=}")
-                liquid = True
-        
-        if not liquid:
-            print(f"{serving_sizes[0]['gramWeight']=} with {serving_sizes[0]['modifier']=} ")
+    single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?format=abridged&api_key={
+        USDA_KEY}"
+    item = requests.get(single_url).json()
 
+    # --- 1. Extract All Available Nutrients and Map by ID ---
+    all_nutrients = {}
+    nutrients = item.get("foodNutrients", [])
+    for n in nutrients:
+        nutrient_id = int(float(n.get("number", 0)))
+        if nutrient_id in NUTRIENT_MAP.values():
+            all_nutrients[nutrient_id] = {
+                "name":  n.get("name"),
+                "value": n.get("amount", 0.00),
+                "unit":  n.get("unitName", "N/A")
+            }
+            print(f"{all_nutrients[nutrient_id]=}")
+
+    # --- Some foods don't have energy values, calculate instead ---
+    cals = all_nutrients.get(208, {}).get("value", 0.0)
+    if (cals == {} or cals == 0.0):
+        # Atwater Factors calorie calculation 4-9-4
+        protein = all_nutrients[203]['value']
+        fat = all_nutrients[204]['value']
+        carbs = all_nutrients[205]['value']
+        all_nutrients[208] = {
+            "name": "Total Calories",
+            "value": (protein * 4) + (fat * 9) + (carbs * 4),
+            "unit": "g"
+        }
+
+    # --- 2. Build the Final Output Dictionary ---
+    final_data = {
+        "fdc_id": fdcId,
+        "name": item.get("description", "Unknown Food"),
+        "macros": {},
+        "minerals": {},
+        "vitamins": {}
+    }
+
+    # Extract Macros and Target Minerals/Vitamins
+    for id, value in all_nutrients.items():
+        if id in VITAMIN:
+            category = "vitamins"
+        elif id in MINERAL:
+            category = "minerals"
+        elif id in MACRO:
+            category = "macros"
+        final_data[category][value["name"]] = value
+
+    # Cache Food
+
+    return render(request, 'calcounter/ingred.html', {'food': final_data})
 
 
 # CRUD : Update a food

@@ -274,8 +274,8 @@ ul {
 
 .profile-pic {
   margin: 5px;
-  width: 70px;
-  height: 70px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--main);
@@ -300,7 +300,7 @@ ul {
   flex: 2;
   display: flex;
 } #hud-info {
-  flex: 4;
+  flex: 10;
   margin: 5px;
   display: flex;
   gap: 0.5em;
@@ -332,8 +332,9 @@ ul {
   box-shadow: var(--item-shadow);
   min-width: 0;
   max-width: 100%;
-  white-space: nowrap;
+  text-wrap: auto;
   flex-shrink: 1;
+  padding:0.5rem;
 }
 #username-chip {
   flex: 2;
@@ -847,6 +848,10 @@ button {
   body {
     font-size: 1rem;
   }
+
+  .main-chip { font-size:0.8rem; }
+   
+    .task { font-size:0.8rem; text-wrap: auto; }
     .workout-date,
     .weight_totals { font-size: 0.8rem; }
 
@@ -854,6 +859,7 @@ button {
     .yellow_btn { font-size: 0.9rem; }
 
     .cardstyle { margin: 10px; padding: 0.5rem; } 
+
 }
 
 /* === MOBILE LAYOUT: Horizontal swipeable columns === */
@@ -892,7 +898,7 @@ button {
         box-sizing: border-box;
     }
 
-    .profile-pic {width: 50px;height: 50px;}
+    .profile-pic {width: 40px;height: 40px;}
     .profile-pic-container { margin: 0; }
     #graph_head__container { box-shadow: none; }
 
