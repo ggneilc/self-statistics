@@ -71,6 +71,7 @@ Keep in mind the database file (`db.sqlite3`) is only tracked for the initial re
 - ORM
 - SQL
 - Query Optimization
+- Caching
 
 ## Backend Development
 
