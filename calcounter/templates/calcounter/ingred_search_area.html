@@ -1,0 +1,21 @@
+<form 
+  hx-post="{% url 'calcounter:search_ingred'%}"
+  hx-target="#ingreds_display"
+>
+
+  <div class="main-nut">
+  <div class="input_container" style="margin:0">
+    <input id="query "type="text" placeholder="" name="query" style="height: 100%;">
+    <label for="query" style="background-color: var(--bg);">Ingredient</label>
+  </div>
+  <div class="button-container">
+	<button class="form_btn" name="action" type="submit" value="submit" style="margin:0">
+	<i class="fa-solid fa-magnifying-glass"></i>
+	</button>
+  </div>
+  </div>
+
+</form>
+
+<ul id="ingreds_display">
+</ul>

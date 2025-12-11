@@ -1,22 +1,30 @@
 {% load static %}
-<section id="meal_head" class="m_head"> 
-    <div id="meal_head__container">
-         <div id="totals" class="m_totals"
-            hx-swap="innerHTML swap:0.5s"
-            hx-get="{% url 'calcounter:sum-nuts' %}"
-            hx-trigger="load, change from:#hidden-date">
-            <!-- this will be filled upon page load-->
-        </div>
-    </div>
-</section>
 <section id="meal_list" class="m_list">
-  <h1>SUBSTANCES CONSUMED</h1>
-  {% include 'calcounter/entry_buttons.html' %}
-  <div id="meal_list__container"
+
+
+  <div class="button-container main-button">
+      <button class="graph-btn left-btn"
+        hx-get="{% url 'calcounter:list' %}" 
+	hx-trigger="click"
+        hx-target="#meal_list__container"
+        hx-swap="innerHTML swap:0.5s">
+        MEAL LOG
+      </button>
+      <button class="graph-btn"
+        hx-swap="innerHTML swap:0.5s">
+        RECIPE BOOK
+      </button>
+    </div>
+
+  <div id="meal_list__container" class="cardstyle"
           hx-get="{% url 'calcounter:list' %}" 
           hx-trigger="load, change from:#hidden-date"
-          hx-target="#meal_list__container"
           hx-swap="innerHTML swap:0.5s">
           <!-- this will be filled upon page load-->
   </div>
+
+  <div id="meal_entry__container">
+	{% include 'calcounter/entry_buttons.html' %}
+  </div>
+
 </section>

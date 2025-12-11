@@ -1,17 +1,41 @@
 <div id="day-container">
-    <div class="button-container">
-        <button class="back-btn"
-            hx-get="{% url 'graphs:calendar' %}"
-            hx-target="#graph_display__container"
-            hx-swap="innerHTML swap:0.5s">
-            back
-        </button>
+    <div id="day-hud-info">
+	  <div id="day-date" class="main-chip" style="flex: 1; background-color: var(--bg);">
+		<span>{{ date }}</span>
+	  </div>
+
+	  <div id="bw-chip" class="main-chip">
+	    <div id="day-weight"
+	      hx-get="{% url 'core:get_bw' %}"
+	      hx-trigger="load"
+	      hx-swap="innerHTML swap:0.5s">
+	    </div>
+	    <i class="fa-solid fa-weight-scale"></i>
+	  </div>
     </div>
-    <div id="day">
-        <div>Ate: {{day.calories_consumed}}</div>
-        <div>Goal: {{day.calorie_goal}}</div>
-        <div>BW: {{day.bodyweight}}</div>
-        <div>Ratio: {{day.calorie_ratio}} </div>
-        <div>Note: {{day.note}} </div>
+    <div id="day-macros">
+    {% for m in macros %}
+    <div class="main-chip task" style="position: relative;">
+      <span class="macro-label">{{m.name}}</span>
+	{% if m.goal %}
+	{{m.amount}} / {{m.goal}}
+	{% else%}
+	{{m.amount}}
+	{% endif %}
+    </div>
+    {% endfor %}
+    </div>
+    <div id="day-tasks">
+    {% for t in tasks %}
+    {% if t.done %}
+    <div class="main-chip done task" style="font-size:0.8rem;">
+      {{t.name}}
+    </div>
+    {% else %}
+    <div class="main-chip todo task">
+      {{t.name}}
+    </div>
+    {% endif %}
+    {% endfor %}
     </div>
 </div>

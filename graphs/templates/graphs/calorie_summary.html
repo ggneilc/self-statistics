@@ -1,0 +1,30 @@
+<div class="statistic">
+  <span class="stat-label">Average </span>
+  <span class="small">Cals :</span> {{mean_c}}
+  <span class="small">Protein : </span> {{mean_p}}
+</div>
+<div class="statistic">
+  <span class="stat-label">daily fluctations</span>
+  <span class="small"> Cals : </span>{{stddev_c}}
+  <span class="small"> Protein : </span>{{stddev_p}}
+</div>
+<div class="statistic">
+  <span class="stat-label">Favorite Meal</span>
+  {{meal}}
+  <span class="small"> count : </span>{{count}}
+</div>
+
+<div class="statistic">
+  <span class="stat-label">hitting goal</span>
+  <span class="small"> current streak : </span> {{cur_streak}}
+  <span class="small"> longest streak : </span> {{long_streak}}
+</div>
+<div class="statistic">
+  <span class="stat-label">one-day</span>
+  <span class="small"> Biggest Drop : </span>{{max_drawdown}}
+  <span class="small"> Largest Gain : </span>{{max_runup}}
+</div>
+<div id="simple" class="statistic" >
+  <div class="statistic"><span class="stat-label">max</span>{{max}}</div>
+  <div class="statistic"><span class="stat-label">min</span> {{min}}</div>
+</div>

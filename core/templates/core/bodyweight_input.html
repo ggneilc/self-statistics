@@ -1,9 +1,17 @@
     <form id="bw_entry_form" style="flex-direction: row; padding:0;margin:0;border-radius:0;gap:5px;"
         hx-post="{% url 'core:set_bw' %}"
-        hx-target="#weight"
+        hx-target="#day-weight"
         >
         <div class="input_container" style="flex:1; margin:0;">
+	{% if edit %}
+            <input class="input"
+		type="number"
+		step="0.1"
+	    	value="{{bw}}"
+		name="weight">
+	{% else %}
             <input class="input" type="number" step="0.1" placeholder=" " name="weight">
+	{% endif %}
             <label style="font-size:16px;left:2px;" for="weight">Bodyweight:</label>
         </div>
         <div class="button-container" style="position: relative;">

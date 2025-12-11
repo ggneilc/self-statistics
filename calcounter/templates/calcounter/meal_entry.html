@@ -1,7 +1,8 @@
 <form id="m_entry_form"
         hx-post="{% url 'calcounter:add' %}"
-	hx-target="#meal_entry__container"
-        hx-swap="outerHTML swap:0.5s">
+	hx-target="#meal_list__container"
+	hx-on="htmx:afterRequest: this.reset()"
+        hx-swap="innerHTML swap:0.5s">
 
     {% csrf_token %}
 
@@ -39,9 +40,13 @@
 
 
     <div class="button-container">
+        <!-- Back Button -->
+        <button class="back-btn"
+		hx-get="{% url 'calcounter:back'%}"
+		hx-target="#meal_entry__container"
+		hx-trigger="click"
+		hx-swap="innerHTML swap:0.4s">CANCEL</button>
         <!-- Standard Submit Button -->
-        <button id="sub" class="form_btn" type="submit" name="action" value="submit">Submit</button>
-        <!-- Save as Template Button -->
-        <button class="form_btn" type="submit" name="action" value="save_template">Save Template</button>
+        <button id="sub" class="form_btn" type="submit" name="action" value="submit">SUBMIT</button>
     </div>
 </form>

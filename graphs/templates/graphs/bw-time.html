@@ -1,3 +1,22 @@
-<div class="cardstyle">
+<div id="time-buttons">
+  <button class="blue_btn"
+	hx-target="#graph-controls"
+	hx-get="{% url 'graphs:bw' %}"
+	hx-trigger="click">DAILY</button>
+  <button class="blue_btn"
+	hx-target="#graph-controls"
+	hx-get="{% url 'graphs:bw-weekly'%}"
+	hx-trigger="click">WEEKLY</button>
+  <button class="blue_btn"
+	hx-target="#graph-controls"
+	hx-get="{% url 'graphs:bw-monthly'%}"
+	hx-trigger="click">MONTHLY</button>
+</div>
+<div id="graph-container">
   <div id="d3-line" data-days='{{ day_data|safe }}'></div>
+</div>
+
+
+<div id="stats" hx-swap-oob="True">
+  {{ summary }}
 </div>

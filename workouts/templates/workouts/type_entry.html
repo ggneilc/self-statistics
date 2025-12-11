@@ -16,15 +16,7 @@
             {{workout_type.name}}
         </button>
         {% endfor %}
-	<!-- will move to profile screen -->
-        <button id="m_entry__btn" class="add" style="display:none;margin: 2px; min-width:40px;"
-                hx-get="{% url 'workouts:addt' %}"
-                hx-trigger="click"
-                hx-target="#lift_entry__container"
-                hx-swap="innerHTML swap:0.4s">
-            + 
-        </button>
-        <button id="m_entry__btn" class="back-btn"
+	<button id="m_entry__btn" class="back-btn"
                 hx-get="{% url 'workouts:back'%}"
                 hx-target="#lift_entry__container"
                 hx-swap="outerHTML swap:0.4s"

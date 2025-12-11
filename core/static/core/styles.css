@@ -4,29 +4,17 @@
 }
 
 :root {
-/*    --bg: #0D0D0F; */
-/*    --fg: #1A1B1E; */
---bg: #252527; 
-/*    --fg: #3d3d3f;  */
+  --vh: 1vh;
     --white: #f5f5f5;
---fg: #1a1a1f;
-
-/* 0%, 10%, 20% tints */
-	/* --bg-dark: #0D0D0F; 	*/
-	/* --bg: #252527; 	*/
-	/* --bg-light: #3d3d3f; */
-
-/* Monochromatic Woodsmoke */
-/*	--bg-dark: #0D0D0F;	*/
-/*	--bg: #575764;		*/
-/*	--bg-light: #a0a0b9;	*/
-
+    --outline: #f5f5f5;
+    --text: #f5f5f5;
+    --bg: #1a1a1f;
+    --fg: #252527; 
 /* accent colors */
-    --yellow: #FFC83D;
-    --blue: #37B8FF;
-
-  --blue-chip-bg: #182d38;
-  --yellow-chip-bg: #2a2312;
+    --main: #FFC83D;
+    --accent: #37B8FF;
+    --accent-chip-bg: #182d38;
+    --main-chip-bg: #2a2312;
 
 /* shadows */
 	--item-shadow: -3px 3px 0px 0px #0d0d0f;
@@ -34,6 +22,7 @@
 	--inset-shadow: 0px 0px 6px 2px #0d0d0f inset;
 
 /* Button colors */
+  --main-buttons: #1a1a1f;
     --button: #72b983;
     --button-bg: #1d2322;
     --button-hover: #207948;
@@ -42,13 +31,13 @@
     --button-back-bg: #231f1f;
     --button-back-hover: #632e2e;
 
-    --button-yellow:#FFC83D; 
-    --button-yellow-bg:#23211a; 
-    --button-yellow-hover:#63532b; 
+    --button-main:#FFC83D; 
+    --button-main-bg:#23211a; 
+    --button-main-hover:#63532b; 
 
-    --button-blue:#37B8FF; 
-    --button-blue-bg:#1e2021; 
-    --button-blue-hover:#567484; 
+    --button-accent:#37B8FF; 
+    --button-accent-bg:#1e2021; 
+    --button-accent-hover:#567484; 
 
 /* Workout types coloring */
     --Push: #79ca85;
@@ -56,9 +45,117 @@
     --Legs: #1c39bc;
     --lift: #050505;
 }
+/* Light theme */
+[data-theme="light"] {
+  --fg: #f5f5f5;
+  --bg: #fff;
+  --main: #5b8aff;
+  --accent: #ff884d;
+  --text: #101010;
+  --outline: #101010;
+  --main-buttons: #5b8aff;
+  --button-main: #5b8aff;
+  --button-main-bg: #23211a;
+  --button-main-hover: #323e5e;
+  --button-accent: #ff884d;
+  --button-accent-bg: #1e2021;
+  --button-accent-hover: #5c3f30;
+}
+
+/* Custom Themes */
+[data-theme="midnight"] {
+  --fg: #221f46;
+  --bg: #0a0a1f;
+  --main: #7169f3;
+  --accent: #ff6584;
+  --text: #f5f5f5;
+  --outline: #f5f5f5;
+  --main-buttons: #7169f3;
+    --button-main:#7169f3; 
+    --button-main-bg:#25242c; 
+    --button-main-hover:#525076; 
+    --button-accent:#ff6584; 
+    --button-accent-bg:#362629; 
+    --button-accent-hover:#693a44; 
+}
+[data-theme="dracula"] {
+  --fg: #f8f8f2;
+  --bg: #282a36;
+  --main: #bd93f9;
+  --accent: #ff79c6;
+  --text: #020202;
+  --outline: #6272a4;
+  --main-buttons: #bd93f9;
+    --button-main:#bd93f9;
+    --button-main-bg:#3a3c4e;
+    --button-main-hover:#6d63a8;
+    --button-accent:#ff79c6;
+    --button-accent-bg:#4a3a44;
+    --button-accent-hover:#a54a7d;
+}
+[data-theme="nord"] {
+  --fg: #eceff4;
+  --bg: #2e3440;
+  --main: #88c0d0;
+  --accent: #bf616a;
+  --text: #020202;
+  --outline: #81a1c1;
+  --main-buttons: #88c0d0;
+    --button-main:#88c0d0;
+    --button-main-bg:#3b4252;
+    --button-main-hover:#6fa6b6;
+    --button-accent:#bf616a;
+    --button-accent-bg:#4c3940;
+    --button-accent-hover:#9a4f59;
+}
+[data-theme="gruvbox-dark"] {
+  --fg: #ebdbb2;
+  --bg: #282828;
+  --main: #d79921;
+  --accent: #fb4934;
+  --text: #fbf1c7;
+  --outline: #928374;
+  --main-buttons: #d79921;
+    --button-main:#d79921;
+    --button-main-bg:#3c3836;
+    --button-main-hover:#b57d1d;
+    --button-accent:#fb4934;
+    --button-accent-bg:#3a2624;
+    --button-accent-hover:#c43729;
+}
+[data-theme="catppuccin-mocha"] {
+  --fg: #cdd6f4;
+  --bg: #1e1e2e;
+  --main: #89b4fa;
+  --accent: #f38ba8;
+  --text: #020202;
+  --outline: #585b70;
+  --main-buttons: #89b4fa;
+    --button-main:#89b4fa;
+    --button-main-bg:#313244;
+    --button-main-hover:#6c96ca;
+    --button-accent:#f38ba8;
+    --button-accent-bg:#432f3a;
+    --button-accent-hover:#c17385;
+}
+[data-theme="github-dark"] {
+  --fg: #c9d1d9;
+  --bg: #0d1117;
+  --main: #58a6ff;
+  --accent: #f778ba;
+  --text: #020202;
+  --outline: #30363d;
+  --main-buttons: #58a6ff;
+    --button-main:#58a6ff;
+    --button-main-bg:#21262d;
+    --button-main-hover:#3875b3;
+    --button-accent:#f778ba;
+    --button-accent-bg:#3d2f3a;
+    --button-accent-hover:#b75c8c;
+}
 
 h1 {
-  color: var(--yellow);
+  color: var(--main);
   text-align: center;
   font-size: 2rem;
   text-shadow: 0px 5px 5px #0d0d0f;
@@ -68,21 +165,17 @@ body {
     font-family: 'Oswald';
     font-size:1.5rem;
     background-color: var(--bg);
-    color: white;
+    color: var(--text);
 
     height: 100vh;
     width: 100vw;
     margin: 0;
-    padding: 5px;
-    padding-bottom: 10px;
     overflow: hidden;
 
     display: grid;
     grid-template-areas:
-        "w_head s_head m_head"
-        "w_list s_list m_list";
+        "workout_column graph_column food_column";
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 85px 1fr;
 
 
     align-items: center; 
@@ -91,13 +184,22 @@ body {
 
 
 /* === Grid Areas ===*/
+#app-columns {
+    display: grid;
+    grid-template-areas: "workout_column graph_column food_column";
+    grid-template-columns: repeat(3, 1fr);
 
-.w_list {grid-area: w_list;}
-.s_list {grid-area: s_list;}
-.m_list {grid-area: m_list;}
-.w_head {grid-area: w_head;}
-.s_head {grid-area: s_head;}
-.m_head {grid-area: m_head;}
+    height: 100dvh;
+    width: 100vw;
+
+    align-items: center;
+    justify-items: center;
+}
+
+
+.w_list {grid-area: workout_column;}
+.s_list {grid-area: graph_column;}
+.m_list {grid-area: food_column;}
 
 #lift_head,
 #graph_head,
@@ -105,42 +207,31 @@ body {
 #meal_entry,
 #lift_entry,
 #graph_entry {
-    min-height:0;
-    flex-grow:0;
-    border-radius: 10px;
-    height: 100%;
-    width: 100%;
     display: flex;  
     flex-direction: column;
     justify-content: center;
-  margin-top: 10px;
 }
 
-#meal_entry__container,
-#lift_entry__container,
-#graph_entry__container {
-    margin: 10px;
-}
 
 #bw_entry_form,
 #t_entry_form,
 #l_entry_form,
 #m_entry_form {
-    background-color: var(--bg);
+    background-color: var(--fg);
     padding: 10px;
     display: flex;
     flex-direction: column;
+  box-shadow: var(--item-shadow);
 }
 
 /* --- List Areas --- */
 
 ul {
     margin:0px;
-    padding:5px;
+    padding:0px;
 }
 
 #meal_list, #workout_list, #graph_display {
-    background-color: var(--bg);
     border-radius: 5px;
     height: 100%;
     width: 100%;
@@ -149,67 +240,203 @@ ul {
     overflow: hidden;       /* Prevent content from escaping */
 }
 
-#meal_list__container, #workout_list__container, #graph_display__container {
+#meal_list__container, #workout_list__container  {
     flex-grow: 1;        /* Takes up remaining space */
     overflow-y: auto;    /* Enables scrolling when content exceeds height */
-    margin: 0;
+    max-height: 100%;    /* Ensures it doesn't grow beyond the parent */
+    position: relative;
+}
+#graph_display__container { 
+    flex-grow: 1;        /* Takes up remaining space */
     max-height: 100%;    /* Ensures it doesn't grow beyond the parent */
     position: relative;
 }
 
 
-
 /* === Navbar === */
 
+#top-runner{
+  position: absolute;
+  width:100vw;
+  height: 10px;
+  background-color: var(--fg);
+  bottom: 0;
+  left: 0;
+}
 #username {
   font-size: 20px;
   padding-left:5px;
 }
 
 .profile-pic-container {
-    flex: 4;
-    display: flex;
-    align-items: center;
-    margin: 10px 0px 10px 0px;
-    border-radius: 2px 0px 0px 2px;
-  background-color: var(--fg);
-  z-index: 5;
-  box-shadow: -3px 0px 6px 0px #0d0d0f;
+  margin: 5px;
 }
 
 .profile-pic {
   margin: 5px;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--yellow);
+  border: 2px solid var(--main);
+  box-shadow: var(--item-shadow);
+} .profile-pic:hover { transform: translateY(-2px); box-shadow: var(--item-shadow-hover); transition: all 0.3s ease;}
+.profile-pic:active { transform: translateY(3px); box-shadow: var(--inset-shadow); transition: all 0.3s ease;}
+
+.profile-pic-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--main);
 }
 
+#profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column
+}
+#top-hud {
+  flex: 2;
+  display: flex;
+} #hud-info {
+  flex: 10;
+  margin: 5px;
+  display: flex;
+  gap: 0.5em;
+} #swap-button {
+  flex: 1;
+  background-color: var(--bg);
+  margin: 5px;
+}
+#exp-area {
+  flex: 1;
+  margin: 5px;
+  display: flex;
+} #exp-bar {
+  flex: 1;
+  background-color: #17251ac2;
+  border-radius: 8px;
+  display:flex;
+  border: 1px solid var(--white);
+} #current-level, #next-level { font-size: 0.7rem; margin: 5px;}
+#exp-bar div {
+  flex:1;
+  border-right:1px solid var(--white);
+}
+#exp1 {border-radius: 8px 0px 0px 8px;}
+#exp7 {border-radius: 0px 8px 8px 0px; border:none;}
+
+.main-chip {
+  border-radius: 4px;
+  box-shadow: var(--item-shadow);
+  min-width: 0;
+  max-width: 100%;
+  text-wrap: auto;
+  flex-shrink: 1;
+  padding:0.5rem;
+}
+#username-chip {
+  flex: 2;
+  background-color: var(--main-chip-bg);
+  color: var(--main);
+}
+#date-nav{
+  flex: 2;
+  background-color: var(--bg);
+  cursor:pointer;
+} #editing-date {
+  position: absolute;
+  font-size: 0.8rem;
+  top: -10px;
+  left: 40%;
+  color: var(--main);
+}
+
+.main-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--item-shadow-hover);
+  transition: all 0.3s ease-in-out;
+} .main-chip:active {
+  transform: translateY(3px) translateX(-3px);
+  box-shadow: none;
+  transition: all 0.1s ease-in-out;
+}
+#bw-chip {
+  flex: 1;
+  background-color: var(--bg);
+}
+#nav-streak {
+  flex: 1;
+    background-color: #fd86309e;
+}
+.task { flex:1; font-size:1rem; padding:0.5em; user-select:none;
+background-color: var(--bg);}
+.todo { border: 1px solid var(--button-back); background-color: var(--button-back-bg); }
+.done { border: 1px solid var(--button); background-color: var(--button-bg); }
+.macro-label {
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  font-size: 0.8rem;
+  color: var(--accent);
+}
+
+
+/** -- profile -- **/
+
+.signup {
+  margin: 1rem;
+  min-height:200px;
+  display:flex;
+}
+
+#theme-switcher {
+  width: 100%;
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+}
+#custom-theme {
+  flex: 1
+}
 
 /* === Floating Labels === */
 
 .input_container {
     position: relative;
     margin-bottom: 10px;
+  flex: 1;
 }
 
 .input {
     width: 100%;
     padding: 10px;
     font-size: 16px;
-    border: 1px solid var(--white);
+    border: 1px solid var(--outline);
     background: transparent;
     outline: none;
-    color: white;
+    color: var(--text);
+}
+.color-input {
+  padding: 0;
+  margin-top: 8px;
 }
 
+.input_container input {
+    width: 100%;
+    font-size: 16px;
+    border: 1px solid var(--outline);
+    background: transparent;
+    outline: none;
+    color: var(--text);
+}
 
 .input_container label {
     position: absolute;
     top: 50%;
     left: 10px;
-    background-color: var(--bg);
+    background-color: var(--fg);
     transform: translateY(-50%);
     padding: 0 5px;
     transition: 0.3s;
@@ -217,10 +444,12 @@ ul {
 }
 
 .input:focus + label,
-.input:not(:placeholder-shown) + label {
+.input:not(:placeholder-shown) + label,
+input:focus + label,
+input:not(:placeholder-shown) + label {
     top: 0;
     font-size: 12px;
-    color: var(--blue);
+    color: var(--accent);
 }
 
 /* Remove number input spinners for all inputs */
@@ -267,15 +496,42 @@ button {
   left:10px;
 } .left-crud-buttons * { border-radius: 2px; }
 
+.graph-btn {
+  background-color: var(--fg);
+  border: 1px solid var(--outline);
+  color: var(--text);
+  border-radius: 2px;
+  flex: 1;
+  padding: 10px 15px;
+  margin: 2px;
+  font-size: 1.5rem;
+  transition: all 0.3s ease-in-out;
+  box-shadow: -4px 4px black;
+} .graph-btn:hover {
+    background-color: var(--button-main-hover);
+    box-shadow: -8px 6px black;
+    transform: translateY(-2px);
+} .graph-btn:active {
+    transform: translateY(3px);
+  box-shadow: -2px 2px black;
+} .left-btn { z-index: 1; }
 
 .btn {
     background-color: var(--bg);
+    border: 0;
     padding: 10px 15px;
-    font-size: 24px;
+    font-size: 1.5rem;
     cursor: pointer;
     margin: 2px;
     flex: 1;
     transition: all 0.3s ease-in-out;
+  min-width: 20%;
+}
+
+.main-button {
+  margin-top: 1rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .add {
@@ -284,10 +540,10 @@ button {
         color: white;
         opacity: 0.6;
         border: 1px dashed white;
-    font-size: 24px;
+    font-size: 1.5rem;
     cursor: pointer;
     padding: 10px 15px;
-    font-size: 24px;
+    font-size: 1.5rem;
     margin: 0;
     flex: 1;
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
@@ -295,27 +551,52 @@ button {
 }
 
 .yellow_btn {
-    background-color: var(--button-yellow-bg);
-    color: var(--button-yellow);
-    border: 1px solid var(--button-yellow);
+    background-color: var(--button-main-bg);
+    color: var(--button-main);
+    border: 1px solid var(--button-main);
     padding: 10px 15px;
-    font-size: 24px;
+    font-size: 1.5rem;
     cursor: pointer;
     margin: 2px;
     flex: 1;
     transition: all 0.3s ease-in-out;
 }
 
+.profile-btn {
+    background-color: #121216;
+  color: white;
+  border: 0px;
+    padding: 10px 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    flex: 1;
+    transition: all 0.3s ease-in-out;
+} .profile-btn:hover {
+    background-color: var(--button-accent-hover);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+.light:hover {
+    background-color: var(--outline);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
+
+.dark:hover {
+    background-color: var(--fg);
+    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+}
 
 .blue_btn {
-    background-color: var(--button-blue-bg);
-    color: var(--button-blue);
-    border: 1px solid var(--button-blue);
+    background-color: var(--button-accent-bg);
+    color: var(--button-accent);
+    border: 1px solid var(--button-accent);
     padding: 10px 15px;
-    font-size: 14px;
+    font-size: 0.8rem;
     cursor: pointer;
     margin: 2px;
-    flex: 1;
     transition: all 0.3s ease-in-out;
 }
 .back-btn, .delete-btn  {
@@ -323,7 +604,7 @@ button {
     border: 1px solid var(--button-back);
     color: var(--button-back);
     padding: 10px 15px;
-    font-size: 24px;
+    font-size: 1.5rem;
     cursor: pointer;
     margin: 2px;
     flex: 1;
@@ -335,7 +616,7 @@ button {
     color: var(--button);
     border: 1px solid var(--button);
     padding: 10px 15px;
-    font-size: 24px;
+    font-size: 1.5rem;
     cursor: pointer;
     margin: 2px;
     flex: 1;
@@ -352,6 +633,7 @@ button {
     background-color: var(--button-hover);
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
     transform: translateY(-2px);
+  color: var(--white);
 }
 .add:hover {
     background-color: var(--fg);
@@ -359,12 +641,12 @@ button {
     transform: translateY(-2px);
 }
 .yellow_btn:hover {
-    background-color: var(--button-yellow-hover);
+    background-color: var(--button-main-hover);
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
     transform: translateY(-2px);
 }
 .blue_btn:hover {
-    background-color: var(--button-blue-hover);
+    background-color: var(--button-accent-hover);
     box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
     transform: translateY(-2px);
 }
@@ -400,17 +682,59 @@ button {
     click: none;
 }
 
+#profile-container {
+  display: flex;
+  height:100%;
+
+}
+#profile-list {
+  flex:1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+#profile-list .profile-item {
+  flex:1;
+  list-style: none;
+  box-shadow: var(--inset-shadow);
+  font-size: 2rem;
+}
+.profile-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--item-shadow-hover);
+    transition: all 0.1s ease-in-out;
+}
+
+#profile-main {
+  flex:3;
+  display:flex;
+}
+
+.personal-left, .personal-right {
+  flex:1;
+  display:flex;
+  flex-direction: column;
+  margin: 1rem;
+  padding: 1rem;
+  background-color: var(--fg);
+  border-radius: 4px;
+  align-items: center;
+}
+
 /*** WARNING: From here on out is pretty much vibecoded (profile screen) ***/
 /* === Modal Box === */
 .modal {
-    background-color: var(--fg);
-    padding: 2rem;
-    width: 90%;
-    max-width: 400px;
+    background-color: var(--bg);
+    width: 50%;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     border-radius: 2px;
     animation: slideUp 0.3s ease-in-out;
 
+}
+
+.modal-content {
+  padding: 1rem;
+  
 }
 
 /* === Modal Content === */
@@ -472,8 +796,7 @@ button {
   opacity: 0;
   transform: scale(0.95);
 /*  transition: all 0.2s ease; */
-  transition: all 2s ease; /* slower for testing */
-  outline: 2px solid red;  /* visualize the old element */
+  transition: all 0.2s ease; /* slower for testing */
 }
 
 /* New element being swapped IN */
@@ -481,16 +804,14 @@ button {
   opacity: 1;
   transform: scale(1);
 /*  transition: all 0.2s ease; */
-  transition: all 2s ease; /* slower for testing */
-  outline: 2px solid blue;  /* visualize the new element */
+  transition: all 0.2s ease; /* slower for testing */
 }
 
 .htmx-settling {
   opacity: 1;
   transform: translateY(0), scale(0);
 /*  transition: all 0.3s ease; */
-  transition: all 2s ease; /* slower for testing */
-  outline: 2px solid green;  /* visualize the new element */
+  transition: all 0.3s ease; /* slower for testing */
 }
 
 .fade-in {
@@ -521,3 +842,87 @@ button {
 * {
     -ms-overflow-style: none;
 }
+
+/* === LAPTOP LAYOUT: smaller font sizes === */
+@media (max-width: 1600px) {
+  body {
+    font-size: 1rem;
+  }
+
+  .main-chip { font-size:0.8rem; }
+   
+    .task { font-size:0.8rem; text-wrap: auto; }
+    .workout-date,
+    .weight_totals { font-size: 0.8rem; }
+
+    .graph-btn,
+    .yellow_btn { font-size: 0.9rem; }
+
+    .cardstyle { margin: 10px; padding: 0.5rem; } 
+
+}
+
+/* === MOBILE LAYOUT: Horizontal swipeable columns === */
+@media (max-width: 768px) {
+
+    body {
+        overflow: hidden; /* Prevent vertical scroll */
+        display: block;   /* Disable grid layout */
+        font-size: 1rem;
+    }
+
+    #app-columns {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        height: 100dvh;
+        min-height: 100dvh;
+        width: 100%;
+    }
+
+    #app-columns::-webkit-scrollbar {
+        display: none; /* Hide scrollbars for mobile UX */
+    }
+
+    /* Each column takes the full viewport width */
+    .w_list,
+    .s_list,
+    .m_list {
+        min-width: 100vw;
+        height: 100vh;
+        scroll-snap-align: start;
+
+        /* Optional: give each column padding so content isn't edge-to-edge */
+        padding: 0.5rem;
+        box-sizing: border-box;
+    }
+
+    .profile-pic {width: 40px;height: 40px;}
+    .profile-pic-container { margin: 0; }
+    #graph_head__container { box-shadow: none; }
+
+    /* Remove grid-area assignments */
+    .w_list,
+    .s_list,
+    .m_list {
+        grid-area: unset;
+    }
+
+    /* mobile font size correction */
+    .workout-date,
+    .weight_totals { font-size: 1rem; }
+
+    .graph-btn,
+    .yellow_btn { font-size: 1rem; }
+
+    .cardstyle { margin: 5px; padding: 0.5rem; } 
+    .main-chip { font-size: 0.7rem; }
+
+    #meal_entry__container,
+    #lift_entry__container {
+      margin: 2px;
+      padding: 1rem;
+    }
+}
+

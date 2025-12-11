@@ -1,8 +1,9 @@
 <div id="lift_entry__container"> 
- <button class="add"
+ <button class="graph-btn" style="background-color: var(--bg);"
    hx-get="{% url 'workouts:load_entry' %}"
    hx-target="#lift_entry__container"
    hx-swap="innerHTML swap:0.4s">
-  + 
+  New Workout  
+<i class="fa-solid fa-dumbbell" style="margin-left:5px;"></i>
  </button>
 </div>

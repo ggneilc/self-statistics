@@ -9,16 +9,19 @@ from core.utils import get_or_create_day
 
 from copy import copy
 from datetime import datetime
+import requests
+import os
 
+USDA_KEY = os.getenv('USDA_API_KEY')
 
 # Listing foods
 
+
 def get_food(request):
     ''' Returns `meal_list.html` with the `selected_date` '''
-    if not request.user.is_authenticated:
-        return HttpResponse("")
     day = get_or_create_day(request.user, request.GET['selected_date'])
-    foods = Food.objects.filter(day=day)
+    foods = day.meals.all()
+    print(f"{foods=}")
     # dont allow saving foods that are already templates
     for food in foods:
         food.is_template = Food.objects.filter(
@@ -29,8 +32,6 @@ def get_food(request):
 
 def get_food_templates(request):
     ''' Returns `template_list.html` with `request.user` templates '''
-    if not request.user.is_authenticated:
-        return HttpResponse("")
     meals = Food.objects.filter(day__user=request.user)
     template_meals = [f for f in meals if f.is_template]
     if len(template_meals) == 0:      # if no templates, return entry form
@@ -84,7 +85,135 @@ def add_food_template(request, food_id):
         return meal_update(request, food_duplicate.day)
 
 
+def get_type_of_input(request):
+    return render(request, 'calcounter/meal_type_input.html')
+
+
+def get_auto_buttons(request):
+    return render(request, 'calcounter/meal_auto_buttons.html')
+
+
+def get_search_area(request):
+    return render(request, 'calcounter/ingred_search_area.html')
+
+
+def query_ingredient(request):
+    query = request.POST['query']
+    print(f"{query=}")
+    url = f"https://api.nal.usda.gov/fdc/v1/foods/search?api_key={
+        USDA_KEY}&query={query}"
+    r = requests.get(url)
+    foods = r.json().get("foods", [])
+
+    results = []
+    for food in foods:
+        # Only foundational foods
+        if food.get("dataType") not in ("Foundation", "SR Legacy"):
+            continue
+
+        print(f"{food["description"]=}")
+        print(f"{food["fdcId"]=}\n")
+        results.append({
+            "name": food["description"],
+            "fdcId": food["fdcId"]
+        })
+
+    return render(request, 'calcounter/ingred_search.html', {"foods": results})
+
+
+# USDA Nutrient ID Mapping (using common NDB numbers for accuracy)
+NUTRIENT_MAP = {
+    # Macros
+    "Energy":        208,   # calories
+    "Protein":       203,
+    "Fat":           204,
+    "Carbohydrates": 205,
+    "Sugar":         269,
+    "Fiber":         291,
+    "Cholesterol":   601,
+
+    # Minerals
+    "Calcium":      301,
+    "Iron":         303,
+    "Magnesium":    304,
+    "Potassium":    306,
+    "Sodium":       307,
+    "Zinc":         309,
+
+    # Vitamins (A-E Complex)
+    "Vitamin A":    320,
+    "Vitamin B-6":  415,
+    "Vitamin B-12": 418,
+    "Vitamin C":    401,
+    "Vitamin D":    328,
+    "Vitamin E":    323,
+
+    # Alcohol: 221
+    # Caffiene: 262
+}
+ID_NAME = {id: name for name, id in NUTRIENT_MAP.items()}
+MACRO = [208, 203, 204, 205, 269, 291, 601]
+MINERAL = [301, 303, 304, 306, 307, 309]
+VITAMIN = [320, 415, 418, 401, 328, 323]
+
+
+def get_specific_usda_item(request, fdcId):
+    single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?format=abridged&api_key={
+        USDA_KEY}"
+    item = requests.get(single_url).json()
+
+    # --- 1. Extract All Available Nutrients and Map by ID ---
+    all_nutrients = {}
+    nutrients = item.get("foodNutrients", [])
+    for n in nutrients:
+        nutrient_id = int(float(n.get("number", 0)))
+        if nutrient_id in NUTRIENT_MAP.values():
+            all_nutrients[nutrient_id] = {
+                "name":  n.get("name"),
+                "value": n.get("amount", 0.00),
+                "unit":  n.get("unitName", "N/A")
+            }
+            print(f"{all_nutrients[nutrient_id]=}")
+
+    # --- Some foods don't have energy values, calculate instead ---
+    cals = all_nutrients.get(208, {}).get("value", 0.0)
+    if (cals == {} or cals == 0.0):
+        # Atwater Factors calorie calculation 4-9-4
+        protein = all_nutrients[203]['value']
+        fat = all_nutrients[204]['value']
+        carbs = all_nutrients[205]['value']
+        all_nutrients[208] = {
+            "name": "Total Calories",
+            "value": (protein * 4) + (fat * 9) + (carbs * 4),
+            "unit": "g"
+        }
+
+    # --- 2. Build the Final Output Dictionary ---
+    final_data = {
+        "fdc_id": fdcId,
+        "name": item.get("description", "Unknown Food"),
+        "macros": {},
+        "minerals": {},
+        "vitamins": {}
+    }
+
+    # Extract Macros and Target Minerals/Vitamins
+    for id, value in all_nutrients.items():
+        if id in VITAMIN:
+            category = "vitamins"
+        elif id in MINERAL:
+            category = "minerals"
+        elif id in MACRO:
+            category = "macros"
+        final_data[category][value["name"]] = value
+
+    # Cache Food
+
+    return render(request, 'calcounter/ingred.html', {'food': final_data})
+
+
 # CRUD : Update a food
+
 
 def edit_food(request, food_id):
     food = get_object_or_404(Food, id=food_id)
@@ -114,10 +243,8 @@ def save_template(request, food_id):
 
 def calculate_totals(request):
     ''' Sum total nutrients for `selected_date` '''
-    if not request.user.is_authenticated:
-        return HttpResponse("")
     day = get_or_create_day(request.user, request.GET['selected_date'])
-    foods = Food.objects.filter(day=day)
+    foods = day.meals.all()
     totals = foods.aggregate(
         calories=Sum('calories'),
         protein=Sum('protein')
@@ -150,7 +277,6 @@ def meal_update(request, day, rm=False):
         calories=Sum('calories'),
         protein=Sum('protein')
     )
-
     for food in foods:
         food.is_template = Food.objects.filter(
             name=food.name, is_template=True).exists()
@@ -163,7 +289,7 @@ def meal_update(request, day, rm=False):
     if rm:  # content inserted into meal
         return render(request, 'calcounter/meal_update_rm.html', context)
     else:
-        return render(request, 'calcounter/meal_update.html', context)
+        return render(request, 'calcounter/meal_list.html', context)
 
 
 # CRUD : Deleteing food

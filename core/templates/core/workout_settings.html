@@ -1,0 +1,28 @@
+<!--
+<div class="personal-left">
+inline settings
+</div>
+-->
+<div class="personal-right">
+  <h1 style="margin: 10px;">Workout Types</h1>
+  <div class="horz_scroll" style="overflow-y: auto; width: 100%; flex: 5;">
+    <div class="button-container" style="flex-wrap: wrap;">
+      {% for workout_type in workout_types %}
+      <button class="btn" style="
+        color: {{workout_type.color}};
+        border: 1px solid {{workout_type.color}};"
+                hx-trigger="click"
+                hx-target="#type_entry__container"
+                hx-get="{% url 'core:edit_type' workout_type.id %}">
+            {{workout_type.name}}
+      </button>
+      {% endfor %}
+    <!-- Entry Form -->
+       <button id="m_entry__btn" class="add" style="margin: 2px; min-width:40px;"
+               hx-get="{% url 'core:addt' %}"
+               hx-trigger="click"
+               hx-target="#type_entry__container"> + </button>
+    </div>
+  </div>
+  <div id="type_entry__container" style="width:75%;"></div>
+</div>

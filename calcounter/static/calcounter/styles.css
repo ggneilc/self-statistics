@@ -9,7 +9,20 @@
 /* === Meal Header (totals) === */
 
 
+#meal_list__container{
+  align-items: revert;
+  justify-content: revert;
+  flex-direction: column;
+}
 
+#lift_entry__container,
+#meal_entry__container {
+display:flex;
+  margin: 0px 20px;
+  padding: 1.2rem;
+  background-color: var(--fg);
+  border-radius: 8px 8px 0px 0px;
+}
 
 #meal_head {
     width: 100%;
@@ -29,6 +42,7 @@
     flex: 2;
     display: flex;
     justify-content: space-around;
+  background-color: var(--bg);
 }
 
 #calories, #protein {
@@ -77,17 +91,17 @@
 }
 .inline_cals {
   font-size: 1rem;
-  color: var(--blue);
-  background: var(--blue-chip-bg);
+  color: var(--accent);
+  background: var(--button-accent-bg);
   border-radius: 10px;
   padding: 4px 10px;
   width: 60px;
 }
 .inline_protein{
   font-size: 1rem;
-  color: var(--yellow);
+  color: var(--main);
   margin-left: 20px;
-  background: var(--yellow-chip-bg);
+  background: var(--button-main-bg);
   border-radius: 10px;
   padding: 4px 10px;
   width: 50px;
@@ -137,6 +151,7 @@
 
 .scroll-text {
   display:inline-block;
+  color: var(--main);
 }
 
 .meal .food_name {transition: transform 0.3s ease;}
@@ -147,5 +162,5 @@
 
 
 tr {
-  border-bottom: 1px solid var(--white); /* horizontal line */
+  border-bottom: 1px solid var(--outline); /* horizontal line */
 }

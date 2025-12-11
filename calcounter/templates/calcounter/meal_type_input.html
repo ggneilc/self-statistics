@@ -1,0 +1,18 @@
+<div class="personal-left button-container" style="margin: revert; padding:revert;">
+  <button class="graph-btn" style="background-color: var(--bg);"
+    hx-get="{% url 'calcounter:add' %}"
+    hx-target="#meal_entry__container"
+    hx-trigger="click"
+    hx-swap="innerHTML swap:0.4s">
+    Manual Input
+  </button>
+</div>
+<div class="personal-right button-container" style="margin: revert; padding:revert;">
+  <button class="graph-btn" style="background-color: var(--bg);"
+    hx-get="{% url 'calcounter:auto_buttons' %}"
+    hx-target="#meal_entry__container"
+    hx-trigger="click"
+    hx-swap="innerHTML swap:0.4s">
+    By Ingredient
+  </button>
+</div>

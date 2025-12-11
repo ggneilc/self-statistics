@@ -1,23 +1,3 @@
-
-
-#date-container {
-  flex: 5;
-  gap: 0.5rem;
-  background: var(--fg);
-  border-radius: 2px;
-  padding: 0.4rem 0.6rem;
-  cursor: pointer;
-  box-shadow: 0px 0px 4px 4px rgba(0,0,0, 0.3);
-  font-size: 2.7rem;
-  z-index: 10;
-}
-
-#date-container:hover {
-  transform: translateY(-2px);
-  box-shadow: 0px 3px 4px 4px rgba(0,0,0, 0.3);
-  transition: all 0.3s ease-in-out;
-}
-
 #hidden-date {
   opacity: 0;
   position: absolute;
@@ -26,26 +6,33 @@
 }
 
 #graph_head__container {
+  background-color: var(--fg);
   flex: 1;
   display: flex;
+  padding: 5px;
+  border-radius: 8px 8px 0px 0px;
+  z-index:2;
+  position:relative;
 }
+
+.day { box-shadow: var(--item-shadow); }
+rect:hover {
+  transform: translateY(-2px);
+} 
 
 #info-container {
   flex: 4;
   margin: 10px 0px 10px 0px;
   border-radius: 0px 2px 2px 0px;
-  background-color: var(--fg);
+  background-color: var(--bg);
   z-index: 5;
-  box-shadow: 3px 0px 6px 0px #0d0d0f;
 }
 
 
 #weight {
     user-select: none;
-    flex: 1;
-    margin: 5px;
-    text-align: center;
-    font-size: 2rem;
+    cursor: pointer;
+    margin: 0px 5px;
 }
 
 #weight input {
@@ -54,7 +41,7 @@
 
 #bulletin {
 	flex: 1;
-	background-color: var(--fg);
+	background-color: var(--bg);
 	text-align: center;
 	min-height: 50px;
 	display:flex;
@@ -69,17 +56,9 @@
 	position: absolute;
 	top: -10px;
 	left: 5px;
-	color: var(--blue);
+	color: var(--accent);
 	font-size: 0.8rem;
 	text-shadow: 0px 3px 2px black;
-}
-
-.task {
-	flex:1;
-	display:flex;
-	align-items: center;
-	justify-content:center;
-
 }
 
 .checkbox {
@@ -108,30 +87,128 @@ margin-left:5px;
 }
 
 #graph_display__container {
+  flex:1;
     overflow:visible;
     display: flex;
+    flex-direction: column;
     height: 100%;
 }
 
-#day-container {
-    display:flex;
-    flex-direction: column;
+#graph-controls{
+  flex: 5;
+  display: flex;
+  width:100%;
+  margin-bottom: -20px;
 }
-
-#d3-calendar {
+#time-buttons{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  overflow-y: auto;
+  max-height: 250px;
 }
+#graph-container{flex: 3;}
 
-svg {
-  padding: 1px;
+#trend-buttons{ flex:1;display: flex; width:100%;}
+#summary-stats{ 
+  flex: 8;
+  background-color: var(--bg);
+  width:100%;
+  border-radius:4px;
+  position:relative;
+  display: flex;
+}
+#summary-label {
+  display:none;
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  color: var(--accent);
+  font-size:0.8rem;
+  text-shadow: 0px 3px 2px black;
+  z-index: 1;
+}
+.statistic {
+  text-align:center;
+  color:var(--main);
+  background-color: var(--fg);
+  margin: 5px 5px 5px 0px;
+  position: relative;
+}
+.goal-statistic {
+  background-color: var(--button-main-bg);
+  margin: 5px 0px 5px 5px;
 }
 
 .cardstyle {
   flex-grow: 1;
   box-shadow: var(--inset-shadow);
-  background-color: var(--fg);
+  background-color: var(--bg);
   border-radius: 2px;
   margin: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
+
+.small {
+  color:var(--accent);
+  font-size: 1rem;
+  }
+
+#simple {
+  flex:1;
+  display: flex;
+}
+#simple .statistic {
+  flex:1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} #simple .stat-label {
+  font-size:1rem;
+  left: revert;
+  top: -5px;
+}
+
+.stat-label {
+  position:absolute;
+  left:5px;
+  font-size:0.8rem;
+  color:var(--outline);
+}
+
+/* === calendars === */ 
+
+#day-container {
+    display:flex;
+    flex-direction: column;
+}
+#d3-calendar {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+} #calendar-container { display: flex; }
+
+#calendar-container, #day-info {
+  flex:6;
+  width:100%;
+  margin: 5px;
+  border-radius: 4px;
+}
+#day-info {
+  background-color: var(--fg);
+  padding: 0.5em;
+}
+
+#day-container > div {
+display: flex;
+  flex: 1;
+  margin: 5px;
+  gap: 0.5em;
+}
+
+.accent-text { color: var(--accent); }

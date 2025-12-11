@@ -4,12 +4,20 @@
 	overflow-y: auto;
 	width: 100%;
 	margin-right: 5px;">
+	
+ <button class="form_btn" style="height: 46px;margin:2px;"
+    hx-get="{% url 'calcounter:add_buttons' %}"
+    hx-trigger="click"
+    hx-target="#meal_entry__container"
+    hx-swap="innerHTML swap:0.4s">
+            New Food 
+ </button>
 {% for food in foods %}
 <div id="template-target" style="display:flex; flex-direction: row;">
     <button class="form_btn"style="flex: 9; font-size:18px;"
             hx-post="{% url 'calcounter:add_t' food.id %}"
-            hx-target="#meal_entry__container"
-	    hx-swap="outerHTML swap:0.4s">
+            hx-target="#meal_list__container"
+	    hx-swap="innerHTML swap:0.4s">
         {{ food.name.upper }}
     </button>
     <div class="button-container">
@@ -22,11 +30,4 @@
     </div>
 </div>
 {% endfor %}
- <button class="add" style="height: 46px;margin:2px;"
-    hx-get="{% url 'calcounter:add' %}"
-    hx-trigger="click"
-    hx-target="#meal_entry__container"
-    hx-swap="innerHTML swap:0.4s">
-            + 
- </button>
 </div>

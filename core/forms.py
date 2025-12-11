@@ -6,23 +6,35 @@ from .models import Profile
 
 
 class ProfileForm(forms.ModelForm):
-    height_ft = forms.IntegerField(label="Feet", min_value=0, required=False)
-    height_in = forms.IntegerField(
-        label="Inches", min_value=0, max_value=11, required=False)
+    height_ft = forms.IntegerField(label="Feet",
+                                   min_value=0,
+                                   required=False,
+                                   widget=forms.NumberInput(attrs={'class': 'input'}))
+    height_in = forms.IntegerField(label="Inches",
+                                   min_value=0,
+                                   max_value=11,
+                                   required=False,
+                                   widget=forms.NumberInput(attrs={'class': 'input'}))
 
     class Meta:
         model = Profile
-        fields = ['timezone', 'gender', 'height_ft', 'height_in']
+        fields = ['timezone', 'age', 'gender', 'height_ft', 'height_in']
         widgets = {
-            'timezone': forms.Select(attrs={'class': 'form-control'}),
-            'gender': forms.Select(attrs={'class': 'form-control'}),
-            'height_ft': forms.NumberInput(
-                attrs={'class': 'input', 'min_value': '0', 'max_value': '11'}
-            ),
-            'height_in': forms.NumberInput(
-                attrs={'class': 'input', 'min_value': '0'}
-            )
+            'timezone': forms.Select(attrs={'class': 'input'}),
+            'gender': forms.Select(attrs={'class': 'input'}),
+            'age': forms.NumberInput(attrs={'class': 'input'})
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        if instance and instance.height:
+            total_cm = instance.height
+            total_inches = total_cm / 2.54
+            feet = int(total_inches // 12)
+            inches = int(round(total_inches % 12))
+            self.fields['height_ft'].initial = feet
+            self.fields['height_in'].initial = inches
 
     def clean(self):
         cleaned_data = super().clean()

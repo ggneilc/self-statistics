@@ -1,0 +1,27 @@
+<div id="trend-buttons">
+  <button class="yellow_btn"
+	hx-get="{% url 'graphs:cals' %}"
+	hx-target="#graph-controls"
+	hx-trigger="click"
+hx-swap="innerHTML swap:0.4s">CALORIES</button>
+  <button class="yellow_btn"
+	hx-get="{% url 'graphs:vol' %}"
+	hx-target="#graph-controls"
+	hx-trigger="click"
+hx-swap="innerHTML swap:0.4s">VOLUME</button>
+  <button class="yellow_btn"
+	hx-get="{% url 'graphs:bw' %}"
+	hx-target="#graph-controls"
+	hx-trigger="click"
+hx-swap="innerHTML swap:0.4s">BODYWEIGHT</button>
+</div>
+<div id="graph-controls">
+ </div>
+
+<div id="summary-stats">
+	<div id="summary-label">SUMMARY</div>
+  <div id="stats" style="flex:1;display:flex;flex-direction:column;">
+	<!-- summary stats filled by button -->
+  </div>
+</div>
+

@@ -1,0 +1,59 @@
+{% comment %} food_detail.html {% endcomment %}
+
+<h1>{{ food.name }}</h1>
+<p>(per 100g)</p>
+<h2>Macro Nutrients </h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Nutrient</th>
+            <th>Value (g)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for name, value in food.macros.items %}
+            <tr>
+                <td>{{ name }}</td>
+                <td>{{ value.value|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Mineral Profile</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Mineral</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for name, value in food.minerals.items %}
+            <tr>
+                <td>{{ name }}</td>
+                <td>{{ value.value|floatformat:2 }} {{value.unit}}</td>
+            </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+
+<h2>Vitamins</h2>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Vitamin</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for name, value in food.vitamins.items %}
+            <tr>
+                <td>{{ name }}</td>
+                <td>{{ value.value|floatformat:2 }} {{value.unit}}</td>
+            </tr>
+    {% endfor %}
+    </tbody>
+</table>
