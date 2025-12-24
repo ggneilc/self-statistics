@@ -1,24 +1,22 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token }}">
 
-    <link rel="stylesheet" href="{% static 'calcounter/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'workouts/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'graphs/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'core/styles.css' %}">
     <link rel="icon" href="{% static 'core/favicon_32x32.png'%}" type="image/x-icon">
     {% block extra_css %} {% endblock %}
+    <!-- pico css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.amber.min.css">
     <!-- Google Font : Pixel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
     <!-- htmx installation -->
-    <script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+    <script src="{% static 'core/js/htmx.min.js' %}"></script>
     <!-- D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <!-- font awesome icons -->
@@ -29,4 +27,5 @@
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% block main_content %}
     {% endblock %}
+<script src="{% static 'core/js/global_date_state.js' %}"></script>
 </body>

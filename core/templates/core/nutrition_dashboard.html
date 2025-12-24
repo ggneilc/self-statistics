@@ -1,0 +1,25 @@
+<div class="horizontal-group">
+
+  <div class="vertical-group" style="flex: 1;">
+    <article id="meal-log" class="log-area container big vertical-group"
+      hx-get="{% url 'calcounter:list_m' %}"
+      hx-trigger="load">
+    </article>
+    <article id="meal-input" class="input-area container" style="padding:1rem;">
+      {% include 'calcounter/meal_entry_button.html' %}
+    </article>
+  </div>
+  <article id="recipe-area" class="log-area container vertical-group">
+    <header>Recipes</header>
+  </article>
+  <div class="vertical-group" style="flex: 1;">
+    <article id="pantry-log" class="log-area container big vertical-group"
+      hx-get="{% url 'calcounter:list_f' %}"
+      hx-trigger="load">
+    </article>
+    <article id="pantry-input" class="input-area container" style="padding:1rem; gap:0.5rem;">
+      {% include 'calcounter/food_entry_button.html' %}
+    </article>
+  </div>
+
+</div>

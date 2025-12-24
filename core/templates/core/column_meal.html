@@ -4,27 +4,21 @@
 
   <div class="button-container main-button">
       <button class="graph-btn left-btn"
-        hx-get="{% url 'calcounter:list' %}" 
+        hx-get="{% url 'calcounter:get_m' %}" 
 	hx-trigger="click"
-        hx-target="#meal_list__container"
+        hx-target="#change"
         hx-swap="innerHTML swap:0.5s">
         MEAL LOG
       </button>
       <button class="graph-btn"
+	hx-target="#change"
+	hx-get="{% url 'calcounter:get_f' %}"
         hx-swap="innerHTML swap:0.5s">
         RECIPE BOOK
       </button>
     </div>
 
-  <div id="meal_list__container" class="cardstyle"
-          hx-get="{% url 'calcounter:list' %}" 
-          hx-trigger="load, change from:#hidden-date"
-          hx-swap="innerHTML swap:0.5s">
-          <!-- this will be filled upon page load-->
-  </div>
-
-  <div id="meal_entry__container">
-	{% include 'calcounter/entry_buttons.html' %}
-  </div>
-
+<div id="change" style="height:100%;display:flex;flex-direction:column;">
+	{% include 'calcounter/meal_area.html' %}
+</div>
 </section>

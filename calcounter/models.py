@@ -1,5 +1,19 @@
+'''
+ Meal : event of eating something
+ Food : something that is eaten 
+ MealConsumption : relationship model [food, serving]
+ Ingredient : relationship model for complex food [food, serving]
+'''
 from django.db import models
+from django.conf import settings
 from core.models import Day
+
+
+class FoodManager(models.Manager):
+    def available_to_user(self, user):
+        global_foods = models.Q(owner__isnull=True)
+        user_foods = models.Q(owner=user)
+        return self.filter(global_foods | user_foods)
 
 
 class Food(models.Model):
@@ -20,31 +34,77 @@ class Food(models.Model):
     fiber = models.IntegerField(blank=True, null=True)
     cholesterol = models.IntegerField(blank=True, null=True)
     # Minerals
-    calcium = models.IntegerField(blank=True, null=True)
-    iron = models.IntegerField(blank=True, null=True)
-    magnesium = models.IntegerField(blank=True, null=True)
-    postassium = models.IntegerField(blank=True, null=True)
-    sodium = models.IntegerField(blank=True, null=True)
-    zinc = models.IntegerField(blank=True, null=True)
+    calcium = models.FloatField(blank=True, null=True)
+    iron = models.FloatField(blank=True, null=True)
+    magnesium = models.FloatField(blank=True, null=True)
+    potassium = models.FloatField(blank=True, null=True)
+    sodium = models.FloatField(blank=True, null=True)
+    zinc = models.FloatField(blank=True, null=True)
     # Vitamins
-    vitamin_a = models.IntegerField(blank=True, null=True)
-    vitamin_b6 = models.IntegerField(blank=True, null=True)
-    vitamin_b12 = models.IntegerField(blank=True, null=True)
-    vitamin_c = models.IntegerField(blank=True, null=True)
-    vitamin_d = models.IntegerField(blank=True, null=True)
-    vitamin_e = models.IntegerField(blank=True, null=True)
-
-    is_template = models.BooleanField(default=False)
+    vitamin_a = models.FloatField(blank=True, null=True)
+    vitamin_b6 = models.FloatField(blank=True, null=True)
+    vitamin_b12 = models.FloatField(blank=True, null=True)
+    vitamin_c = models.FloatField(blank=True, null=True)
+    vitamin_d = models.FloatField(blank=True, null=True)
+    vitamin_e = models.FloatField(blank=True, null=True)
 
     ingredients = models.ManyToManyField(
         'self',
-        through='IngredientComposition',
+        through='Ingredient',
         symmetrical=False,
-        related_name='used_in_foods'
+        related_name='contained_in'
     )
+    # Null = Global Food Item
+    # Owner = Complex food item
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_foods'
+    )
+
+    objects = FoodManager()
 
     def __str__(self):
         return f"{self.name}: {self.calories}"
+
+    def to_formatted_dict(self):
+        """Returns the food item in the macros/minerals/vitamins structure."""
+
+        # Define field mappings: { field_name: (Display Name, Unit) }
+        MACRO_MAP = {
+            'calories': ('Energy', 'kcal'), 'protein': ('Protein', 'g'),
+            'fat': ('Total lipid (fat)', 'g'), 'carb': ('Carbohydrate, by difference', 'g'),
+            'sugar': ('Sugars, total including NLEA', 'g'), 'fiber': ('Fiber, total dietary', 'g'),
+            'cholesterol': ('Cholesterol', 'mg')
+        }
+        MINERAL_MAP = {
+            'calcium': ('Calcium, Ca', 'mg'), 'iron': ('Iron, Fe', 'mg'),
+            'magnesium': ('Magnesium, Mg', 'mg'), 'potassium': ('Potassium, K', 'mg'),
+            'sodium': ('Sodium, Na', 'mg'), 'zinc': ('Zinc, Zn', 'mg')
+        }
+        VITAMIN_MAP = {
+            'vitamin_a': ('Vitamin A, RAE', 'µg'), 'vitamin_b6': ('Vitamin B-6', 'mg'),
+            'vitamin_b12': ('Vitamin B-12', 'µg'), 'vitamin_c': ('Vitamin C, total ascorbic acid', 'mg'),
+            'vitamin_d': ('Vitamin D (D2 + D3)', 'µg'), 'vitamin_e': ('Vitamin E (alpha-tocopherol)', 'mg')
+        }
+
+        def group_fields(mapping):
+            group = {}
+            for field, (label, unit) in mapping.items():
+                val = getattr(self, field)
+                if val is not None:
+                    group[label] = {"name": label, "value": val, "unit": unit}
+            return group
+
+        return {
+            "fdc_id": self.fdc_id,
+            "name": self.name,
+            "macros": group_fields(MACRO_MAP),
+            "minerals": group_fields(MINERAL_MAP),
+            "vitamins": group_fields(VITAMIN_MAP)
+        }
 
     def get_nutrition_consumed(self, serving_size):
         # Calculation: (Food's nutrient per 100g / 100) * serving_g
@@ -69,7 +129,6 @@ class Food(models.Model):
         vitamin_c = (self.vitamin_c / 100) * serving_size
         vitamin_d = (self.vitamin_d / 100) * serving_size
         vitamin_e = (self.vitamin_e / 100) * serving_size
-
         return {
             'calories': calories,
             'protein': protein,
@@ -95,35 +154,12 @@ class Food(models.Model):
         }
 
 
-class Meal(models.Model):
-    '''
-    Specific Food(s) Eaten on a day:
-    - day: Day occured
-    - foods[]: Food eaten
-    - serving_size[]: amount in units
-    - unit[]: oz, g, lb
-    @get_macros(): standardize (food[i] x serving_size[i]) to g
-    '''
-    day = models.ForeignKey(Day, on_delete=models.CASCADE,
-                            related_name="meals", null=True)
-    name = models.CharField(max_length=255, blank=True, null=True)
-    is_template = models.BooleanField(default=False)
-    foods_consumed = models.ManytoManyField(
-        Food,
-        through='MealConsumption',
-        related_name='consumed_in_meals'
-    )
-
-    def __str__(self):
-        return f"Meal: {self.name or 'Unnamed'} on {self.date_consumed.date()}"
-
-
-class IngredientComposition(models.Model):
+class Ingredient(models.Model):
     ''' Complex Food
-     i.e. "mashed potato" is component of meal which
+     i.e. "mashed potato" is complex food
+    'butter' is ingredient
     '''
-    complex_food = models.ForeignKey(Food, on_delete=models.CASCADE,
-                                     related_name='components')
+    complex_food = models.ForeignKey(Food, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Food, on_delete=models.CASCADE,
                                    related_name='is_ingredient_of')
     quantity_g = models.FloatField()
@@ -135,17 +171,39 @@ class IngredientComposition(models.Model):
         return f"{self.complex_food.name} uses {self.quantity_g}g of {self.ingredient.name}"
 
 
+class Meal(models.Model):
+    '''
+    'The Plate the user sees' 
+    Specific Food(s) Eaten on a day:
+    - day: Day occured
+    - foods[]: Food eaten
+    - serving_size[]: amount in units
+    - unit[]: oz, g, lb
+    @get_macros(): standardize (food[i] x serving_size[i]) to g
+    '''
+    day = models.ForeignKey(Day, on_delete=models.CASCADE,
+                            related_name="meals", null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    foods_consumed = models.ManyToManyField(
+        Food,
+        through='MealConsumption',
+        related_name='consumed_in_meals'
+    )
+
+    def __str__(self):
+        return f"Meal: {self.name or 'Unnamed'} on {self.day}"
+
+
 class MealConsumption(models.Model):
     '''
+    'Each individual food on the plate'
     Food items and serving sizes consumed for a meal
     '''
-    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
+    meal = models.ForeignKey(
+        Meal, on_delete=models.CASCADE, related_name="items")
     food = models.ForeignKey(Food, on_delete=models.CASCADE)
-
-    serving_g = models.FloatField()
-
-    class Meta:
-        unique_together = ('meal', 'food')
+    quantity = models.FloatField()
+    units = models.FloatField()
 
     def __str__(self):
         return f"{self.food.name} ({self.serving_g}g) in {self.meal.name}"
@@ -173,7 +231,6 @@ class MealConsumption(models.Model):
         vitamin_c = (self.food.vitamin_c / 100) * self.serving_g
         vitamin_d = (self.food.vitamin_d / 100) * self.serving_g
         vitamin_e = (self.food.vitamin_e / 100) * self.serving_g
-
         return {
             'calories': calories,
             'protein': protein,
@@ -199,8 +256,29 @@ class MealConsumption(models.Model):
         }
 
 
+PANTRY_STATUS = [
+    ("s", "IN STOCK"),
+    ("l", "LOW STOCK"),
+    ("o", "OUT OF STOCK")
+]
+
+
+class PantryItem(models.Model):
+    ''' Food the user owns '''
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE,
+                             related_name='pantry')
+    food = models.ForeignKey(Food, on_delete=models.CASCADE)
+    quantity = models.IntegerField(null=True, blank=True)
+    unit = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=1,
+                              choices=PANTRY_STATUS,
+                              default="o")
+    is_template = models.BooleanField(default=False)
+
+
 class Recipe(models.Model):
-    ''' Instructions on Food Entity '''
-    food = models.OneToOneField(Food, on_delete=models.PROTECT,
+    ''' Instructions on creating a Meal '''
+    food = models.OneToOneField(Meal, on_delete=models.PROTECT,
                                 related_name="recipe", null=True)
     name = models.TextField()

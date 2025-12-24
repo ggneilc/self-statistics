@@ -1,18 +1,16 @@
-<div class="personal-left button-container" style="margin: revert; padding:revert;">
-  <button class="graph-btn" style="background-color: var(--bg);"
-    hx-get="{% url 'calcounter:add' %}"
-    hx-target="#meal_entry__container"
+<button style="flex: 1;"
+    hx-get="{% url 'calcounter:complex_food' %}"
+    hx-target="#pantry-input"
     hx-trigger="click"
     hx-swap="innerHTML swap:0.4s">
-    Manual Input
-  </button>
-</div>
-<div class="personal-right button-container" style="margin: revert; padding:revert;">
-  <button class="graph-btn" style="background-color: var(--bg);"
-    hx-get="{% url 'calcounter:auto_buttons' %}"
-    hx-target="#meal_entry__container"
+<i class="fa-solid fa-cubes-stacked"></i>
+    Complex Food
+</button>
+<button style="flex: 1;"
+    hx-get="{% url 'calcounter:search_food' %}"
+    hx-target="#pantry-log"
     hx-trigger="click"
     hx-swap="innerHTML swap:0.4s">
-    By Ingredient
-  </button>
-</div>
+<i class="fa-solid fa-bread-slice"></i>
+    Simple Search
+</button>

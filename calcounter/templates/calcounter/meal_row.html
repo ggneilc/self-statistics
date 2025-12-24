@@ -1,0 +1,32 @@
+{% load static %}
+<tr id="form-{{ prefix }}-{{ empty_form_index }}" class="consumption-row">
+    
+    <td>
+        {{ form.id }}
+        {{ form.meal }}
+        
+        {{ form.food }}
+        
+        {{ form.DELETE }}
+    </td>
+    
+    <td>
+        <b>{{ food_name }}</b>
+    </td>
+    
+    <td>
+        {{ form.serving_g }}
+    </td>
+    
+    <td>
+        <button type="button" class="btn btn-sm btn-danger" onclick="document.getElementById('id_form-{{ empty_form_index }}-DELETE').checked = true; document.getElementById('form-{{ prefix }}-{{ empty_form_index }}').style.display='none';">Remove</button>
+    </td>
+</tr>
+
+<script>
+    // 🌟 THE ONLY REQUIRED JAVASCRIPT 🌟
+    // This script increments the TOTAL_FORMS counter after the row is appended.
+    // It is vital for formset validation to pass.
+    var totalForms = document.getElementById('id_mealconsumption_set-TOTAL_FORMS');
+    totalForms.value = parseInt(totalForms.value) + 1;
+</script>

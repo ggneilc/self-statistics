@@ -1,72 +1,7 @@
 {% load custom_filters %}
-{% if just_updated %}
-<li class="meal expanded" hx-on:click="this.classList.toggle('expanded')">
-{% else %}
-<li class="meal" hx-on:click="this.classList.toggle('expanded')">
-{% endif %}
+<li><div class="meal">
+  <span class="scroll-text">{{ food.name.upper }}</span>
+  <span class="inline_cals">{{ food.calories }}</span>
+  <span class="inline_protein">{{ food.protein }}</span>
+</div></li>
 
-<div class="meal-inline">
-    <span class="food_name scroll-container"> 
-	<span class="scroll-text">{{ food.name.upper }}</span>
-    </span>
-    <span class="inline_cals">{{ food.calories }}</span>
-    <span class="inline_protein">{{ food.protein }}</span>
-</div>
-
-
-    <div class="details">
-<div class="button-container left-crud-buttons"
-		onclick="event.stopPropagation()">
-
-<button class="yellow_btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
-	hx-get="{% url 'calcounter:edit_food' food.id %}"
-	hx-target="closest .meal"
-	hx-swap="outerHTML">
-    <i class="fa-solid fa-pen"></i>
-</button>
-    <button class="delete-btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
-	hx-delete="{% url 'calcounter:delete_food' food.id %}" 
-	hx-target="closest .meal" 
-	hx-swap="outerHTML swap:0.3s">
-	<i class="fa-solid fa-trash"></i>
-    </button>
-{% if food.is_template %}
-	{% include 'calcounter/checkmark.html' %}
-{% else %}
-    <button id="tmp-btn" class="form_btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
-	hx-post="{% url 'calcounter:save_template' food.id %}"
-	hx-target="closest button"
-	hx-swap="outerHTML">
-	<i class="fa-solid fa-floppy-disk"></i>
-    </button>
-{% endif %}
-</div>
-
-	
-        <table style="width: 100%;  border-collapse: collapse;">
-            <tbody>
-                <tr>
-                    <th scope="row">Calories</th>
-                    <td> {{food.calories}}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Protein</th>
-                    <td> {{food.protein}}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Carbs</th>
-                    <td> {{food.carb | blank_check}}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Fats</th>
-                    <td> {{food.fat | blank_check}}</td>
-                </tr>
-                <tr style="border: none;">
-                    <td colspan="2">
-                                            </td>
-                </tr>
-            </tbody>
-        </table>
-
-    </div>
-</li>

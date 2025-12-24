@@ -1,41 +1,37 @@
-<div id="day-container">
-    <div id="day-hud-info">
-	  <div id="day-date" class="main-chip" style="flex: 1; background-color: var(--bg);">
-		<span>{{ date }}</span>
-	  </div>
-
-	  <div id="bw-chip" class="main-chip">
-	    <div id="day-weight"
+<header style="display: flex; justify-content: space-around; align-items: center; padding: 0.5rem 1rem;"> 
+<div style="display: flex; align-items: center; justify-content: center;">
+<i class="fa-solid fa-calendar-day"></i>{{date}} 
+</div>
+<div id="day-weight">
+	    <div
 	      hx-get="{% url 'core:get_bw' %}"
 	      hx-trigger="load"
 	      hx-swap="innerHTML swap:0.5s">
 	    </div>
-	    <i class="fa-solid fa-weight-scale"></i>
 	  </div>
-    </div>
-    <div id="day-macros">
-    {% for m in macros %}
-    <div class="main-chip task" style="position: relative;">
-      <span class="macro-label">{{m.name}}</span>
-	{% if m.goal %}
-	{{m.amount}} / {{m.goal}}
-	{% else%}
-	{{m.amount}}
-	{% endif %}
-    </div>
-    {% endfor %}
-    </div>
-    <div id="day-tasks">
-    {% for t in tasks %}
-    {% if t.done %}
-    <div class="main-chip done task" style="font-size:0.8rem;">
-      {{t.name}}
-    </div>
-    {% else %}
-    <div class="main-chip todo task">
-      {{t.name}}
-    </div>
-    {% endif %}
-    {% endfor %}
-    </div>
+</header>
+
+<div class="horizontal-group">
+	<article id="today_values" style="flex: 1;">
+		  <div id="day-macros">
+	    {% for m in macros %}
+	    <div class="main-chip" style="position:relative;">
+	      <span class="macro-label">{{m.name}}</span>
+	        {{m.amount}}
+	    </div>
+	    {% endfor %}
+	  </div>
+	</article>
+	<article id="meal_plan" style="flex: 1;display:flex;align-items: center; justify-content: center;">
+		...
+	</article>
 </div>
+<article id="progress_track">
+<div id="day-tasks" class="horizontal-group">
+  {% for t in tasks %}
+    <div class="main-chip todo">
+      {{t.name}}
+    </div>
+  {% endfor %}
+</div>
+</article>

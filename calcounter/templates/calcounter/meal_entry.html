@@ -1,52 +1,53 @@
-<form id="m_entry_form"
+<!--
         hx-post="{% url 'calcounter:add' %}"
 	hx-target="#meal_list__container"
-	hx-on="htmx:afterRequest: this.reset()"
-        hx-swap="innerHTML swap:0.5s">
-
+-->
+<form method="post" style="flex:1; position: relative;">
     {% csrf_token %}
 
-    <div class="main-nut">
-        <div class="input_container" style="flex:2;">
-            {{form.name}}
-            <label for="{{ form.name.id_for_label }}">Meal Name</label>
-        </div>
+	<button id="back-btn"
+	hx-get="{% url "calcounter:cancel_m" %}"
+	hx-target="#meal-input"
+	hx-trigger="click"
+	hx-on:click="
+	document.querySelector('#meal-input').classList.remove('big');
+	document.querySelector('#meal-log').classList.add('big');
+	"
+	style="position:absolute;top:0;right:5px;"
+	> BACK</button>
 
-        <div class="input_container" style="flex:1; display: none">
-		<input name="selected_date" value="{{date}}">
-        </div>
-    </div>
+	<hgroup>
+    <h1>New Meal</h1>
+    <p>Add Food</p>
+	</hgroup>
+    {{ meal_form.as_p }}
 
-    <div class="main-nut">
-        <div class="input_container">
-            {{form.calories}}
-            <label for="{{ form.calories.id_for_label }}">Calories</label>
-        </div>
+    <h2>Foods Consumed</h2>
+    
+    {{ formset.management_form }} 
 
-        <div class="input_container">
-            {{form.protein}}
-            <label for="{{ form.protein.id_for_label }}">Protein</label>
-        </div>
-        <div class="input_container">
-            {{form.fat}}
-            <label for="{{ form.fat.id_for_label }}">Fat</label>
-        </div>
+    <table id="consumption-table">
+        <thead>
+            <tr>
+                <th>Food</th>
+                <th>Serving (grams)</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for form in formset %}
+            <tr class="consumption-row">
+                {{ form.id }}
+                {{ form.meal }} 
+                {{ form.food }} 
 
-        <div class="input_container">
-            {{form.carb}}
-            <label for="{{ form.carb.id_for_label }}">Carbs</label>
-        </div>
-    </div>
+                <td>{{ form.food_name }}</td>
+                <td>{{ form.serving_g }}</td>
+                <td>{{ form.DELETE }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-
-    <div class="button-container">
-        <!-- Back Button -->
-        <button class="back-btn"
-		hx-get="{% url 'calcounter:back'%}"
-		hx-target="#meal_entry__container"
-		hx-trigger="click"
-		hx-swap="innerHTML swap:0.4s">CANCEL</button>
-        <!-- Standard Submit Button -->
-        <button id="sub" class="form_btn" type="submit" name="action" value="submit">SUBMIT</button>
-    </div>
+    <button type="submit">Save Meal</button>
 </form>

@@ -1,8 +1,6 @@
-<div class="button-container" style="flex-direction: column;">
 {% for food in foods %}
-	<button class="form_btn"
+<button class="form_btn"
     hx-get="{% url 'calcounter:get_ingred' food.fdcId %}"
     hx-trigger="click"
-    hx-target="#ingreds_display"> {{ food.name }}</button>
+    hx-target="#search-results"> {{ food.name }}</button>
 {% endfor %}
-</div>

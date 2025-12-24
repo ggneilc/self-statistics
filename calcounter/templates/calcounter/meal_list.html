@@ -1,12 +1,13 @@
-<ul id="form_target">
+<header> Today's Meals </header>
 {% if foods %}
-{% for food in foods %}
+  <ul id="meal-list">
+    {% for food in foods %}
     {% include './meal.html' with food=food%}
-{% endfor %}
+    {% endfor %}
+  </ul>
 {% else %}
-	<div style="text-align: center;">
-		
-	</div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;
+  box-shadow: 0 0 0.25rem inset black; color: var(--pico-muted-color);">
+	Eat a Meal
+  </div>
 {% endif %}
-</ul>
-

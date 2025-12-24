@@ -1,21 +1,18 @@
-<form 
-  hx-post="{% url 'calcounter:search_ingred'%}"
-  hx-target="#ingreds_display"
->
+<header>USDA Food Database</header>
+<input type="search"
+	name="query"
+	placeholder="Search for a food..." 
+	hx-post="{% url 'calcounter:search_ingred' %}"
+	hx-trigger="keyup changed delay:500ms"
+	hx-target="#search-results"/>
+<div id="search-results" class="vertical-group overflow-auto"></div> 
 
-  <div class="main-nut">
-  <div class="input_container" style="margin:0">
-    <input id="query "type="text" placeholder="" name="query" style="height: 100%;">
-    <label for="query" style="background-color: var(--bg);">Ingredient</label>
-  </div>
-  <div class="button-container">
-	<button class="form_btn" name="action" type="submit" value="submit" style="margin:0">
-	<i class="fa-solid fa-magnifying-glass"></i>
-	</button>
-  </div>
-  </div>
 
-</form>
-
-<ul id="ingreds_display">
-</ul>
+<article id="pantry-input" hx-swap-oob="True">
+<button style="flex:1;"
+	hx-get="{% url 'calcounter:cancel_f' %}"
+	hx-trigger="click"
+	hx-target="#pantry-input">
+	CANCEL
+</button>
+</article>

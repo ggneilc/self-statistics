@@ -49,34 +49,34 @@ def set_macro_goal(sender, instance, created, **kwargs):
     )
 
 
-@receiver([post_save, post_delete], sender=Food)
-def update_day_after_meal_change(sender, instance, **kwargs):
-    signal = kwargs.get('signal')  # post_save or post_delete
-    date = instance.day.date
-    print(f"Updating {date}")
-    day = instance.day
+# @receiver([post_save, post_delete], sender=Food)
+# def update_day_after_meal_change(sender, instance, **kwargs):
+#    signal = kwargs.get('signal')  # post_save or post_delete
+#    date = instance.day.date
+#    print(f"Updating {date}")
+#    day = instance.day
 
     # Check if food has 01-01-0001
-    if (date == datetime(1, 1, 1)):
-        print("flushing dead foods")
-        # delete all foods that has 01-01-0001
-        foods = Food.objects.filter(day=day)
-        for f in foods:
-            if not f.is_template:
-                print(f"dead food found: {f}")
-                instance.delete()
-    else:
-        total_c = Food.objects.filter(day=day).aggregate(
-            total_cals=Sum('calories')
-        )['total_cals'] or 0
-        total_p = Food.objects.filter(day=day).aggregate(
-            total_pro=Sum('protein')
-        )['total_pro'] or 0
-
-        Day.objects.filter(pk=day.id).update(
-            calories_consumed = total_c,
-            protein_consumed = total_p
-        )
+#    if (date == datetime(1, 1, 1)):
+#        print("flushing dead foods")
+    # delete all foods that has 01-01-0001
+#        foods = Food.objects.filter(day=day)
+#        for f in foods:
+#            if not f.is_template:
+#                print(f"dead food found: {f}")
+#                instance.delete()
+#    else:
+#        total_c = Food.objects.filter(day=day).aggregate(
+#            total_cals=Sum('calories')
+#        )['total_cals'] or 0
+#        total_p = Food.objects.filter(day=day).aggregate(
+#            total_pro=Sum('protein')
+#        )['total_pro'] or 0
+#
+#        Day.objects.filter(pk=day.id).update(
+#            calories_consumed = total_c,
+#            protein_consumed = total_p
+#        )
 
 
 @receiver([post_save, post_delete], sender=Workout)

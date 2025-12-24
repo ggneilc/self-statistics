@@ -1,0 +1,16 @@
+<li class="food"
+  hx-on:click="this.closest('.food').querySelector('.details').classList.toggle('hidden')">
+  <span>{{ pantry.food.name.upper }}</span>
+  <div class="details hidden horizontal-group">
+    <div style="flex:1;">
+      {{ pantry.get_status_display }}
+    </div>
+    <div style="flex:1;">
+      {{ pantry.quantity}} {{pantry.unit}}
+    </div>
+    <div style="flex:1;">
+      +
+    </div>
+  </div>
+</li>
+

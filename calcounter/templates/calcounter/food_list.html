@@ -1,0 +1,19 @@
+<header style="position: relative;"> Pantry
+
+<span style="position: absolute; right: 1rem;">
+  <button data-tooltip="All" data-placement="bottom" style="padding: 0 0.3rem;"><i class="fa-solid fa-list-ul"></i></button>
+  <button data-tooltip="In Stock" data-placement="bottom" style="padding: 0 0.3rem;"><i class="fa-solid fa-basket-shopping"></i></button>
+</span>
+</header>
+{% if foods %}
+  <ul id="food-list">
+    {% for pantry in foods %}
+    {% include './food.html' with pantry=pantry%}
+    {% endfor %}
+  </ul>
+{% else %}
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;
+  box-shadow: 0 0 0.25rem inset black; color: var(--pico-muted-color);">
+	Find your favorite foods
+  </div>
+{% endif %}

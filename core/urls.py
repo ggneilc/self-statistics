@@ -7,12 +7,17 @@ app_name = "core"
 urlpatterns = [
     path("", views.index, name="index"),
     path("home/", views.home, name="home"),
+    path("dashboard/", views.dashboard_page, name="dashboard_page"),
+    path("user/streak", views.get_current_streak, name="curr_streak"),
+    path("wt/", views.workout_page, name="workout_page"),
+    path("nutrition/", views.nutrition_page, name="nutrition_page"),
     path('signup/', views.signup_view, name='signup'),
     path('login/', views.HTMXLoginView.as_view(template_name='core/login.html'), name='login'),
     path('logout/', views.HTMXLogoutView.as_view(next_page='core:home'), name='logout'),
     path("auth-modal/", views.auth_modal, name="auth_modal"),
 
 
+    path("goal/macro/", views.get_macro_goal, name="macro-goal"),
     path("bodyweight/", views.get_bodyweight, name="get_bw"),
     path("profile/tz", views.update_timezone, name="set_tz"),
     path("profile/personal", views.info_setting, name="info_setting"),
