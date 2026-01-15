@@ -1,0 +1,65 @@
+{% comment %} food form {% endcomment %}
+
+
+
+<button id="back-btn"
+	hx-get="{% url 'calcounter:cancel_f' %}"
+	hx-target="#pantry-input"
+	hx-trigger="click"
+	hx-on:click="
+    document.querySelector('#pantry-input').classList.toggle('big');
+    document.querySelector('#pantry-input').classList.toggle('overflow-auto');
+    document.querySelector('#pantry-input').classList.toggle('hidden');
+    document.querySelector('#pantry-log').classList.toggle('big');
+    document.querySelector('#pantry-log').classList.remove('partial');
+    document.querySelector('#pantry-log').classList.add('full');
+	"
+	style="position:absolute;top:10px;right:10px;padding:0 0.5rem;">
+    <i class="fa-solid fa-xmark"></i>
+    </button>
+
+<form style="width:100%;"
+    hx-post="{% url 'calcounter:complex_food' %}"
+    hx-target="#pantry-log">
+    {% csrf_token %}
+    
+    {{ form.name.label_tag }} {{ form.name }}
+
+    <h3>Ingredients</h3>
+    {{ formset.management_form }}
+    <div id="ingredient-list">
+        {% for ingredient_form in formset %}
+            <div class="ingredient-row horizontal-group">
+                {{ ingredient_form.ingredient }} 
+                {{ ingredient_form.amount }}
+                {{ ingredient_form.unit }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="horizontal-group" style="justify-content:center;">
+    <button type="button"
+        hx-get="{% url 'calcounter:add_ingredient_row' %}"
+        hx-target="#ingredient-list"
+        hx-swap="beforeend"
+        style="padding: 0 0.5rem;">
+        + 
+    </button>
+    </div>
+
+    <button type="submit"
+    hx-on:click="
+    document.querySelector('#pantry-input').classList.toggle('big');
+    document.querySelector('#pantry-input').classList.toggle('overflow-auto');
+    document.querySelector('#pantry-input').classList.toggle('hidden');
+    document.querySelector('#pantry-log').classList.toggle('big');
+    document.querySelector('#pantry-log').classList.remove('partial');
+    document.querySelector('#pantry-log').classList.add('full');
+    ">Save Complex Food</button>
+</form>
+
+<script>
+(function() {
+document.querySelectorAll('.tom-select-ingredient').forEach(el => setupTomSelectIngredient(el));
+})();
+</script>

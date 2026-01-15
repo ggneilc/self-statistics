@@ -1,18 +1,42 @@
-<header>USDA Food Database</header>
+<header style="position:relative;">USDA Food Database
+
+<span class="horizontal-group"
+style="position:absolute;right:1rem;top:0.5rem;">
+
+  <label data-tooltip="Branded" data-placement="bottom"
+  style="padding:0;">
+	<input type="checkbox" name="branded" id="branded">
+  </label>
+
+  <label data-tooltip="Foundational" data-placement="bottom"
+  style="padding:0;">
+	<input type="checkbox" name="foundational" id="foundational">
+  </label>
+
+  <button data-tooltip="Back" data-placement="bottom"
+  style="padding:0 0.5rem;"
+  	hx-get="{% url 'calcounter:list_f' 'all' %}"
+	hx-target="#pantry-log"
+	hx-on:click="
+	document.getElementById('pantry-input').classList.add('hidden');
+	document.getElementById('pantry-log').classList.remove('partial');
+	document.getElementById('pantry-log').classList.add('full');
+	">
+	<i class="fa-solid fa-xmark"></i>
+  </button>
+</span>
+</header>
 <input type="search"
 	name="query"
 	placeholder="Search for a food..." 
-	hx-post="{% url 'calcounter:search_ingred' %}"
+	hx-get="{% url 'calcounter:search_ingred' %}"
 	hx-trigger="keyup changed delay:500ms"
-	hx-target="#search-results"/>
-<div id="search-results" class="vertical-group overflow-auto"></div> 
-
-
-<article id="pantry-input" hx-swap-oob="True">
-<button style="flex:1;"
-	hx-get="{% url 'calcounter:cancel_f' %}"
-	hx-trigger="click"
-	hx-target="#pantry-input">
-	CANCEL
-</button>
-</article>
+	hx-include="#branded,#foundational"
+	hx-target="#search-results"
+	hx-on:keyup="document.getElementById('search-busy').classList.remove('hidden')"/>
+<div id="search-results" class="vertical-group overflow-auto">
+	<div id="search-busy" class="hidden" aria-busy="true"></div>
+</div> 
+<div id="selected-food" class="hidden vertical-group overflow-auto">
+	<div aria-busy="true"></div>
+</div>

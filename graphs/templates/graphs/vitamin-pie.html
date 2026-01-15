@@ -1,0 +1,155 @@
+<div id="vitamin-chart"
+    data-raw='{{ day_data|safe }}'
+    data-goal='{{ goals|safe }}'></div>
+
+
+
+<script>
+
+
+(function() {
+
+    const datacontainer = document.getElementById("vitamin-chart");
+    if (!datacontainer) return;
+    const rawMinerals = JSON.parse(datacontainer.dataset.raw);
+    const rdaGoals = JSON.parse(datacontainer.dataset.goal);
+
+    const data = Object.keys(rawMinerals).map(key => ({
+        name: key.charAt(0).toUpperCase() + key.slice(1),
+        percentage: Math.min((rawMinerals[key] / rdaGoals[key]) * 100, 100), // Cap at 100% for the visual
+        actual: rawMinerals[key],
+        unit: 'mg'
+    }));
+
+    // 1. Internal Coordinate System (Always stays 400x400 internally)
+    const baseSize = 450; 
+    const chartRadius = baseSize / 2;
+    const ringWidth = 22; // Slightly wider for better visibility
+    const ringSpacing = 6;
+
+    const container = d3.select("#vitamin-chart");
+    container.selectAll("svg").remove();
+
+    // 2. Responsive SVG setup
+    const svg = container.append("svg")
+        // These attributes make it responsive
+        .attr("viewBox", `0 0 ${baseSize} ${baseSize}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .style("width", "100%")  // Fills the container
+        .style("height", "auto") // Maintains aspect ratio
+        .append("g")
+        .attr("transform", `translate(${baseSize / 2}, ${baseSize / 2})`);
+
+    const colorScheme = [
+        'var(--vitamin-e-color)','var(--vitamin-d-color)',
+        'var(--vitamin-c-color)','var(--vitamin-b12-color)',
+        'var(--vitamin-b6-color)','var(--vitamin-a-color)'
+    ];
+    const color = d3.scaleOrdinal()
+        .domain(data.map(d => d.name))
+        .range(colorScheme);
+    const angleScale = d3.scaleLinear().domain([0, 100]).range([0, 2 * Math.PI]);
+
+    // 3. Dynamic Radius Calculation
+    // We start the first ring further out to leave room for a center label
+    const startRadius = 30; 
+
+    const arc = d3.arc()
+        .innerRadius((d, i) => i * (ringWidth + ringSpacing) + startRadius)
+        .outerRadius((d, i) => (i + 1) * ringWidth + (i * ringSpacing) + startRadius)
+        .startAngle(0)
+        .cornerRadius(12);
+    
+    // 4 & 5. Create a Group for each Mineral "Lane"
+    const ringGroups = svg.selectAll(".ring-group")
+        .data(data)
+        .enter()
+        .append("g")
+        .attr("class", "ring-group")
+        .style("cursor", "pointer");
+
+    // Add Background Track to the group
+    ringGroups.append("path")
+        .attr("class", "background-arc")
+        .attr("d", (d, i) => d3.arc()
+            .innerRadius(i * (ringWidth + ringSpacing) + startRadius)
+            .outerRadius((i + 1) * ringWidth + (i * ringSpacing) + startRadius)
+            .startAngle(0)
+            .endAngle(2 * Math.PI)()
+        )
+        .attr("fill", "rgba(255, 255, 255, 0.08)");
+
+    // Add Foreground Progress to the same group
+    const foregroundPaths = ringGroups.append("path")
+        .attr("class", "foreground-arc")
+        .attr("fill", (d, i) => color(i))
+        .datum((d, i) => ({ ...d, index: i })); // Pass index for the tween
+
+    // Entrance Animation
+    foregroundPaths.transition()
+        .duration(1200)
+        .delay((d, i) => i * 80)
+        .attrTween("d", function(d) {
+            const i = d.index;
+            const interpolate = d3.interpolate(0, d.percentage);
+            return function(t) {
+                d.endAngle = angleScale(interpolate(t));
+                return arc(d, i);
+            };
+        });
+
+    // 6. Labels (Initial state: Hidden)
+    const labels = ringGroups.append("text")
+        .attr("class", "ring-label")
+        .attr("x", 12)
+        .attr("y", (d, i) => -(i * (ringWidth + ringSpacing) + startRadius + (ringWidth/2)))
+        .attr("dy", "0.35em")
+        .style("font-size", "25px")
+        .style("fill", "white")
+        .style("font-weight", "bold")
+        .style("pointer-events", "none")
+        .style("opacity", 0)
+        .text(d => `${d.name}: ${Math.round(d.percentage)}%`);
+
+    // 7. HOVER LOGIC (Attached to the Group)
+    ringGroups.on("mouseenter", function(event, d) {
+        const group = d3.select(this);
+
+        // Show label with shift
+        group.select(".ring-label")
+            .transition().duration(200)
+            .style("opacity", 1)
+            .attr("transform", "translate(8, 0)");
+
+        // Highlight the progress bar
+        group.select(".foreground-arc")
+            .transition().duration(200)
+            .style("filter", "brightness(1.4)")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1);
+            
+        // Optional: darken other rings slightly to emphasize this one
+        ringGroups.filter(g => g !== d)
+            .transition().duration(200)
+            .style("opacity", 0.3);
+        ringGroups.selectAll("text").classed("text-active", true);
+    })
+    .on("mouseleave", function(event, d) {
+        const group = d3.select(this);
+
+        group.select(".ring-label")
+            .transition().duration(200)
+            .style("opacity", 0)
+            .attr("transform", "translate(0, 0)");
+
+        group.select(".foreground-arc")
+            .transition().duration(200)
+            .style("filter", "brightness(1)")
+            .attr("stroke", "none");
+            
+        // Reset all rings
+        ringGroups.transition().duration(200).style("opacity", 1);
+        ringGroups.selectAll("text").classed("text-active", false);
+    });
+})();
+</script>

@@ -1,14 +1,29 @@
 <header style="position: relative;"> Pantry
 
 <span style="position: absolute; right: 1rem;">
-  <button data-tooltip="All" data-placement="bottom" style="padding: 0 0.3rem;"><i class="fa-solid fa-list-ul"></i></button>
-  <button data-tooltip="In Stock" data-placement="bottom" style="padding: 0 0.3rem;"><i class="fa-solid fa-basket-shopping"></i></button>
+  <button data-tooltip="All" data-placement="bottom" style="padding: 0 0.3rem;"
+  hx-get="{% url 'calcounter:list_f' 'all' %}"
+  hx-target="#pantry-log"><i class="fa-solid fa-list-ul"></i></button>
+  <button data-tooltip="In Stock" data-placement="bottom" style="padding: 0 0.3rem;"
+  hx-get="{% url 'calcounter:list_f' 'in_stock' %}" hx-target="#pantry-log"><i class="fa-solid fa-basket-shopping"></i></button>
+  <button data-tooltip="Complex" data-placement="bottom" style="padding: 0 0.3rem;"
+  hx-get="{% url 'calcounter:list_f' 'complex' %}" hx-target="#pantry-log"><i class="fa-solid fa-cubes"></i></button>
+  <button data-tooltip="Simple" data-placement="bottom" style="padding: 0 0.3rem;"
+  hx-get="{% url 'calcounter:list_f' 'simple' %}" hx-target="#pantry-log"><i class="fa-solid fa-cube"></i></button>
+  <button data-tooltip="Add" data-placement="bottom" style="padding: 0 0.3rem;"
+  hx-on:click="
+  document.getElementById('pantry-input').classList.remove('hidden');
+  document.getElementById('pantry-log').classList.remove('full');
+  document.getElementById('pantry-log').classList.add('partial');
+  "
+  ><i class="fa-solid fa-plus"></i></button>
 </span>
 </header>
 {% if foods %}
+  <div id="unit-target"></div>
   <ul id="food-list">
     {% for pantry in foods %}
-    {% include './food.html' with pantry=pantry%}
+    {% include './food.html' with pantry=pantry open=False %}
     {% endfor %}
   </ul>
 {% else %}
@@ -17,3 +32,20 @@
 	Find your favorite foods
   </div>
 {% endif %}
+
+
+{% if added %}
+
+
+<article id="pantry-input"
+class="input-area container overflow-auto"
+style="padding:1rem; gap:0.5rem;position:relative;"
+hx-swap-oob="true">
+  {% include 'calcounter/food_entry_button.html' %}
+</article>
+
+{% endif %}
+
+<script>
+
+</script>

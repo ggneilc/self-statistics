@@ -1,7 +1,69 @@
 {% load custom_filters %}
-<li><div class="meal">
-  <span class="scroll-text">{{ food.name.upper }}</span>
-  <span class="inline_cals">{{ food.calories }}</span>
-  <span class="inline_protein">{{ food.protein }}</span>
+<li><div class="meal" style="position:relative;"
+  hx-on:click="this.querySelector('.details').classList.toggle('hidden');
+  this.classList.toggle('active');">
+  <span class="scroll-text">{{ meal.name.upper|default:"Unnamed" }}</span>
+
+  <div class="details hidden vertical-group nutrition">
+
+    <span style="position:absolute;top:0.5rem;right:0.5rem;">
+      <button style="padding:0 0.3rem">
+        <i class="fa-solid fa-floppy-disk"></i>
+      </button>
+      <button style="padding:0 0.3rem;"
+        hx-delete="{% url 'calcounter:delete_meal' meal.id %}"
+        hx-target="closest li"
+        hx-swap="outerHTML">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+    </span>
+
+    
+    <div class="horizontal-group nutrient"><span class="meal-macro-label">
+      macros</span>
+      <div data-tooltip="Calories" data-placement="top" class="calorie">{{ meal.nutrients.calories|floatformat:0}}</div>
+      <div data-tooltip="Protein" data-placement="top" class="protein">{{ meal.nutrients.protein|floatformat:0}}</div>
+      <div data-tooltip="Fat" data-placement="top" class="fat">{{ meal.nutrients.fat|floatformat:0}}</div>
+      <div data-tooltip="Carbohydrates" data-placement="top" class="carb">{{ meal.nutrients.carb|floatformat:0}}</div>
+      <div data-tooltip="Sugar" data-placement="top" class="sugar">{{ meal.nutrients.sugar|floatformat:0}}</div>
+      <div data-tooltip="Fiber" data-placement="top" class="fiber">{{ meal.nutrients.fiber|floatformat:0}}</div>
+      <div data-tooltip="Cholesterol" data-placement="top" class="cholesterol">{{ meal.nutrients.cholesterol|floatformat:0}}</div>
+    </div>
+    <div class="horizontal-group nutrient"><span class="meal-macro-label">
+      minerals</span>
+      <div data-tooltip="Sodium" data-placement="top" class="sodium">{{meal.nutrients.sodium|floatformat:0}}</div>
+      <div data-tooltip="Potassium" data-placement="top" class="potassium">{{meal.nutrients.potassium|floatformat:0}}</div>
+      <div data-tooltip="Calcium" data-placement="top" class="calcium">{{meal.nutrients.calcium|floatformat:0}}</div>
+      <div data-tooltip="Magnesium" data-placement="top" class="magnesium">{{meal.nutrients.magnesium|floatformat:0}}</div>
+      <div data-tooltip="Zinc" data-placement="top" class="zinc">{{meal.nutrients.zinc|floatformat:0}}</div>
+      <div data-tooltip="Iron" data-placement="top" class="iron">{{meal.nutrients.iron|floatformat:0}}</div>
+    </div>
+    <div class="horizontal-group nutrient"><span class="meal-macro-label">
+      vitamins</span>
+      <div data-tooltip="Vitamin A" data-placement="top" class="vitamin-a">{{meal.nutrients.vitamin_a|floatformat:1}}</div>
+      <div data-tooltip="Vitamin B6" data-placement="top" class="vitamin-b6">{{meal.nutrients.vitamin_b6|floatformat:1}}</div>
+      <div data-tooltip="Vitamin B12" data-placement="top" class="vitamin-b12">{{meal.nutrients.vitamin_b12|floatformat:1}}</div>
+      <div data-tooltip="Vitamin C" data-placement="top" class="vitamin-c">{{meal.nutrients.vitamin_c|floatformat:1}}</div>
+      <div data-tooltip="Vitamin D" data-placement="top" class="vitamin-d">{{meal.nutrients.vitamin_d|floatformat:1}}</div>
+      <div data-tooltip="Vitamin E" data-placement="top" class="vitamin-e">{{meal.nutrients.vitamin_e|floatformat:1}}</div>
+    </div>
+
+    <details style="width:100%;margin-bottom:0;"
+    hx-on:click="event.stopPropagation();">
+      <summary>Foods</summary>
+      <div class="vertical-group">
+      {% for mapping in meal.items.all %}
+        <div class="ingredient">
+          {% if mapping.food %}
+          <span class="ingredient-name">{{ mapping.food.name }}</span> : <span class="ingredient-unit">{{ mapping.amount}} {{ mapping.unit.name }}</span>
+          {% else %}
+          <span class="ingredient-name">{{ mapping.description }}</span> : <span class="ingredient-unit">  <i class="fa-solid fa-keyboard"></i> </span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    </details>
+
+  </div>
 </div></li>
 

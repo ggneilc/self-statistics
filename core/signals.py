@@ -1,7 +1,7 @@
 # core/signals.py
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from calcounter.models import Food
+from calcounter.models import MealConsumption
 from workouts.models import Workout, WorkoutType
 from django.contrib.auth.models import User
 from .models import Day, Profile
@@ -14,6 +14,12 @@ def set_macro_goal(sender, instance, created, **kwargs):
     # instance.date = YYYY-MM-DD
     user = instance.user
     today = instance.date
+
+    # 1. Force conversion if 'today' is a string
+    if isinstance(today, str):
+        # Handles 'YYYY-MM-DD'
+        today = datetime.strptime(today, '%Y-%m-%d').date()
+
     if (today == '0001-01-01'):
         return
     yesterday = today - timedelta(days=1)
@@ -22,9 +28,11 @@ def set_macro_goal(sender, instance, created, **kwargs):
 
     # if no bodyweight or day, just use default
     if not yesterday_obj:
+        print("No yesterday found: cannot set goals")
         return
     bw = yesterday_obj.bodyweight
     if not bw:
+        print("No bodyweight found: cannot set goals")
         return
 
     print(f"Setting macros for {instance.date} for user {user}:")
@@ -49,34 +57,25 @@ def set_macro_goal(sender, instance, created, **kwargs):
     )
 
 
-# @receiver([post_save, post_delete], sender=Food)
-# def update_day_after_meal_change(sender, instance, **kwargs):
-#    signal = kwargs.get('signal')  # post_save or post_delete
-#    date = instance.day.date
-#    print(f"Updating {date}")
-#    day = instance.day
+@receiver([post_save, post_delete], sender=MealConsumption)
+def update_day_after_meal_change(sender, instance, **kwargs):
+    # instance is a MealConsumption object
+    meal = instance.meal
+    day = meal.day
+    print(f"Updating {day.date}")
 
-    # Check if food has 01-01-0001
-#    if (date == datetime(1, 1, 1)):
-#        print("flushing dead foods")
-    # delete all foods that has 01-01-0001
-#        foods = Food.objects.filter(day=day)
-#        for f in foods:
-#            if not f.is_template:
-#                print(f"dead food found: {f}")
-#                instance.delete()
-#    else:
-#        total_c = Food.objects.filter(day=day).aggregate(
-#            total_cals=Sum('calories')
-#        )['total_cals'] or 0
-#        total_p = Food.objects.filter(day=day).aggregate(
-#            total_pro=Sum('protein')
-#        )['total_pro'] or 0
-#
-#        Day.objects.filter(pk=day.id).update(
-#            calories_consumed = total_c,
-#            protein_consumed = total_p
-#        )
+    total_c, total_p = 0, 0
+
+    for meal in day.meals.all():
+        totals = meal.get_nutrients_consumed()
+        total_c += totals['calories']
+        total_p += totals['protein']
+
+    print(f"New totals for {day.date}: {total_c} cals, {total_p} pro")
+    Day.objects.filter(pk=day.id).update(
+        calories_consumed = total_c,
+        protein_consumed = total_p
+    )
 
 
 @receiver([post_save, post_delete], sender=Workout)

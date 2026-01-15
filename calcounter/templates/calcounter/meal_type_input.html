@@ -1,16 +1,16 @@
-<button style="flex: 1;"
-    hx-get="{% url 'calcounter:complex_food' %}"
-    hx-target="#pantry-input"
+<button style="flex:1;"
+    hx-get="{% url 'calcounter:templates_m' %}"
+    hx-target="#meal-input"
     hx-trigger="click"
-    hx-swap="innerHTML swap:0.4s">
+    hx-swap="innerHTML swap:0.4s"
+    hx-on:click="
+	document.querySelector('#meal-input').classList.add('big');
+	document.querySelector('#meal-log').classList.remove('big');
+    ">
 <i class="fa-solid fa-cubes-stacked"></i>
-    Complex Food
+    Automatic
 </button>
-<button style="flex: 1;"
-    hx-get="{% url 'calcounter:search_food' %}"
-    hx-target="#pantry-log"
-    hx-trigger="click"
-    hx-swap="innerHTML swap:0.4s">
-<i class="fa-solid fa-bread-slice"></i>
-    Simple Search
+<button style="flex:1;">
+<i class="fa-regular fa-hand-pointer"></i>
+    Manual
 </button>

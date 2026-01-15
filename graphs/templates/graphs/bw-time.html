@@ -1,4 +1,4 @@
-<div id="time-buttons" class="horizontal-group">
+<div id="time-buttons" style="display:none;" class="horizontal-group">
   <button style="flex:1;"
 	hx-target="#graph-area"
 	hx-get="{% url 'graphs:bw' %}"
@@ -19,117 +19,124 @@
   {{ summary }}
 </div>
 
-<div class="horizontal-group">
-</div>
-
 <script>
 (function() {
     const container = document.getElementById("d3-line");
-    if (!container) return; // No graph container, nothing to do
+    if (!container) return;
 
-    // Parse data from data-days attribute
     let data;
     try {
-      data = JSON.parse(container.dataset.days);
+        data = JSON.parse(container.dataset.days);
     } catch (err) {
-      console.error("Invalid day data:", err);
-      return;
+        console.error("Invalid day data:", err);
+        return;
     }
 
-    // Parse dates and sort
     data = data.map(d => ({
-      date: new Date(d.day),
-      value: +d.value,
-      ma7: +d.ma7
+        date: new Date(d.day),
+        value: +d.value,
+        ma7: +d.ma7
     })).sort((a, b) => a.date - b.date);
 
-    // Remove any previous SVG if re-rendering
     container.innerHTML = "";
 
-    // --- Setup chart dimensions ---
-    const margin = { top: 20, right: 30, bottom: 30, left: 50 };
-    const width = container.clientWidth || 400;
-    const height = 250;
+    // 1. Setup Internal Dimensions (The coordinate system)
+    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
+    const baseWidth = 1000; // Large internal width for smoothness
+    
+    // Maintain your height logic for the internal scale
+    function getInternalHeight() {
+        const h = window.innerHeight;
+        if (h < 625) return 250;  
+        return 350;
+    }
+    const baseHeight = getInternalHeight();
 
-    // --- Create scales ---
+    // 2. Create Scales based on baseWidth/baseHeight
     const x = d3.scaleTime()
-      .domain(d3.extent(data, d => d.date))
-      .range([margin.left, width - margin.right]);
+        .domain(d3.extent(data, d => d.date))
+        .range([margin.left, baseWidth - margin.right]);
 
     const y = d3.scaleLinear()
-      .domain([d3.min(data, d => d.value) - 1,
-               d3.max(data, d => d.value) + 1])
-      .nice()
-      .range([height - margin.bottom, margin.top]);
+        .domain([d3.min(data, d => d.value) - 1, d3.max(data, d => d.value) + 1])
+        .nice()
+        .range([baseHeight - margin.bottom, margin.top]);
 
-    // --- Create SVG ---
+    // 3. Create Responsive SVG using viewBox
     const svg = d3.select(container)
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
+        .append("svg")
+        .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .style("width", "100%")
+        .style("height", "auto");
 
-    // --- X Axis ---
-    svg.append("g")
-      .attr("transform", `translate(0,${height - margin.bottom})`)
-      .call(d3.axisBottom(x).ticks(5).tickFormat(d3.timeFormat("%b %d")))
-      .selectAll("text")
-      .style("font-size", "0.8rem")
-      .style("fill", "var(--text, #f5f5f5)");
+    const g = svg.append("g");
 
-    // --- Y Axis ---
-    svg.append("g")
-      .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y).ticks(5))
-      .selectAll("text")
-      .style("font-size", "0.8rem")
-      .style("fill", "var(--text, #f5f5f5)");
+    // 4. Draw Axes
+    g.append("g")
+        .attr("transform", `translate(0,${baseHeight - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(baseWidth / 100).tickFormat(d3.timeFormat("%b %d")))
+        .selectAll("text")
+        .style("font-size", "14px") // Fixed internal font size
+        .style("fill", "var(--text, #f5f5f5)");
 
-    // --- Line Generator ---
+    g.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).ticks(5))
+        .selectAll("text")
+        .style("font-size", "14px")
+        .style("fill", "var(--text, #f5f5f5)");
+
+    // 5. Line Generators
     const line = d3.line()
-      .x(d => x(d.date))
-      .y(d => y(d.value))
-      .curve(d3.curveMonotoneX);
+        .x(d => x(d.date))
+        .y(d => y(d.value))
+        .curve(d3.curveMonotoneX);
 
     const maline = d3.line()
-	.x(d => x(d.date))
-	.y(d => y(d.ma7))
-	.curve(d3.curveBasis);
+        .x(d => x(d.date))
+        .y(d => y(d.ma7))
+        .curve(d3.curveBasis);
 
-    // --- Draw Line ---
+    // 6. Draw Paths
+    // Raw Weight Line
     svg.append("path")
-      .datum(data)
-      .attr("fill", "none") .attr("stroke", "var(--accent, #ffc83d)")
-      .attr("stroke-width", 2)
-      .attr("d", line);
-    const path = svg.append("path")
-      .datum(data)
-      .attr("fill", "none") .attr("stroke", "var(--blue, #ffc83d)")
-      .attr("stroke-width", 2)
-      .attr("d", maline);
-// Animation
-const totalLength = path.node().getTotalLength();
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "var(--accent, #ffc83d)")
+        .attr("stroke-width", 3)
+        .attr("d", line);
 
-path
-    .attr("stroke-dasharray", totalLength + " " + totalLength)
-    .attr("stroke-dashoffset", totalLength)
-    .transition()
-    .duration(2000)
-    .ease(d3.easeLinear)
-    .attr("stroke-dashoffset", 0);
+    // Moving Average Line (Animated)
+    const maPath = svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "var(--pico-secondary, #707a8a)")
+        .attr("stroke-width", 3)
+        .attr("d", maline);
 
-    // --- Draw Points ---
+    const totalLength = maPath.node().getTotalLength();
+
+    maPath
+        .attr("stroke-dasharray", totalLength + " " + totalLength)
+        .attr("stroke-dashoffset", totalLength)
+        .transition()
+        .duration(2000)
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0);
+
+    // 7. Draw Points
     svg.selectAll(".dot")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("class", "dot")
-      .attr("cx", d => x(d.date))
-      .attr("cy", d => y(d.value))
-      .attr("fill", "var(--accent, #ffc83d)")
-.transition()
-    .delay((d, i) => i * 30)
-    .duration(500)
-    .attr("r", 3);
-
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("cx", d => x(d.date))
+        .attr("cy", d => y(d.value))
+        .attr("fill", "var(--accent, #ffc83d)")
+        .transition()
+        .delay((d, i) => i * 30)
+        .duration(500)
+        .attr("r", 5);
 })();
 </script>

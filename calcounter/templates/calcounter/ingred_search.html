@@ -2,5 +2,9 @@
 <button class="form_btn"
     hx-get="{% url 'calcounter:get_ingred' food.fdcId %}"
     hx-trigger="click"
-    hx-target="#search-results"> {{ food.name }}</button>
+    hx-target="#selected-food"
+    hx-on:click="
+    document.getElementById('search-results').classList.toggle('hidden');
+    document.getElementById('selected-food').classList.toggle('hidden');
+    "> {{ food.name }}</button>
 {% endfor %}

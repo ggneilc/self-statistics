@@ -1,11 +1,4 @@
-<!--
-        hx-post="{% url 'calcounter:add' %}"
-	hx-target="#meal_list__container"
--->
-<form method="post" style="flex:1; position: relative;">
-    {% csrf_token %}
-
-	<button id="back-btn"
+<button id="back-btn"
 	hx-get="{% url "calcounter:cancel_m" %}"
 	hx-target="#meal-input"
 	hx-trigger="click"
@@ -13,41 +6,56 @@
 	document.querySelector('#meal-input').classList.remove('big');
 	document.querySelector('#meal-log').classList.add('big');
 	"
-	style="position:absolute;top:0;right:5px;"
-	> BACK</button>
+	style="position:absolute;top:10px;right:10px;padding:0 0.5rem;">
+    <i class="fa-solid fa-xmark"></i>
+</button>
 
-	<hgroup>
-    <h1>New Meal</h1>
-    <p>Add Food</p>
-	</hgroup>
-    {{ meal_form.as_p }}
+<form style="flex:1;"
+    hx-post="{% url 'calcounter:add' %}"
+	hx-target="#meal-log">
+    {% csrf_token %}
 
-    <h2>Foods Consumed</h2>
-    
-    {{ formset.management_form }} 
+    {{ form.name.label_tag }} {{ form.name }}
 
-    <table id="consumption-table">
-        <thead>
-            <tr>
-                <th>Food</th>
-                <th>Serving (grams)</th>
-                <th>Remove</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for form in formset %}
-            <tr class="consumption-row">
-                {{ form.id }}
-                {{ form.meal }} 
-                {{ form.food }} 
+    <h3>Foods Consumed</h3>
+    {{ formset.management_form }}
+    <div id="consumption-list" class="vertical-group">
+        {% for mealconsumption_form in formset %}
+            {% include 'calcounter/meal_row.html' with form=mealconsumption_form %}
+        {% endfor %}
+    </div>
 
-                <td>{{ form.food_name }}</td>
-                <td>{{ form.serving_g }}</td>
-                <td>{{ form.DELETE }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="horizontal-group" style="justify-content:center;">
+    <button type="button"
+        data-tooltip="Add a meal row" data-placement="top" 
+        hx-get="{% url 'calcounter:add_meal_row' %}"
+        hx-target="#consumption-list"
+        hx-swap="beforeend"
+        style="padding: 0 0.5rem;">
+<i class="fa-regular fa-hand-pointer"></i>
+    </button>
+    <button type="button"
+        data-tooltip="Manual Nutrients" data-placement="top" 
+        hx-get="{% url 'calcounter:add_manual_meal_row' %}"
+        hx-target="#consumption-list"
+        hx-swap="beforeend"
+        style="padding: 0 0.5rem;">
+<i class="fa-regular fa-keyboard"></i>
+    </button>
+    </div>
 
-    <button type="submit">Save Meal</button>
+
+    <button type="submit"
+    hx-on:click="
+    document.querySelector('#meal-input').classList.remove('big');
+    document.querySelector('#meal-log').classList.add('big');
+    ">Save Meal</button>
 </form>
+
+
+
+<script>
+(function() {
+document.querySelectorAll('.tom-select-meal').forEach(el => setupTomSelectMeal(el));
+})();
+</script>

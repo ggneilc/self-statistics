@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
     font-family: 'Oswald';
     height: 100vh;
@@ -68,8 +72,8 @@ main { flex: 1; }
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 74vh;
-  max-height: 74vh;
+  height: 95vh;
+  max-height: 95vh;
   overflow: hidden;
   padding-bottom: 0;
 }
@@ -83,6 +87,11 @@ main { flex: 1; }
 #calendar-container { flex: 1; }
 #day-container { flex: 2; }
 
+#heatmap-window{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
 #calendar-selector {
   text-align: end;
   padding: 0.3rem;
@@ -93,20 +102,91 @@ main { flex: 1; }
   margin-right: 0.3rem;
 }
 
+
+#meal-plan,
+#grocery-list {
+  flex: 1;
+  display: flex;
+  height: 22vh;
+  max-height: 22vh;
+  flex-direction: column;
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  padding: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.daily-macro {
+  background-color: var(--pico-card-sectioning-background-color);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border-radius: var(--pico-border-radius);
+  padding: 0.5rem;
+}
+
+#vitamin-chart,
+#macro-chart,
+#mineral-chart {
+  border-radius: 100%;
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  margin: 0.5rem;
+  border: 1px solid #0d0f0f;
+}
+
+.food-stat,
+.nutrition-breakdown {
+  margin-top: -0.7rem;
+  padding-bottom: 0;
+  margin-bottom: 0.5rem;
+  gap: 0;
+}
+
+.food-stat {
+  margin-top: 1rem;
+  text-align:center;
+  margin-bottom:1rem;
+}
+
+.day-label, .ratio-helper {
+  pointer-events: none; /* Mouse clicks go through the text to the rect */
+  user-select: none;
+}
+
+.day-cell rect {
+  transition: filter 0.2s ease;
+}
+
+.day-cell:hover rect {
+  filter: brightness(1.2);
+}
+
+#d3-double-line,
+#d3-line {
+  box-shadow: -3px 3px 8px 0px #0d0d0f;
+  border-radius: var(--pico-border-radius);
+  background-color: var(--pico-card-sectioning-background-color);
+  margin-bottom: 1rem;
+  border: 1px solid #0d0f0f;
+}
+
 #workout-info,
 #macro-info,
 #bw-info, #streak-info {text-align: center;}
 .big-font { font-size: 2.5rem; }
 .med-font { font-size: 1.7rem; }
-.fa-fire-flame-curved { color: orange; margin-right: 0.3rem; }
+.fa-fire-flame-curved { color: orange; margin-right: 0.3rem;}
 .fa-caret-up { color: #00A66E; }
 
 
+.fa-bed,
 .fa-weight-scale,
 .fa-calendar-day {
   color: var(--pico-primary);
 }
 
+.fa-bed,
+.fa-weight-scale,
+.fa-calendar-day,
 .fa-arrow-trend-up,
 .fa-crosshairs,
 .fa-chart-simple,
@@ -161,7 +241,7 @@ main { flex: 1; }
 
 #recipe-area { height: 96vh; }
 
-.big { flex: 4; }
+.big { flex: 6; }
 
 #workout-history {
   flex: 1;
@@ -175,6 +255,32 @@ main { flex: 1; }
   flex: 2;
 }
 
+#stats {
+  overflow: visible;
+  margin-top: 2rem;
+}
+.summary-area {
+  position: relative;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0.5rem;
+  text-align: center;
+  height: 10vh;
+  font-size: 2rem;
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border: 1px solid #0d0f0f;
+}
+
+/* Target the labels inside your SVG */
+#vitamin-chart text, #mineral-chart text, #macro-chart text {
+  transition: text-shadow 0.3s ease, fill 0.3s ease;
+}
+
+/* This class will be toggled by D3 */
+.text-active {
+  fill: #ffffff !important;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
 
 #today_values,
 #meal_plan,
@@ -189,38 +295,221 @@ main { flex: 1; }
   gap: 1rem;
 }
 
-#bw_entry_form {
+.bw-card {
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border: 1px solid #0d0f0f;
+  padding: 0.5rem;
+  border-radius: var(--pico-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day_value_form {
   height: 5vh;
   margin: 0;
 }
-#bw_entry_form input {
+.day_value_form input {
   height: 5vh;
   line-height: 0;
 }
+
+#meal-log,
+#pantry-log {
+  overflow: hidden;
+}
+
+.full { max-height:96vh; }
+.partial { max-height:80vh; }
 
 #recipe-area,
 #meal-log,
 #pantry-log {
   padding: var(--pico-spacing);
 }
-#search-results { max-height: 60vh; }
+#search-results { flex:1; min-height: 0; }
 
-#food-list { padding: 0; }
+#recipe-list,
+#meal-list,
+#food-list {
+  padding: 0.3rem;
+  min-height:0;
+  overflow-y:auto; 
+  overflow-x:hidden;
+}
+
+.ingredient {
+  flex: 1;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0 10px;
+  box-shadow: -2px 2px 0px 0px #0d0f0f;
+  border: 1px solid #0d0f0f;
+}
+
+.ingredient-name { color: var(--pico-color)}
+.ingredient-unit { color: var(--pico-primary)}
+
+
+.recipe,
+.meal,
 .food {
   padding: 0.5rem;
   border-radius: var(--pico-border-radius);
+  border: 1px solid #0d0f0f;
   list-style-type: none;
-  border: 1px solid var(--pico-primary);
+  background-color: var(--pico-background-color);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
 }
+.meal:hover,
+.meal:hover,
 .food:hover {
   transform: translateY(-3px);
-  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  box-shadow: -5px 5px 0px 0px #0d0d0f;
+  transition: all 0.3s ease;
+}
+.active {
+  transform: translateY(-2px);
+  box-shadow: -4px 4px 0px 0px #0d0d0f;
   transition: all 0.3s ease;
 }
 
 .hidden { display: none; }
 
+.nutrient {
+  position: relative;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0.3rem;
+  gap:0.2rem;
+}
 
+.nutrition {
+  gap:0.8rem;
+  margin-top:0.8rem;
+}
+
+.meal-macro-label {
+  position: absolute;
+  top: 0;
+  font-size: 0.7rem;
+  color: var(--pico-primary);
+}
+
+.nutrient > div {
+  border-radius: var(--pico-border-radius);
+  flex:1;
+  text-align:center;
+  color: ghostwhite;
+}
+
+[data-tooltip]:not(a,button,input,[role=button]) {
+  border-bottom:none;
+}
+
+text {
+    transition: fill 0.2s ease, font-size 0.2s ease;
+}
+
+:root {
+  --water-color: #1e88e5;
+  --sleep-color: #69359c;
+
+  --calorie-color: #7f7f80;
+  --protein-color: var(--pico-primary);
+  --carb-color: #43a047;
+  --fat-color: #e53935;
+  --sugar-color: #885053;
+  --fiber-color: #43a047;
+  --starch-color: #848243;
+  --cholesterol-color: #D5573B;
+
+  --sodium-color: #737c87;
+  --potassium-color: #815b4d;
+  --calcium-color: #777676;
+  --magnesium-color: #c1c2c3;
+  --zinc-color: #3b4a6b;
+  --iron-color: #a59c93;
+
+  --vitamin-a-color: #0195c5;
+  --vitamin-b6-color: #b72f5b;
+  --vitamin-b12-color: #9542aa;
+  --vitamin-c-color: #f8931f;
+  --vitamin-d-color: #ed2b36;
+  --vitamin-e-color: #24ac24;
+}
+.calorie {
+  background-color: var(--calorie-color);
+}
+.protein {
+  background-color: var(--protein-color);
+}
+.carb {
+  background-color: var(--carb-color);
+}
+.fat {
+  background-color: var(--fat-color);
+}
+.sugar {
+  background-color: var(--sugar-color);
+}
+.fiber {
+  background-color: var(--fiber-color);
+}
+.cholesterol {
+  background-color: var(--cholesterol-color);
+}
+.sodium {
+  background-color: var(--sodium-color);
+}
+.potassium {
+  background-color: var(--potassium-color);
+}
+.calcium {
+  background-color: var(--calcium-color);
+}
+.iron {
+  background-color: var(--iron-color);
+}
+.magnesium {
+  background-color: var(--magnesium-color);
+}
+.zinc {
+  background-color: var(--zinc-color);
+}
+.vitamin-a {
+  background-color: var(--vitamin-a-color);
+}
+.vitamin-b6 {
+  background-color: var(--vitamin-b6-color);
+}
+.vitamin-b12 {
+  background-color: var(--vitamin-b12-color);
+}
+.vitamin-c {
+  background-color: var(--vitamin-c-color);
+}
+.vitamin-d {
+  background-color: var(--vitamin-d-color);
+}
+.vitamin-e {
+  background-color: var(--vitamin-e-color);
+}
+
+@media (max-width: 768px) {
+
+}
+
+@media (max-width: 1350px) {
+  html{
+    font-size: 16px;
+  }
+  .macro-label{
+    top: -15px;
+    left: 5px;
+    font-size: 0.6rem;
+  }
+}
 
 
 
@@ -244,4 +533,139 @@ main { flex: 1; }
 /* For Internet Explorer and Edge */
 * {
     -ms-overflow-style: none;
+}
+
+.unit-select {
+    appearance: none;       /* Standard */
+    -webkit-appearance: none; /* Safari/Chrome */
+    -moz-appearance: none;    /* Firefox */
+    
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: center;
+    color: inherit;
+    font-size: inherit;
+    width: auto;
+}
+
+/* Optional: Add a subtle visual cue on hover so users know it's a menu */
+.unit-select:hover {
+    text-decoration: underline dotted;
+}
+
+.unit-container {
+  max-width:90px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
+.ts-wrapper {
+  flex: 3;
+}
+.ingred-input {
+  flex: 1;
+}
+
+/* 1. Prevent Pico from forcing height/padding on the TomSelect wrapper */
+.ts-wrapper.form-control, 
+.ts-wrapper.single .ts-control {
+    height: auto !important;
+    padding: 0 !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 2. Style the actual clickable control to look like a Pico input */
+.ts-control {
+    background-color: var(--pico-form-element-background-color) !important;
+    border: 1px solid var(--pico-form-element-border-color) !important;
+    border-radius: var(--pico-border-radius) !important;
+    padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal) !important;
+    color: var(--pico-color) !important;
+    min-height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2);
+}
+
+/* 3. Highlight the focus state to match Pico's primary color */
+.ts-wrapper.focus .ts-control {
+    border-color: var(--pico-primary-focus) !important;
+    box-shadow: 0 0 0 var(--outline-width) var(--primary-focus) !important;
+}
+
+/* 4. Fix dropdown z-index so it doesn't hide behind other Pico elements */
+.ts-dropdown {
+    z-index: 1000;
+    background: var(--pico-card-sectioning-background-color) !important;
+    color: var(--pico-color) !important;
+    border: 1px solid var(--pico-form-element-border-color) !important;
+}
+
+.ts-control > input {
+  background: var(--pico-form-element-background-color) !important;
+  border: 1px solid var(--pico-form-element-border-color) !important;
+  padding: 1rem !important;
+}
+
+svg:not(:host), svg:not(:root) {
+    overflow: visible;
+}
+
+.editable {
+    cursor: pointer;
+    padding: 0 2px;
+}
+.editable:hover {
+    background: var(--pico-card-background-color);
+    border-bottom: 1px dashed var(--pico-muted-color);
+    color: var(--pico-primary);
+}
+
+
+@keyframes globalFallIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+article {
+    /* Set the starting state so they are invisible before animation starts */
+    opacity: 0; 
+    transform: translateY(-20px);
+    
+    /* Apply the animation */
+    animation: globalFallIn 0.5s ease-out forwards;
+}
+
+/* Ensure HTMX content doesn't double-animate if it's inside an article */
+.htmx-added article, 
+article.htmx-added {
+    animation: none; /* Let the htmx-settling classes handle it instead */
+}
+/* Only animate articles that exist on initial page load */
+article:not(.htmx-added) {
+    opacity: 0;
+    animation: globalFallIn 0.5s ease-out forwards;
+}
+
+/* Handle HTMX swaps separately and gracefully */
+.htmx-swapping article {
+    opacity: 0;
+    transform: translateY(20px); /* Slide out downwards */
+    transition: all 0.2s ease-in;
+}
+
+.htmx-settling article {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }

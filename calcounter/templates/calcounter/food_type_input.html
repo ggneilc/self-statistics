@@ -1,0 +1,27 @@
+<button style="flex: 1;"
+    hx-get="{% url 'calcounter:complex_food' %}"
+    hx-target="#pantry-input"
+    hx-trigger="click"
+    hx-on:click="
+	document.querySelector('#pantry-log').classList.toggle('big');
+	document.querySelector('#pantry-input').classList.toggle('big');
+	document.querySelector('#pantry-input').classList.add('overflow-auto');
+    "
+    hx-swap="innerHTML swap:0.4s">
+<i class="fa-solid fa-cubes-stacked"></i>
+    Complex
+</button>
+<button style="flex: 1;"
+    hx-get="{% url 'calcounter:search_food' %}"
+    hx-target="#pantry-log"
+    hx-trigger="click"
+    hx-swap="innerHTML swap:0.4s">
+<i class="fa-solid fa-bread-slice"></i>
+    Search
+</button>
+<button style="flex: 1;"
+    data-tooltip="Coming Soon"
+    data-placement="top">
+<i class="fa-solid fa-camera"></i>
+    Label
+</button>

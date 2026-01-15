@@ -1,0 +1,12 @@
+<form 
+{% if editing %}
+    hx-post="{% url 'calcounter:edit_recipe' recipe.id %}"
+{% else %}
+    hx-post="{% url 'calcounter:add_recipe' %}"
+{% endif %}
+    hx-target="#recipe-area">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Save Recipe</button>
+</form>

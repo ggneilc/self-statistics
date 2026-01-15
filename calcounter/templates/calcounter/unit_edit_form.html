@@ -1,0 +1,17 @@
+<form id="unit-row-{{ unit.id }}" class="horizontal-group" 
+      hx-post="{% url 'calcounter:edit_unit' unit.id %}" 
+      hx-target="this" 
+      hx-swap="outerHTML"
+      style="align-items:center;justify-content:space-between; gap: 10px;">
+    
+    <div style="display: flex; gap: 5px; align-items: center;">
+        <input type="text" name="name" value="{{ unit.name }}" style="margin-bottom:0; width: 120px;">
+        <input type="number" name="gram_weight" value="{{ unit.gram_weight }}" style="margin-bottom:0; width: 80px;">
+        <span>g</span>
+    </div>
+
+    <div class="horizontal-group">
+        <button type="submit" class="outline" style="padding: 2px 10px; margin-bottom:0;">Save</button>
+        <button hx-get="{% url 'calcounter:get_unit' unit.id %}" class="secondary outline" style="padding: 2px 10px; margin-bottom:0;">Cancel</button>
+    </div>
+</form>

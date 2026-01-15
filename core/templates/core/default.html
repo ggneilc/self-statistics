@@ -3,14 +3,15 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token }}">
 
     <link rel="icon" href="{% static 'core/favicon_32x32.png'%}" type="image/x-icon">
-    {% block extra_css %} {% endblock %}
     <!-- pico css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.amber.min.css">
+    <!-- TomSelect -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
     <!-- Google Font : Pixel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,10 +23,19 @@
     <!-- font awesome icons -->
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+    {% block extra_css %} {% endblock %}
     <title>Self Stats</title>
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% block main_content %}
     {% endblock %}
-<script src="{% static 'core/js/global_date_state.js' %}"></script>
+<script src="{% static 'calcounter/js/tomselect-setup.js' %}"></script>
+<script src="{% static 'calcounter/js/nutrition_pies.js' %}"></script>
+<script src="{% static 'graphs/js/calorie_graph.js' %}"></script>
+<script>
+document.body.addEventListener('configRequest.htmx', (event) => {
+    // This ensures every HTMX request has a 200ms settle delay by default
+    event.detail.parameters['hx-swap'] = 'innerHTML settle:500ms';
+});
+</script>
 </body>
