@@ -20,7 +20,19 @@
 2. Workout tracking; start monitoring a lift and receive progression insights along with custom workout plans.
 3. Health modeling; with all your data in one place, receive statistics not found in any other application.
 
+## AIO Statistics
+<img width="1919" height="1005" alt="image" src="https://github.com/user-attachments/assets/7084bd60-b2a1-489a-ae42-468581476458" />
+
+- Time series analytics for bodyweights, calorie consumption, and strength (daily, weekly, monthly, moving average, summary statistics) 
+- Automated daily goals for Macros, Minerals, Vitamins, Sleep, Water, & Physical activity based on Bodyweight/Height/Gender; everything you need to live a healthy life without any of the hassle of figuring it out yourself. 
+
+See how your meals impact your lifts, or your lifts impact your meals, or how your bodyweight impacts either; with everything in one place, all these variables can be used for predictions, with more to come! 
+
+ML forecasting; each user receives a personalized model on their information tracked. This enables users to forecast how their body might responds to potential diets, workout plans, or time off from the gym; "if i decrease calories by 200 for the next 8 weeks, what would my bodyweight/strength look like." This enables trial running diets/workouts/events before you spend time doing them!
+
 ## Food Companion
+<img width="1919" height="1011" alt="image" src="https://github.com/user-attachments/assets/6e6b68bb-7163-4f63-ae5d-d90b55165c41" />
+Humans tend to eat the same few things day in and day out, the food companion capitalizes on this to streamline macro tracking.
 
 - Track your macros manually and turn your meal into a template to easily add again and again on any day.
 - Add a meal based on its consituient ingredients; simply search each ingredient and attach them to your meal, then you only need to enter the serving size you consumed!
@@ -33,13 +45,7 @@
 - Start tracking a particular lift to see and save your progression
 - Create custom workout plans for any body part or machine
 
-## AIO Statistics
 
-- Time series analytics for bodyweights, calorie consumption, and strength (daily, weekly, monthly, moving average, summary statistics) 
-
-See how your meals impact your lifts, or your lifts impact your meals, or how your bodyweight impacts either; with everything in one place, all these variables can be used for predictions, with more to come! 
-
-ML forecasting; each user receives a personalized model on their information tracked. This enables users to forecast how their body might responds to potential diets, workout plans, or time off from the gym; "if i decrease calories by 200 for the next 8 weeks, what would my bodyweight/strength look like." This enables trial running diets/workouts/events before you spend time doing them!
 
 # Download
 
