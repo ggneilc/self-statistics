@@ -1,0 +1,43 @@
+<dialog open>
+    <article>
+    <header>{{food.name}}
+        <button rel="prev"
+        hx-get="{% url 'calcounter:clear'%}"
+        hx-target="#unit-target"></button>
+    </header>
+
+
+
+    <section>
+        <div>
+            <label for="pantry_name">Pantry Display Name</label>
+            <input type="text" 
+               name="pantry_name" 
+               id="pantry_name" 
+               value="{{ pantry_item.name|default:food.name }}" 
+               placeholder="e.g. Large Grade A Eggs"
+               form="unit-form"> <small>This updates how the item appears in your pantry list.</small>
+        </div>
+        <hr>
+
+
+        {% for unit in foodunits %}
+            {% include 'calcounter/unit_display_row.html' with unit=unit%}
+        {% endfor%}
+    <h3>Add New Unit</h3>
+        <form id="unit-form">
+           {% csrf_token %} 
+           <div class="horizontal-group">
+           {{ form.as_p }}
+           </div>
+
+        <button 
+        hx-post="{% url 'calcounter:unit' food.id %}"
+        hx-target="#unit-target"
+        hx-include="#pantry_name"
+        type="submit">Save</button>
+        </form>
+    </section>
+
+    </article>
+</dialog>

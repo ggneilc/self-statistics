@@ -17,7 +17,7 @@ class LiftForm(forms.ModelForm):
         model = Lift
         fields = ['exercise_name']
         widgets = {
-            'exercise_name': forms.TextInput(attrs={'class': 'input', 'placeholder': ' '}),
+            'exercise_name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'Exercise Name'}),
         }
 
 

@@ -1,0 +1,15 @@
+<header style="position:relative;">
+    <i class="fa-solid fa-dumbbell" style="margin-right:10px;"></i>
+    Workout History
+    <span style="position:absolute; right:1rem;">
+    <div id="modal-workout-add"></div>
+    <button data-tooltip="Add" data-placement="bottom" style="padding: 0 0.3rem;"
+    hx-get="{% url 'workouts:load_entry' %}"
+    hx-target="#modal-workout-add">
+    <i class="fa-solid fa-plus"></i></button>
+    </span>
+</header>
+<ul id="workout_list" class="overflow-auto"
+    hx-get="{% url 'workouts:list' %}"
+    hx-trigger="load">
+</ul>

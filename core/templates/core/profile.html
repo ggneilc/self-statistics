@@ -1,6 +1,6 @@
-<div id="auth-modal" class="modal-overlay">
-<div id="modal-target" class="modal">
-<div id="profile-container">
+<dialog open>
+<article>
+<div id="profile-container" class="horizontal-group">
 	<ul id="profile-list" >
 		<li class="profile-item">
 			<div class="button-container">
@@ -46,7 +46,7 @@
 		    <button class="back-btn" style="margin:0;"
 			hx-get="{% url 'core:close_profile' %}"
 			hx-swap="innerHTML"
-			hx-target="#profile"
+			hx-target="#dummy"
 			onclick="event.stopPropagation()"
 			>CLOSE</button>
 		  </div></li>
@@ -55,5 +55,5 @@
 		{% include './personal_info.html' with user=user %}
 	</div>
 </div>
-</div>
-</div>
+</article>
+</dialog>

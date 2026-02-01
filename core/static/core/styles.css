@@ -1,832 +1,523 @@
-* {
-    box-sizing: border-box; 
-    font-family: 'Oswald';
-}
-
-:root {
-  --vh: 1vh;
-    --white: #f5f5f5;
-    --outline: #f5f5f5;
-    --text: #f5f5f5;
-    --bg: #1a1a1f;
-    --fg: #252527; 
-/* accent colors */
-    --main: #FFC83D;
-    --accent: #37B8FF;
-    --accent-chip-bg: #182d38;
-    --main-chip-bg: #2a2312;
-
-/* shadows */
-	--item-shadow: -3px 3px 0px 0px #0d0d0f;
-	--item-shadow-hover: -5px 5px 0px 0px #0d0d0f;
-	--inset-shadow: 0px 0px 6px 2px #0d0d0f inset;
-
-/* Button colors */
-  --main-buttons: #1a1a1f;
-    --button: #72b983;
-    --button-bg: #1d2322;
-    --button-hover: #207948;
-
-    --button-back: #cb0014;
-    --button-back-bg: #231f1f;
-    --button-back-hover: #632e2e;
-
-    --button-main:#FFC83D; 
-    --button-main-bg:#23211a; 
-    --button-main-hover:#63532b; 
-
-    --button-accent:#37B8FF; 
-    --button-accent-bg:#1e2021; 
-    --button-accent-hover:#567484; 
-
-/* Workout types coloring */
-    --Push: #79ca85;
-    --Pull: #bc311c;
-    --Legs: #1c39bc;
-    --lift: #050505;
-}
-/* Light theme */
-[data-theme="light"] {
-  --fg: #f5f5f5;
-  --bg: #fff;
-  --main: #5b8aff;
-  --accent: #ff884d;
-  --text: #101010;
-  --outline: #101010;
-  --main-buttons: #5b8aff;
-  --button-main: #5b8aff;
-  --button-main-bg: #23211a;
-  --button-main-hover: #323e5e;
-  --button-accent: #ff884d;
-  --button-accent-bg: #1e2021;
-  --button-accent-hover: #5c3f30;
-}
-
-/* Custom Themes */
-[data-theme="midnight"] {
-  --fg: #221f46;
-  --bg: #0a0a1f;
-  --main: #7169f3;
-  --accent: #ff6584;
-  --text: #f5f5f5;
-  --outline: #f5f5f5;
-  --main-buttons: #7169f3;
-    --button-main:#7169f3; 
-    --button-main-bg:#25242c; 
-    --button-main-hover:#525076; 
-    --button-accent:#ff6584; 
-    --button-accent-bg:#362629; 
-    --button-accent-hover:#693a44; 
-}
-[data-theme="dracula"] {
-  --fg: #f8f8f2;
-  --bg: #282a36;
-  --main: #bd93f9;
-  --accent: #ff79c6;
-  --text: #020202;
-  --outline: #6272a4;
-  --main-buttons: #bd93f9;
-    --button-main:#bd93f9;
-    --button-main-bg:#3a3c4e;
-    --button-main-hover:#6d63a8;
-    --button-accent:#ff79c6;
-    --button-accent-bg:#4a3a44;
-    --button-accent-hover:#a54a7d;
-}
-[data-theme="nord"] {
-  --fg: #eceff4;
-  --bg: #2e3440;
-  --main: #88c0d0;
-  --accent: #bf616a;
-  --text: #020202;
-  --outline: #81a1c1;
-  --main-buttons: #88c0d0;
-    --button-main:#88c0d0;
-    --button-main-bg:#3b4252;
-    --button-main-hover:#6fa6b6;
-    --button-accent:#bf616a;
-    --button-accent-bg:#4c3940;
-    --button-accent-hover:#9a4f59;
-}
-[data-theme="gruvbox-dark"] {
-  --fg: #ebdbb2;
-  --bg: #282828;
-  --main: #d79921;
-  --accent: #fb4934;
-  --text: #fbf1c7;
-  --outline: #928374;
-  --main-buttons: #d79921;
-    --button-main:#d79921;
-    --button-main-bg:#3c3836;
-    --button-main-hover:#b57d1d;
-    --button-accent:#fb4934;
-    --button-accent-bg:#3a2624;
-    --button-accent-hover:#c43729;
-}
-[data-theme="catppuccin-mocha"] {
-  --fg: #cdd6f4;
-  --bg: #1e1e2e;
-  --main: #89b4fa;
-  --accent: #f38ba8;
-  --text: #020202;
-  --outline: #585b70;
-  --main-buttons: #89b4fa;
-    --button-main:#89b4fa;
-    --button-main-bg:#313244;
-    --button-main-hover:#6c96ca;
-    --button-accent:#f38ba8;
-    --button-accent-bg:#432f3a;
-    --button-accent-hover:#c17385;
-}
-[data-theme="github-dark"] {
-  --fg: #c9d1d9;
-  --bg: #0d1117;
-  --main: #58a6ff;
-  --accent: #f778ba;
-  --text: #020202;
-  --outline: #30363d;
-  --main-buttons: #58a6ff;
-    --button-main:#58a6ff;
-    --button-main-bg:#21262d;
-    --button-main-hover:#3875b3;
-    --button-accent:#f778ba;
-    --button-accent-bg:#3d2f3a;
-    --button-accent-hover:#b75c8c;
-}
-
-h1 {
-  color: var(--main);
-  text-align: center;
-  font-size: 2rem;
-  text-shadow: 0px 5px 5px #0d0d0f;
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
     font-family: 'Oswald';
-    font-size:1.5rem;
-    background-color: var(--bg);
-    color: var(--text);
-
     height: 100vh;
     width: 100vw;
     margin: 0;
     overflow: hidden;
+}
 
-    display: grid;
-    grid-template-areas:
-        "workout_column graph_column food_column";
-    grid-template-columns: repeat(3, 1fr);
+aside li {
+  align-items: center;
+  justify-self: center;
+}
 
+main { flex: 1; }
 
-    align-items: center; 
-    justify-items: center;
+.main-wrapper {
+  display: flex;
+  flex-direction: row;
 }
 
 
-/* === Grid Areas ===*/
-#app-columns {
-    display: grid;
-    grid-template-areas: "workout_column graph_column food_column";
-    grid-template-columns: repeat(3, 1fr);
-
-    height: 100dvh;
-    width: 100vw;
-
-    align-items: center;
-    justify-items: center;
+.sidebar {
+  height: 100vh;
+  width: 70px;
+  border-right: 1px solid var(--pico-muted-border-color);
+  background: var(--muted-color);
+  padding: var(--spacing);
 }
 
-
-.w_list {grid-area: workout_column;}
-.s_list {grid-area: graph_column;}
-.m_list {grid-area: food_column;}
-
-#lift_head,
-#graph_head,
-#meal_head,
-#meal_entry,
-#lift_entry,
-#graph_entry {
-    display: flex;  
-    flex-direction: column;
-    justify-content: center;
-}
-
-
-#bw_entry_form,
-#t_entry_form,
-#l_entry_form,
-#m_entry_form {
-    background-color: var(--fg);
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-  box-shadow: var(--item-shadow);
-}
-
-/* --- List Areas --- */
-
-ul {
-    margin:0px;
-    padding:0px;
-}
-
-#meal_list, #workout_list, #graph_display {
-    border-radius: 5px;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;       /* Prevent content from escaping */
-}
-
-#meal_list__container, #workout_list__container  {
-    flex-grow: 1;        /* Takes up remaining space */
-    overflow-y: auto;    /* Enables scrolling when content exceeds height */
-    max-height: 100%;    /* Ensures it doesn't grow beyond the parent */
-    position: relative;
-}
-#graph_display__container { 
-    flex-grow: 1;        /* Takes up remaining space */
-    max-height: 100%;    /* Ensures it doesn't grow beyond the parent */
-    position: relative;
-}
-
-
-/* === Navbar === */
-
-#top-runner{
+.settings-group {
   position: absolute;
-  width:100vw;
-  height: 10px;
-  background-color: var(--fg);
-  bottom: 0;
-  left: 0;
+  bottom: 10px;
+  left: 11px;
 }
-#username {
-  font-size: 20px;
-  padding-left:5px;
-}
-
-.profile-pic-container {
-  margin: 5px;
+.pfp-group {
+  padding-left: 10px;
 }
 
 .profile-pic {
-  margin: 5px;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--main);
-  box-shadow: var(--item-shadow);
-} .profile-pic:hover { transform: translateY(-2px); box-shadow: var(--item-shadow-hover); transition: all 0.3s ease;}
-.profile-pic:active { transform: translateY(3px); box-shadow: var(--inset-shadow); transition: all 0.3s ease;}
-
-.profile-pic-large {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--main);
+  border: 1px solid var(--pico-primary-border);
+}
+.username {
+  width: 70px;
+  font-size: 0.7rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  text-align: center;
 }
 
-#profile-info {
-  flex: 1;
+#content { padding: 1rem; }
+.horizontal-group {
   display: flex;
-  flex-direction: column
+  flex-direction: row;
+  gap: 1rem;
 }
-#top-hud {
-  flex: 2;
-  display: flex;
-} #hud-info {
-  flex: 10;
-  margin: 5px;
-  display: flex;
-  gap: 0.5em;
-} #swap-button {
+.horizontal-group > article {
   flex: 1;
-  background-color: var(--bg);
-  margin: 5px;
+  height: 20vh;
 }
-#exp-area {
+
+
+#graph-container {flex: 1;}
+#graph-area,
+#day-area {
   flex: 1;
-  margin: 5px;
   display: flex;
-} #exp-bar {
-  flex: 1;
-  background-color: #17251ac2;
-  border-radius: 8px;
+  flex-direction: column;
+  height: 95vh;
+  max-height: 95vh;
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+#day-area {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+#day-area > article {margin-bottom: revert;}
+#calendar-container { flex: 1; }
+#day-container { flex: 2; }
+
+#heatmap-window{
   display:flex;
-  border: 1px solid var(--white);
-} #current-level, #next-level { font-size: 0.7rem; margin: 5px;}
-#exp-bar div {
-  flex:1;
-  border-right:1px solid var(--white);
+  justify-content: center;
+  align-items: center;
 }
-#exp1 {border-radius: 8px 0px 0px 8px;}
-#exp7 {border-radius: 0px 8px 8px 0px; border:none;}
+#calendar-selector {
+  text-align: end;
+  padding: 0.3rem;
+}
+#calendar-selector > button {
+  padding: 0.2rem 0.7rem;
+  font-size: 0.7rem;
+  margin-right: 0.3rem;
+}
+
+
+#meal-plan,
+#grocery-list {
+  flex: 1;
+  display: flex;
+  height: 22vh;
+  max-height: 22vh;
+  flex-direction: column;
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  padding: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.daily-macro {
+  background-color: var(--pico-card-sectioning-background-color);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border-radius: var(--pico-border-radius);
+  padding: 0.5rem;
+}
+
+#vitamin-chart,
+#macro-chart,
+#mineral-chart {
+  border-radius: 100%;
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  margin: 0.5rem;
+  border: 1px solid #0d0f0f;
+}
+
+.food-stat,
+.nutrition-breakdown {
+  margin-top: -0.7rem;
+  padding-bottom: 0;
+  margin-bottom: 0.5rem;
+  gap: 0;
+}
+
+.food-stat {
+  margin-top: 1rem;
+  text-align:center;
+  margin-bottom:1rem;
+}
+
+.day-label, .ratio-helper {
+  pointer-events: none; /* Mouse clicks go through the text to the rect */
+  user-select: none;
+}
+
+.day-cell rect {
+  transition: filter 0.2s ease;
+}
+
+.day-cell:hover rect {
+  filter: brightness(1.2);
+}
+
+#d3-double-line,
+#d3-line {
+  box-shadow: -3px 3px 8px 0px #0d0d0f;
+  border-radius: var(--pico-border-radius);
+  background-color: var(--pico-card-sectioning-background-color);
+  margin-bottom: 1rem;
+  border: 1px solid #0d0f0f;
+}
+
+#workout-info,
+#macro-info,
+#bw-info, #streak-info {text-align: center;}
+.big-font { font-size: 2.5rem; }
+.med-font { font-size: 1.7rem; }
+.fa-fire-flame-curved { color: orange; margin-right: 0.3rem;}
+.fa-caret-up { color: #00A66E; }
+
+
+.fa-bed,
+.fa-weight-scale,
+.fa-calendar-day {
+  color: var(--pico-primary);
+}
+
+.fa-chart-line,
+.fa-burger,
+.fa-jar,
+.fa-scroll,
+.fa-magnifying-glass-chart,
+.fa-weight-hanging,
+.fa-bed,
+.fa-weight-scale,
+.fa-calendar-day,
+.fa-arrow-trend-up,
+.fa-crosshairs,
+.fa-chart-simple,
+.fa-weight-scale,
+.fa-calendar-day,
+.fa-bulleye {
+  margin-right: 10px;
+}
+
+.summary {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+#time-buttons {
+  padding: 0px 1rem;
+}
+.vertical-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 
 .main-chip {
-  border-radius: 4px;
-  box-shadow: var(--item-shadow);
-  min-width: 0;
-  max-width: 100%;
-  text-wrap: auto;
-  flex-shrink: 1;
-  padding:0.5rem;
+  background-color: var(--pico-background-color);
+  border-radius: var(--pico-border-radius);
+  border: 1px solid #FCEFD9;
+  flex:1;
+  text-align:center;
 }
-#username-chip {
-  flex: 2;
-  background-color: var(--main-chip-bg);
-  color: var(--main);
-}
-#date-nav{
-  flex: 2;
-  background-color: var(--bg);
-  cursor:pointer;
-} #editing-date {
+.macro-label{
   position: absolute;
-  font-size: 0.8rem;
-  top: -10px;
-  left: 40%;
-  color: var(--main);
-}
-
-.main-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--item-shadow-hover);
-  transition: all 0.3s ease-in-out;
-} .main-chip:active {
-  transform: translateY(3px) translateX(-3px);
-  box-shadow: none;
-  transition: all 0.1s ease-in-out;
-}
-#bw-chip {
-  flex: 1;
-  background-color: var(--bg);
-}
-#nav-streak {
-  flex: 1;
-    background-color: #fd86309e;
-}
-.task { flex:1; font-size:1rem; padding:0.5em; user-select:none;
-background-color: var(--bg);}
-.todo { border: 1px solid var(--button-back); background-color: var(--button-back-bg); }
-.done { border: 1px solid var(--button); background-color: var(--button-bg); }
-.macro-label {
-  position: absolute;
-  top: -8px;
+  top: -23px;
   left: 8px;
-  font-size: 0.8rem;
-  color: var(--accent);
+  font-size: 0.7rem;
 }
 
-
-/** -- profile -- **/
-
-.signup {
-  margin: 1rem;
-  min-height:200px;
-  display:flex;
+#day-macros,
+#day-tasks {
+ height: 100%;
 }
-
-#theme-switcher {
-  width: 100%;
+.main-chip { 
   display: flex;
-  gap: 0.5em;
-  flex-wrap: wrap;
-}
-#custom-theme {
-  flex: 1
-}
-
-/* === Floating Labels === */
-
-.input_container {
-    position: relative;
-    margin-bottom: 10px;
-  flex: 1;
-}
-
-.input {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid var(--outline);
-    background: transparent;
-    outline: none;
-    color: var(--text);
-}
-.color-input {
-  padding: 0;
-  margin-top: 8px;
-}
-
-.input_container input {
-    width: 100%;
-    font-size: 16px;
-    border: 1px solid var(--outline);
-    background: transparent;
-    outline: none;
-    color: var(--text);
-}
-
-.input_container label {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    background-color: var(--fg);
-    transform: translateY(-50%);
-    padding: 0 5px;
-    transition: 0.3s;
-    pointer-events: none;
-}
-
-.input:focus + label,
-.input:not(:placeholder-shown) + label,
-input:focus + label,
-input:not(:placeholder-shown) + label {
-    top: 0;
-    font-size: 12px;
-    color: var(--accent);
-}
-
-/* Remove number input spinners for all inputs */
-/* For WebKit browsers (Chrome, Edge, Safari, etc.) */
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* For Firefox */
-input[type=number] {
-    -moz-appearance: textfield;
-}
-
-/* Double tapping doesn't highlight text */
-button {
-  -webkit-user-select: none; /* Chrome/Safari */
-  -moz-user-select: none;    /* Firefox */
-  -ms-user-select: none;     /* IE/Edge */
-  user-select: none;         /* Standard */
-}
-
-
-/* === Button Styling === */
-
-
-
-
-.button-container {
-    display: flex;
-    flex-direction: row;
-}
-
-
-.right-crud-buttons {
-  position:absolute;
-  top:5px;
-  right:10px;
-} .right-crud-buttons * { border-radius: 2px; }
-.left-crud-buttons {
-  position:absolute;
-  top:8px;
-  left:10px;
-} .left-crud-buttons * { border-radius: 2px; }
-
-.graph-btn {
-  background-color: var(--fg);
-  border: 1px solid var(--outline);
-  color: var(--text);
-  border-radius: 2px;
-  flex: 1;
-  padding: 10px 15px;
-  margin: 2px;
-  font-size: 1.5rem;
-  transition: all 0.3s ease-in-out;
-  box-shadow: -4px 4px black;
-} .graph-btn:hover {
-    background-color: var(--button-main-hover);
-    box-shadow: -8px 6px black;
-    transform: translateY(-2px);
-} .graph-btn:active {
-    transform: translateY(3px);
-  box-shadow: -2px 2px black;
-} .left-btn { z-index: 1; }
-
-.btn {
-    background-color: var(--bg);
-    border: 0;
-    padding: 10px 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin: 2px;
-    flex: 1;
-    transition: all 0.3s ease-in-out;
-  min-width: 20%;
-}
-
-.main-button {
-  margin-top: 1rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-}
-
-.add {
-    background-color: #10101075;
-        min-width: 122px;
-        color: white;
-        opacity: 0.6;
-        border: 1px dashed white;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 10px 15px;
-    font-size: 1.5rem;
-    margin: 0;
-    flex: 1;
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transition: all 0.3s ease-in-out;
-}
-
-.yellow_btn {
-    background-color: var(--button-main-bg);
-    color: var(--button-main);
-    border: 1px solid var(--button-main);
-    padding: 10px 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin: 2px;
-    flex: 1;
-    transition: all 0.3s ease-in-out;
-}
-
-.profile-btn {
-    background-color: #121216;
-  color: white;
-  border: 0px;
-    padding: 10px 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    flex: 1;
-    transition: all 0.3s ease-in-out;
-} .profile-btn:hover {
-    background-color: var(--button-accent-hover);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-
-.light:hover {
-    background-color: var(--outline);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-
-.dark:hover {
-    background-color: var(--fg);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-
-.blue_btn {
-    background-color: var(--button-accent-bg);
-    color: var(--button-accent);
-    border: 1px solid var(--button-accent);
-    padding: 10px 15px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    margin: 2px;
-    transition: all 0.3s ease-in-out;
-}
-.back-btn, .delete-btn  {
-    background-color: var(--button-back-bg);
-    border: 1px solid var(--button-back);
-    color: var(--button-back);
-    padding: 10px 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin: 2px;
-    flex: 1;
-    transition: all 0.3s ease-in-out;
-}
-
-.form_btn {
-    background-color: var(--button-bg);
-    color: var(--button);
-    border: 1px solid var(--button);
-    padding: 10px 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    margin: 2px;
-    flex: 1;
-    transition: all 0.3s ease-in-out;
-}
-
-.form_btn:active, .meal:active, .workout:active, .add:active {
-  transform: translateY(2px) translateX(-1px);
-  box-shadow: -3px 3px 2px 0px rgba(0, 0, 0, 0.5);
-  transition: all 0.05s ease-out;
-}
-
-.form_btn:hover {
-    background-color: var(--button-hover);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-  color: var(--white);
-}
-.add:hover {
-    background-color: var(--fg);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-.yellow_btn:hover {
-    background-color: var(--button-main-hover);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-.blue_btn:hover {
-    background-color: var(--button-accent-hover);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-
-
-.delete-btn:hover, .back-btn:hover {
-    background-color: var(--button-back-hover);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-
-
-.btn:hover {
-    background-color: var(--fg);
-    box-shadow: -3px 3px 2px 0px rgba(0,0,0,0.5);
-    transform: translateY(-2px);
-}
-
-
-/* === Modal Overlay === */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-in-out;
-    click: none;
-}
-
-#profile-container {
-  display: flex;
-  height:100%;
-
-}
-#profile-list {
-  flex:1;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-}
-#profile-list .profile-item {
-  flex:1;
-  list-style: none;
-  box-shadow: var(--inset-shadow);
-  font-size: 2rem;
-}
-.profile-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--item-shadow-hover);
-    transition: all 0.1s ease-in-out;
-}
-
-#profile-main {
-  flex:3;
-  display:flex;
-}
-
-.personal-left, .personal-right {
-  flex:1;
-  display:flex;
-  flex-direction: column;
-  margin: 1rem;
-  padding: 1rem;
-  background-color: var(--fg);
-  border-radius: 4px;
+  justify-content: center;
   align-items: center;
 }
 
-/*** WARNING: From here on out is pretty much vibecoded (profile screen) ***/
-/* === Modal Box === */
-.modal {
-    background-color: var(--bg);
-    width: 50%;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    border-radius: 2px;
-    animation: slideUp 0.3s ease-in-out;
+.log-area,
+.input-area { flex: 1; display: flex; }
+
+#recipe-area { height: 96vh; }
+
+.big { flex: 6; }
+
+#workout-history {
+  flex: 1;
+  height: 96vh;
+}
+
+#stats {
+  overflow: visible;
+  margin-top: 2rem;
+}
+.summary-area {
+  position: relative;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0.5rem;
+  text-align: center;
+  height: 10vh;
+  font-size: 2rem;
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border: 1px solid #0d0f0f;
+}
+
+/* Target the labels inside your SVG */
+#vitamin-chart text, #mineral-chart text, #macro-chart text {
+  transition: text-shadow 0.3s ease, fill 0.3s ease;
+}
+
+/* This class will be toggled by D3 */
+.text-active {
+  fill: #ffffff !important;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+#today_values,
+#meal_plan,
+#progress_track {
+  background-color: var(--pico-card-sectioning-background-color);
+}
+#progress_track { height: 10vh; }
+
+#day-macros {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.bw-card {
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border: 1px solid #0d0f0f;
+  padding: 0.5rem;
+  border-radius: var(--pico-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day_value_form {
+  height: 5vh;
+  margin: 0;
+}
+.day_value_form input {
+  height: 5vh;
+  line-height: 0;
+}
+
+#meal-log,
+#pantry-log {
+  overflow: hidden;
+}
+
+.full { max-height:96vh; }
+.partial { max-height:80vh; }
+
+#recipe-area,
+#meal-log,
+#pantry-log {
+  padding: var(--pico-spacing);
+}
+#search-results { flex:1; min-height: 0; }
+
+#recipe-list,
+#meal-list,
+#food-list {
+  padding: 0.3rem;
+  min-height:0;
+  overflow-y:auto; 
+  overflow-x:hidden;
+}
+
+.ingredient {
+  flex: 1;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0 10px;
+  box-shadow: -2px 2px 0px 0px #0d0f0f;
+  border: 1px solid #0d0f0f;
+}
+
+.ingredient-name { color: var(--pico-color)}
+.ingredient-unit { color: var(--pico-primary)}
+
+.workout,
+.recipe,
+.meal,
+.food {
+  padding: 0.5rem;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid #0d0f0f;
+  list-style-type: none;
+  background-color: var(--pico-background-color);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+}
+.workout:hover,
+.meal:hover,
+.food:hover {
+  transform: translateY(-3px);
+  box-shadow: -5px 5px 0px 0px #0d0d0f;
+  transition: all 0.3s ease;
+}
+.active {
+  transform: translateY(-2px);
+  box-shadow: -4px 4px 0px 0px #0d0d0f;
+  transition: all 0.3s ease;
+}
+
+.hidden { display: none; }
+
+.nutrient {
+  position: relative;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0.3rem;
+  gap:0.2rem;
+}
+
+.nutrition {
+  gap:0.8rem;
+  margin-top:0.8rem;
+}
+
+.meal-macro-label {
+  position: absolute;
+  top: 0;
+  font-size: 0.7rem;
+  color: var(--pico-primary);
+}
+
+.nutrient > div {
+  border-radius: var(--pico-border-radius);
+  flex:1;
+  text-align:center;
+  color: ghostwhite;
+}
+
+[data-tooltip]:not(a,button,input,[role=button]) {
+  border-bottom:none;
+}
+
+text {
+    transition: fill 0.2s ease, font-size 0.2s ease;
+}
+
+:root {
+  --water-color: #1e88e5;
+  --sleep-color: #69359c;
+
+  --calorie-color: #7f7f80;
+  --protein-color: var(--pico-primary);
+  --carb-color: #43a047;
+  --fat-color: #e53935;
+  --sugar-color: #885053;
+  --fiber-color: #43a047;
+  --starch-color: #848243;
+  --cholesterol-color: #D5573B;
+
+  --sodium-color: #737c87;
+  --potassium-color: #815b4d;
+  --calcium-color: #777676;
+  --magnesium-color: #c1c2c3;
+  --zinc-color: #3b4a6b;
+  --iron-color: #a59c93;
+
+  --vitamin-a-color: #0195c5;
+  --vitamin-b6-color: #b72f5b;
+  --vitamin-b12-color: #9542aa;
+  --vitamin-c-color: #f8931f;
+  --vitamin-d-color: #ed2b36;
+  --vitamin-e-color: #24ac24;
+}
+.calorie {
+  background-color: var(--calorie-color);
+}
+.protein {
+  background-color: var(--protein-color);
+}
+.carb {
+  background-color: var(--carb-color);
+}
+.fat {
+  background-color: var(--fat-color);
+}
+.sugar {
+  background-color: var(--sugar-color);
+}
+.fiber {
+  background-color: var(--fiber-color);
+}
+.cholesterol {
+  background-color: var(--cholesterol-color);
+}
+.sodium {
+  background-color: var(--sodium-color);
+}
+.potassium {
+  background-color: var(--potassium-color);
+}
+.calcium {
+  background-color: var(--calcium-color);
+}
+.iron {
+  background-color: var(--iron-color);
+}
+.magnesium {
+  background-color: var(--magnesium-color);
+}
+.zinc {
+  background-color: var(--zinc-color);
+}
+.vitamin-a {
+  background-color: var(--vitamin-a-color);
+}
+.vitamin-b6 {
+  background-color: var(--vitamin-b6-color);
+}
+.vitamin-b12 {
+  background-color: var(--vitamin-b12-color);
+}
+.vitamin-c {
+  background-color: var(--vitamin-c-color);
+}
+.vitamin-d {
+  background-color: var(--vitamin-d-color);
+}
+.vitamin-e {
+  background-color: var(--vitamin-e-color);
+}
+
+@media (max-width: 768px) {
 
 }
 
-.modal-content {
-  padding: 1rem;
-  
-}
-
-/* === Modal Content === */
-.modal-content h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-.modal-content p {
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
-.modal-content .button {
-    display: block;
-    width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-    border: none;
-    background-color: #4CAF50;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-}
-
-.modal-content .button:hover {
-    background-color: #45a049;
-}
-
-/* === Close Button (optional) === */
-.modal-content .close-btn {
-    display: block;
-    text-align: center;
-    margin-top: 1rem;
-    color: #777;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-/* === Animations === */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* -------------- HTMX Animations ------------- */
-
-/* Element that is being swapped OUT */
-.htmx-swapping {
-  opacity: 0;
-  transform: scale(0.95);
-/*  transition: all 0.2s ease; */
-  transition: all 0.2s ease; /* slower for testing */
-}
-
-/* New element being swapped IN */
-.htmx-added {
-  opacity: 1;
-  transform: scale(1);
-/*  transition: all 0.2s ease; */
-  transition: all 0.2s ease; /* slower for testing */
-}
-
-.htmx-settling {
-  opacity: 1;
-  transform: translateY(0), scale(0);
-/*  transition: all 0.3s ease; */
-  transition: all 0.3s ease; /* slower for testing */
-}
-
-.fade-in {
-  opacity: 0;
-  transform: scale(0.98);
-  animation: fadeIn 0.3s ease forwards;
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: scale(1);
+@media (max-width: 1350px) {
+  html{
+    font-size: 16px;
+  }
+  .macro-label{
+    top: -15px;
+    left: 5px;
+    font-size: 0.6rem;
   }
 }
 
+
+
+
+
+
+
+
+/* === Remove Scrollbars === */
 
 /* For WebKit browsers (Chrome, Safari) */
 *::-webkit-scrollbar {
@@ -843,86 +534,333 @@ button {
     -ms-overflow-style: none;
 }
 
-/* === LAPTOP LAYOUT: smaller font sizes === */
-@media (max-width: 1600px) {
-  body {
-    font-size: 1rem;
-  }
-
-  .main-chip { font-size:0.8rem; }
-   
-    .task { font-size:0.8rem; text-wrap: auto; }
-    .workout-date,
-    .weight_totals { font-size: 0.8rem; }
-
-    .graph-btn,
-    .yellow_btn { font-size: 0.9rem; }
-
-    .cardstyle { margin: 10px; padding: 0.5rem; } 
-
+.unit-select {
+    appearance: none;       /* Standard */
+    -webkit-appearance: none; /* Safari/Chrome */
+    -moz-appearance: none;    /* Firefox */
+    
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: center;
+    color: inherit;
+    font-size: inherit;
+    width: auto;
 }
 
-/* === MOBILE LAYOUT: Horizontal swipeable columns === */
-@media (max-width: 768px) {
+/* Optional: Add a subtle visual cue on hover so users know it's a menu */
+.unit-select:hover {
+    text-decoration: underline dotted;
+}
 
-    body {
-        overflow: hidden; /* Prevent vertical scroll */
-        display: block;   /* Disable grid layout */
-        font-size: 1rem;
+.unit-container {
+  max-width:90px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+
+
+
+.workout { position: relative; }
+#workout_list {
+  padding: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.inline-workout {
+  justify-content: space-evenly;
+  width: 80%;
+  align-items: center;
+}
+.workout-name {
+  font-size: 1.2rem;
+}
+.workout-date {
+  background-color: var(--pico-secondary-background);
+  border-radius: var(--pico-border-radius);
+  padding: 0.2rem 0.5rem;
+}
+.workout-total { 
+  background-color: var(--pico-card-sectioning-background-color);
+  color: var(--pico-primary);
+  border-radius: var(--pico-border-radius);
+  padding: 0.2rem 0.5rem;
+}
+#inspected-workout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: 30vh;
+}
+.blank-inspect {
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 0 0.25rem inset black;
+  color: var(--pico-muted-color);
+}
+#workout-info {
+  justify-content: space-evenly;
+}
+#workout-lifts {
+  overflow-x: auto;
+  max-width: 38vw;
+  padding: 0.2rem;
+}
+.lift {
+  padding: 0.5rem;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid #0d0f0f;
+  list-style-type: none;
+  background-color: var(--pico-background-color);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+.lift_set {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.lift_main {
+  text-align:center;
+}
+#weekly-sets {
+  flex: 1;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  border: 1px solid #0d0f0f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+
+#lifts-overview {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  max-height: 63vh;
+}
+#overview-target {
+  flex: 1;
+  display: flex;
+}
+
+#lift-graph {
+  flex: 3;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+}
+
+#lift-name {
+  flex:3;
+  font-size:large;
+}
+#lift-level {
+  flex:1;
+  font-size:small;
+}
+#lift-name,
+#lift-level {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+}
+#lift-details {
+  flex:1;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+}
+
+#lift-sets {
+  flex: 3;
+  padding: 0 0.5rem;
+}
+.lift_set_detail {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  padding: 0.2rem 0.5rem;
+}
+#bottom-track > div {
+  flex: 1;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+}
+
+#lift-carosel {
+  flex: 1;
+  padding: 1rem;  
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.list-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 1rem;
+}
+.list-container > div {
+  min-width: 150px;
+  max-width: 150px;
+  min-height: 150px;
+  max-height: 150px;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ts-wrapper {
+  flex: 3;
+}
+.ingred-input {
+  flex: 1;
+}
+
+/* 1. Prevent Pico from forcing height/padding on the TomSelect wrapper */
+.ts-wrapper.form-control, 
+.ts-wrapper.single .ts-control {
+    height: auto !important;
+    padding: 0 !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 2. Style the actual clickable control to look like a Pico input */
+.ts-control {
+    background-color: var(--pico-form-element-background-color) !important;
+    border: 1px solid var(--pico-form-element-border-color) !important;
+    border-radius: var(--pico-border-radius) !important;
+    padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal) !important;
+    color: var(--pico-color) !important;
+    min-height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2);
+}
+
+/* 3. Highlight the focus state to match Pico's primary color */
+.ts-wrapper.focus .ts-control {
+    border-color: var(--pico-primary-focus) !important;
+    box-shadow: 0 0 0 var(--outline-width) var(--primary-focus) !important;
+}
+
+/* 4. Fix dropdown z-index so it doesn't hide behind other Pico elements */
+.ts-dropdown {
+    z-index: 1000;
+    background: var(--pico-card-sectioning-background-color) !important;
+    color: var(--pico-color) !important;
+    border: 1px solid var(--pico-form-element-border-color) !important;
+}
+
+.ts-control > input {
+  background: var(--pico-form-element-background-color) !important;
+  border: 1px solid var(--pico-form-element-border-color) !important;
+  padding: 1rem !important;
+}
+
+svg:not(:host), svg:not(:root) {
+    overflow: visible;
+}
+
+.editable {
+    cursor: pointer;
+    padding: 0 2px;
+}
+.editable:hover {
+    background: var(--pico-card-background-color);
+    border-bottom: 1px dashed var(--pico-muted-color);
+    color: var(--pico-primary);
+}
+
+
+@keyframes globalFallIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
     }
-
-    #app-columns {
-        display: flex;
-        flex-direction: row;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        height: 100dvh;
-        min-height: 100dvh;
-        width: 100%;
-    }
-
-    #app-columns::-webkit-scrollbar {
-        display: none; /* Hide scrollbars for mobile UX */
-    }
-
-    /* Each column takes the full viewport width */
-    .w_list,
-    .s_list,
-    .m_list {
-        min-width: 100vw;
-        height: 100vh;
-        scroll-snap-align: start;
-
-        /* Optional: give each column padding so content isn't edge-to-edge */
-        padding: 0.5rem;
-        box-sizing: border-box;
-    }
-
-    .profile-pic {width: 40px;height: 40px;}
-    .profile-pic-container { margin: 0; }
-    #graph_head__container { box-shadow: none; }
-
-    /* Remove grid-area assignments */
-    .w_list,
-    .s_list,
-    .m_list {
-        grid-area: unset;
-    }
-
-    /* mobile font size correction */
-    .workout-date,
-    .weight_totals { font-size: 1rem; }
-
-    .graph-btn,
-    .yellow_btn { font-size: 1rem; }
-
-    .cardstyle { margin: 5px; padding: 0.5rem; } 
-    .main-chip { font-size: 0.7rem; }
-
-    #meal_entry__container,
-    #lift_entry__container {
-      margin: 2px;
-      padding: 1rem;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
+article {
+    /* Set the starting state so they are invisible before animation starts */
+    opacity: 0; 
+    transform: translateY(-20px);
+    
+    /* Apply the animation */
+    animation: globalFallIn 0.5s ease-out forwards;
+}
+
+/* Ensure HTMX content doesn't double-animate if it's inside an article */
+.htmx-added article, 
+article.htmx-added {
+    animation: none; /* Let the htmx-settling classes handle it instead */
+}
+/* Only animate articles that exist on initial page load */
+article:not(.htmx-added) {
+    opacity: 0;
+    animation: globalFallIn 0.5s ease-out forwards;
+}
+
+/* Handle HTMX swaps separately and gracefully */
+.htmx-swapping article {
+    opacity: 0;
+    transform: translateY(20px); /* Slide out downwards */
+    transition: all 0.2s ease-in;
+}
+
+.htmx-settling article {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+
+/* === Color Picker === */
+.color-patch {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  background: var(--color);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  cursor: pointer;
+}
+
+.c-icon {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: black;
+}
+
+.color-patch i {
+    display: none;
+}
+
+.color-patch:hover i {
+    display: inline-block;
+}

@@ -1,17 +1,17 @@
-<!-- horizontal scroll of each lift done -->
-{% if expanded %}
-<div class="workout expanded" hx-on:click="this.classList.toggle('expanded')"
-{% else %}
-<div class="workout" hx-on:click="this.classList.toggle('expanded')"
-{% endif %}
-    style="--color: {{workout_type.color}};
-	   background: linear-gradient(135deg, var(--fg) 85%, var(--fg) 85%,
-           {{workout.workout_type.color}} 15%);">
+<div class="workout" 
+    style="background: linear-gradient(135deg,
+          var(--pico-background-color) 85%,
+          var(--pico-background-color) 85%,
+          {{workout.workout_type.color}} 15%);"
+      hx-trigger="click"
+      hx-get="{% url 'workouts:get_workout' workout.id %}"
+      hx-target="#inspected-workout">
+     
 
-  <div class="workout-header">
-	<div class="workout-name">{{workout.workout_type.name.upper}} </div>
-	<div class="workout-date">{{workout.day.date}}</div>
-        <div id="total-{{workout.id}}" class="weight_totals"></div>
+  <div class="horizontal-group inline-workout">
+    <div class="workout-name">{{workout.workout_type.name.upper}} </div>
+    <div class="workout-total">{{workout.total}}</div>
+    <div class="workout-date">{{workout.day.date|date:"m/d"}}</div>
   </div>
 
   <!-- Color patch -->
@@ -31,25 +31,7 @@
     hx-vals='{"workout_id": "{{ workout.id }}"}'
     hx-swap="innerHTML"
   >
-  <div class="details">
-    <div class="horz_scroll" style="overflow-x: auto; width: 100%;">
-	<ul class="workout_list"
-              hx-get="{% url 'workouts:listl' workout.id %}"
-              hx-trigger="load once"
-              hx-swap="innerHTML">
-	</ul>
-    </div>
-    <div class="button-container right-crud-buttons">
-      <button class="delete-btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
-	hx-delete="{% url 'workouts:del_workout' workout.id %}" 
-	hx-target="closest .workout" 
-	hx-swap="outerHTML swap:0.3s">
-	<i class="fa-solid fa-trash"></i>
-      </button>
-    </div>
-  </div>
   {% if workout.is_active %}
   {% include './end_workout.html' %}
   {% endif %}
-
 </div>

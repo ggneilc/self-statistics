@@ -1,0 +1,42 @@
+{% for recipe in recipes %}
+<div class="recipe" style="position:relative;"
+hx-on:click="this.querySelector('.details').classList.toggle('hidden')">
+    <span>{{ recipe.food.name.upper }}</span>
+    <div class="details hidden">
+
+  <span style="position:absolute;top:0.5rem;right:0.5rem;">
+    <button style="padding:0 0.5rem;"
+      hx-get="{% url 'calcounter:edit_recipe' recipe.id %}"
+      hx-target="#recipe-list">
+        <i class="fa-solid fa-pen"></i>
+    </button>
+    <button style="padding:0 0.5rem;"
+        hx-delete="{% url 'calcounter:delete_recipe' recipe.id %}"
+        hx-target="closest .recipe"
+        hx-swap="outerHTML">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+  </span>
+
+
+    <h3> Ingredients </h3>
+    <div class="vertical-group">
+      {% for mapping in recipe.food.ingredient_set.all %}
+      <div class="horizontal-group">
+        <div style="display:flex;align-items:center;">
+          <input type="checkbox" hx-on:click="event.stopPropagation();" style="margin-right:0;">
+        </div>
+        <div class="ingredient">
+          <span class="ingredient-name">{{ mapping.ingredient.name }}</span> : <span class="ingredient-unit">{{ mapping.amount}} {{ mapping.unit.name }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <h3>Preparation</h3>
+    <div class="instructions-body">
+        {# linebreaks converts single newlines to <br> and double to <p> #}
+        {{ recipe.instructions|linebreaks }}
+    </div>
+    </div>
+</div>
+{% endfor %}

@@ -1,11 +1,11 @@
 # core/signals.py
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from calcounter.models import Food
-from workouts.models import Workout, WorkoutType
+from calcounter.models import MealConsumption
+from workouts.models import Workout, WorkoutType, Set, WeeklyVolume
 from django.contrib.auth.models import User
 from .models import Day, Profile
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from datetime import datetime, timedelta
 
 
@@ -14,6 +14,12 @@ def set_macro_goal(sender, instance, created, **kwargs):
     # instance.date = YYYY-MM-DD
     user = instance.user
     today = instance.date
+
+    # 1. Force conversion if 'today' is a string
+    if isinstance(today, str):
+        # Handles 'YYYY-MM-DD'
+        today = datetime.strptime(today, '%Y-%m-%d').date()
+
     if (today == '0001-01-01'):
         return
     yesterday = today - timedelta(days=1)
@@ -22,9 +28,11 @@ def set_macro_goal(sender, instance, created, **kwargs):
 
     # if no bodyweight or day, just use default
     if not yesterday_obj:
+        print("No yesterday found: cannot set goals")
         return
     bw = yesterday_obj.bodyweight
     if not bw:
+        print("No bodyweight found: cannot set goals")
         return
 
     print(f"Setting macros for {instance.date} for user {user}:")
@@ -49,34 +57,25 @@ def set_macro_goal(sender, instance, created, **kwargs):
     )
 
 
-@receiver([post_save, post_delete], sender=Food)
+@receiver([post_save, post_delete], sender=MealConsumption)
 def update_day_after_meal_change(sender, instance, **kwargs):
-    signal = kwargs.get('signal')  # post_save or post_delete
-    date = instance.day.date
-    print(f"Updating {date}")
-    day = instance.day
+    # instance is a MealConsumption object
+    meal = instance.meal
+    day = meal.day
+    print(f"Updating {day.date}")
 
-    # Check if food has 01-01-0001
-    if (date == datetime(1, 1, 1)):
-        print("flushing dead foods")
-        # delete all foods that has 01-01-0001
-        foods = Food.objects.filter(day=day)
-        for f in foods:
-            if not f.is_template:
-                print(f"dead food found: {f}")
-                instance.delete()
-    else:
-        total_c = Food.objects.filter(day=day).aggregate(
-            total_cals=Sum('calories')
-        )['total_cals'] or 0
-        total_p = Food.objects.filter(day=day).aggregate(
-            total_pro=Sum('protein')
-        )['total_pro'] or 0
+    total_c, total_p = 0, 0
 
-        Day.objects.filter(pk=day.id).update(
-            calories_consumed = total_c,
-            protein_consumed = total_p
-        )
+    for meal in day.meals.all():
+        totals = meal.get_nutrients_consumed()
+        total_c += totals['calories']
+        total_p += totals['protein']
+
+    print(f"New totals for {day.date}: {total_c} cals, {total_p} pro")
+    Day.objects.filter(pk=day.id).update(
+        calories_consumed = total_c,
+        protein_consumed = total_p
+    )
 
 
 @receiver([post_save, post_delete], sender=Workout)
@@ -109,3 +108,30 @@ def create_default_workout_types(sender, instance, created, **kwargs):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
+
+
+@receiver([post_save, post_delete], sender=Set)
+def update_weekly_volume(sender, instance, **kwargs):
+    # 1. Find the Sunday of the week this set belongs to
+    workout_date = instance.lift.workout.day.date
+    days_since_sunday = (workout_date.weekday() + 1) % 7
+    sunday = workout_date - timedelta(days=days_since_sunday)
+    
+    user = instance.lift.workout.day.user
+    bodypart = instance.lift.bodypart
+
+    # 2. Recalculate total sets for this specific user/week/muscle
+    total_sets = Set.objects.filter(
+        lift__workout__day__user=user,
+        lift__workout__day__date__range=[sunday, sunday + timedelta(days=6)],
+        lift__bodypart=bodypart
+    ).count()
+
+    # 3. Update or create the volume record
+    WeeklyVolume.objects.update_or_create(
+        user=user,
+        start_date=sunday,
+        muscle_group=bodypart,
+        defaults={'set_count': total_sets}
+    )

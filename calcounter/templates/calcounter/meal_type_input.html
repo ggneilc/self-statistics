@@ -1,18 +1,16 @@
-<div class="personal-left button-container" style="margin: revert; padding:revert;">
-  <button class="graph-btn" style="background-color: var(--bg);"
-    hx-get="{% url 'calcounter:add' %}"
-    hx-target="#meal_entry__container"
+<button style="flex:1;"
+    hx-get="{% url 'calcounter:templates_m' %}"
+    hx-target="#meal-input"
     hx-trigger="click"
-    hx-swap="innerHTML swap:0.4s">
-    Manual Input
-  </button>
-</div>
-<div class="personal-right button-container" style="margin: revert; padding:revert;">
-  <button class="graph-btn" style="background-color: var(--bg);"
-    hx-get="{% url 'calcounter:auto_buttons' %}"
-    hx-target="#meal_entry__container"
-    hx-trigger="click"
-    hx-swap="innerHTML swap:0.4s">
-    By Ingredient
-  </button>
-</div>
+    hx-swap="innerHTML swap:0.4s"
+    hx-on:click="
+	document.querySelector('#meal-input').classList.add('big');
+	document.querySelector('#meal-log').classList.remove('big');
+    ">
+<i class="fa-solid fa-cubes-stacked"></i>
+    Automatic
+</button>
+<button style="flex:1;">
+<i class="fa-regular fa-hand-pointer"></i>
+    Manual
+</button>

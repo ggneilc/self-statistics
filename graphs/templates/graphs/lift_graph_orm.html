@@ -1,0 +1,75 @@
+<div id="lift-chart-container" data-lifts='{{ data|safe }}'
+style="width:100%;"></div>
+
+<script>
+(function() {
+    // 1. Fetch data from our Django view
+    const container = document.getElementById("lift-chart-container");
+    if (!container) return;
+
+    let data;
+    try {
+        data = JSON.parse(container.dataset.lifts);
+    } catch (err) {
+        console.error("Invalid day data:", err);
+        return;
+    }
+
+    // Parse dates
+    const parseDate = d3.isoParse;
+    data.forEach(d => { d.date = parseDate(d.date); });
+
+    // 2. Set dimensions
+    const margin = {top: 20, right: 30, bottom: 40, left: 50};
+    const width = document.getElementById('lift-chart-container').clientWidth - margin.left - margin.right;
+    const height = 250 - margin.top - margin.bottom;
+
+    const svg = d3.select(container)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // 3. Set Scales
+    const x = d3.scaleTime()
+        .domain(d3.extent(data, d => d.date))
+        .range([0, width]);
+
+    const y = d3.scaleLinear()
+        .domain([d3.min(data, d => d.one_rm) * 0.9, d3.max(data, d => d.one_rm) * 1.1])
+        .range([height, 0]);
+
+    // 4. Add Axes
+    svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).ticks(5));
+
+    svg.append("g")
+        .call(d3.axisLeft(y));
+
+    // 5. Add the Line
+    const line = d3.line()
+        .x(d => x(d.date))
+        .y(d => y(d.one_rm))
+        .curve(d3.curveMonotoneX); // Smooths the line
+
+    svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "var(--pico-primary)")
+        .attr("stroke-width", 3)
+        .attr("d", line);
+
+    // 6. Add Tooltip Dots
+    svg.selectAll("dot")
+        .data(data)
+        .enter().append("circle")
+        .attr("r", 5)
+        .attr("cx", d => x(d.date))
+        .attr("cy", d => y(d.one_rm))
+        .attr("fill", "var(--primary)")
+        .append("title") // Simple browser tooltip
+        .text(d => `${d.one_rm}kg on ${d.date.toLocaleDateString()}`);
+})();
+</script>

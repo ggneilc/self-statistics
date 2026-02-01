@@ -1,0 +1,30 @@
+{% load static %}
+<!-- global date storage -->
+<input type="date"
+  id="hidden-date"
+  name="date"
+  value="today"
+  style="display:none;">
+
+<aside class="sidebar">
+<nav>
+  <ul class="pfp-group">
+      <li> <div class="profile-pic"></div> </li>
+      <li class="username"> <strong>{{user.username}}</strong></li>
+  </ul>
+  <hr/>
+  <ul>
+    <li><a hx-get="{% url 'core:dashboard_page' %}" data-tooltip="Dashboard" data-placement="right" hx-target="#content">
+      <i class="fa-solid fa-chart-area"></i>
+    </a></li>
+    <li><a hx-get="{% url 'core:nutrition_page' %}" data-tooltip="Nutrition" data-placement="right" hx-target="#content"><i class="fa-solid fa-utensils"></i></a></li>
+    <li><a hx-get="{% url 'core:workout_page' %}" data-tooltip="Workouts" data-placement="right" hx-target="#content"><i class="fa-solid fa-dumbbell"></i></a></li>
+    <li><a data-tooltip="coming soon" data-placement="right" ><i class="fa-solid fa-book-open"></i></a></li>
+    <li><a data-tooltip="coming soon" data-placement="right" ><i class="fa-solid fa-message"></i></a></li>
+  </ul>
+    <div id="dummy" style=""></div>
+  <ul class="settings-group">
+      <li> <a hx-get="{% url 'core:profile' %}" hx-target="#dummy"data-tooltip="Settings" data-placement="right"><i class="fa-solid fa-gears"></i></a></li>
+  </ul>
+</nav>
+</aside>

@@ -1,0 +1,16 @@
+<div class="consumption-row vertical-group"
+style="border: 1px solid #0d0f0f;padding:1rem;margin-bottom:0.5rem;box-shadow: -3px 3px 0px 0px #0d0f0f;">
+    <fieldset role="group">
+        {{ form.food }}
+        <button hx-on:click="event.preventDefault();"
+                hx-delete="{% url 'calcounter:clear' %}"
+                hx-target="closest .consumption-row"
+                hx-swap="outerHTML">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </fieldset>
+    <div class="horizontal-group">
+    {{ form.amount }}
+    {{ form.unit }}
+    </div>
+</div>

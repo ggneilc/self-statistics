@@ -1,0 +1,12 @@
+ <button class="input-btn" style="flex:1;"
+    hx-get="{% url 'calcounter:add' %}"
+    hx-trigger="click"
+    hx-target="#meal-input"
+    hx-swap="innerHTML swap:0.4s"
+    hx-on:click="
+    document.querySelector('#meal-input').classList.toggle('big');
+    document.querySelector('#meal-log').classList.toggle('big');
+    ">
+	<i class="fa-solid fa-utensils" style="margin-left:5px;"></i>
+            New Meal 
+ </button>

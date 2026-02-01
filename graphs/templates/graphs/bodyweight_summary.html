@@ -1,16 +1,26 @@
-<div class="statistic"><span class="small">Average Bodyweight :</span> {{mean}}</div>
-<div class="statistic"><span class="small"> Daily Weight Fluctations : </span>{{stddev}}</div>
-<div class="statistic">
-  <span class="stat-label"> regression line </span>
-  <span class="small"> Trend : </span>{{trend}} <span class="small">  Intercept : </span>{{intercept}} </div>
-<div class="statistic"><span class="small"> 7 Day Difference : </span>{{7d}}</div>
-<div class="statistic">
-  <span class="stat-label">one-day</span>
-  <span class="small"> Biggest Drop : </span>{{max_drawdown}}
-  <span class="small"> Largest Gain : </span>{{max_runup}}
-</div>
-<div id="simple" class="statistic" >
-  <div class="statistic"><span class="stat-label">max</span>{{max}}</div>
-  <div class="statistic"><span class="stat-label">min</span> {{min}}</div>
-  <div class="statistic"><span class="stat-label">total change to date</span> {{total_change}}</div>
+<div class="horizontal-group">
+    <article class="summary-area" style="height:10vh;">
+      <span class="macro-label">Avg. Bw</span>
+       {{mean|floatformat:1}} 
+    </article>
+    <article class="summary-area" style="height:10vh;">
+      <span class="macro-label">Fluctations</span>
+       {{stddev|floatformat:1}} 
+    </article>
+    <article class="summary-area" style="height:10vh;">
+      <span class="macro-label">Biggest Drop</span>
+       {{max_drawdown}} 
+    </article>
+    <article class="summary-area" style="height:10vh;">
+      <span class="macro-label">Largest Gain</span>
+       {{max_runup}} 
+    </article>
+    <article class="summary-area" style="height:10vh;">
+      <span class="macro-label">Min</span>
+       {{min}} 
+    </article>
+    <article class="summary-area" style="height:10vh;">
+      <span class="macro-label" style="color:var(--pico)">Max</span>
+       {{max}} 
+    </article>
 </div>

@@ -1,9 +1,12 @@
 {% comment %} food_detail.html {% endcomment %}
 
-<h1>{{ food.name }}</h1>
-<p>(per 100g)</p>
+<hgroup>
+  <h1>{{ food.name }}</h1>
+  <p>(per 100g)</p>
+</hgroup>
+
 <h2>Macro Nutrients </h2>
-<table border="1">
+<table>
     <thead>
         <tr>
             <th>Nutrient</th>
@@ -21,7 +24,7 @@
 </table>
 
 <h2>Mineral Profile</h2>
-<table border="1">
+<table>
     <thead>
         <tr>
             <th>Mineral</th>
@@ -41,7 +44,7 @@
 
 
 <h2>Vitamins</h2>
-<table border="1">
+<table>
     <thead>
         <tr>
             <th>Vitamin</th>
@@ -57,3 +60,20 @@
     {% endfor %}
     </tbody>
 </table>
+
+<h2>Serving Info</h2>
+
+<p> Standard Serving: {{ gram }} grams per {{ amount }} {{modifier}}</p>
+
+<div class="horizontal-group">
+<button style="flex: 1;"
+    hx-on:click="
+    document.getElementById('search-results').classList.toggle('hidden');
+    document.getElementById('selected-food').classList.toggle('hidden');
+    "> BACK </button>
+<button style="flex: 1;"
+	hx-post="{% url 'calcounter:add_p' food_id %}"
+    hx-vals='{"modifier": "{{ modifier }}", "amount": "{{ amount }}", "gram_weight": "{{ gram }}"}'
+	hx-trigger="click"
+	hx-target="#pantry-log"> ADD </button>
+</div>

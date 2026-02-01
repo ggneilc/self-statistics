@@ -1,0 +1,42 @@
+<div class="consumption-row vertical-group"
+style="border: 1px solid #0d0f0f;padding:1rem;margin-bottom:0.5rem;box-shadow: -3px 3px 0px 0px #0d0f0f;">
+    <fieldset role="group">
+        {{ form.description }}
+        <button hx-on:click="event.preventDefault();"
+                hx-delete="{% url 'calcounter:clear' %}"
+                hx-target="closest .consumption-row"
+                hx-swap="outerHTML">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </fieldset>
+    <div class="horizontal-group">
+        {{ form.calories }}
+        {{ form.protein }}
+    </div>
+    <details>
+        <summary>Macros</summary>
+        {{ form.fat }}
+        {{ form.carb }}
+        {{ form.sugar }}
+        {{ form.fiber }}
+        {{ form.cholesterol }}
+    </details>
+    <details>
+        <summary>Minerals</summary>
+        {{ form.sodium }}
+        {{ form.potassium }}
+        {{ form.calcium }}
+        {{ form.iron }}
+        {{ form.magnesium }}
+        {{ form.zinc }}
+    </details>
+    <details>
+        <summary>Vitamins</summary>
+        {{ form.vitamin_a }}
+        {{ form.vitamin_c }}
+        {{ form.vitamin_d }}
+        {{ form.vitamin_b6 }}
+        {{ form.vitamin_b12 }}
+        {{ form.vitamin_e }}
+    </details>
+</div>

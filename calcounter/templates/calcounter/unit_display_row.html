@@ -1,0 +1,35 @@
+<div class="unit-row horizontal-group" style="align-items:center;justify-content:space-between;">
+    <div>
+        <span class="editable"
+            hx-get="{% url 'calcounter:edit_unit' unit.id %}"
+            hx-trigger="click"
+            hx-target="closest .unit-row">
+        {{unit.name}}
+        </span>
+        :
+        <span class="editable"
+            hx-get="{% url 'calcounter:edit_unit' unit.id %}"
+            hx-trigger="click"
+            hx-target="closest .unit-row">
+        {{unit.gram_weight}}
+        </span>
+        g
+    </div>
+    <div>
+        {% if unit.is_standard %}
+        <!-- Don't allow deletion of standard unit-->
+        <span data-tooltip="USDA Certified Portion" data-placement="left">
+            <i class="fa-solid fa-check" style="color:green;"></i>
+        </span>
+        {% else %}
+        <span class="editable"
+            hx-get="{% url 'calcounter:delete_unit' unit.id %}"
+            hx-trigger="click"
+            hx-target="closest .unit-row"
+            hx-swap="outerHTML"> 
+            <i class="fa-solid fa-xmark" style="color:red;"></i>
+        </span>
+        {% endif %}
+    </div>
+</div>
+<hr/>

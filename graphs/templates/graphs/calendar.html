@@ -1,181 +1,143 @@
-<div id="d3-calendar" data-days='{{ day_data|safe }}'></div>
+<figure id="heatmap-window" data-days='{{ day_data|safe }}'></figure>
 
-<script> 
-(function() {
-  const node = document.querySelector("#d3-calendar");
-  if (!node) return;
 
-  // Parse day data (expect array of {id, date, ratio})
-  // Accept either ISO date strings or Date objects serialized as strings.
-  let dayData;
-  try {
-    dayData = JSON.parse(node.dataset.days);
-  } catch (err) {
-    console.error("Failed to parse day data:", err);
-    return;
+<script>
+  (function() {
+  function getCellSize() {
+    const width = window.innerWidth;
+    if (width < 625) return 45;
+    if (width <= 1200) return 60; 
+    if (width <= 1400) return 70; 
+    return 100;                   
   }
 
-  // map date-strings (YYYY-MM-DD) -> ratio
-  const byIso = new Map();
-  dayData.forEach(d => {
-    // tolerate datetime strings, and ensure YYYY-MM-DD
-    let iso;
-    if (!d.date) return;
-    // If incoming date looks like '2025-11-16T00:00:00' or '2025-11-16', extract YYYY-MM-DD
-    iso = (typeof d.date === "string") ? d.date.slice(0, 10) : new Date(d.date).toLocatelDateString("en-CA").slice(0,10);
-    byIso.set(iso, { id: d.id, ratio: d.ratio });
-  });
+  let cellSize = getCellSize();
+  const gap = 4;
+  const headerHeight = 10; // Space for "Mon/Sun" labels
+  const container = d3.select("#heatmap-window");
+  let viewStart = d3.timeWeek.floor(new Date());
 
-  // Determine the month from the dayData if possible, else use today.
-  // We'll compute window_end as last day of that month (or today if no data),
-  // and window_start = end - 27 days => a 28-day window.
-  let monthDate = null;
-  if (dayData.length) {
-    // pick the first entry's date as a month anchor
-    monthDate = new Date(dayData[0].date);
-  } else {
-    monthDate = new Date();
-  }
-  // normalize to midnight, use local dates
-  const year = monthDate.getFullYear();
-  const month = monthDate.getMonth(); // 0-based
-  // last day of month
-  const lastOfMonth = new Date(year, month + 1, 0); // day 0 of next month -> last day of current
-  // end = lastOfMonth
-  const end = new Date(lastOfMonth.getFullYear(), lastOfMonth.getMonth(), lastOfMonth.getDate());
-  // start = end - 27 days
-  const start = new Date(end);
-  start.setDate(end.getDate() - 27);
+  const rawData = JSON.parse(container.attr("data-days"));
+  const dataMap = new Map(rawData.map(d => [d.date, d]));
 
-  // Build array of 28 days from start..end (inclusive)
-  const days = [];
-  for (let i = 0; i < 28; i++) {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    // iso string YYYY-MM-DD
-    const iso = d.toLocaleDateString("en-CA").slice(0,10);
-    days.push({
-      date: d,
-      iso,
-      data: byIso.get(iso) || null
+  const colorScale = d3.scaleThreshold()
+    .domain([0, 0.3, 0.5, 0.8, 1.0, 1.2])
+    .range(["#f0f0f0", "#bc1010", "#ef5350", "#fc9d3f", "#66bb6a", "#2e7d32"]);
+
+  function renderWindow(startDate) {
+    const endDate = d3.timeDay.offset(startDate, 14);
+    const days = d3.timeDays(startDate, endDate);
+    
+    container.selectAll("svg").remove(); // Clean render to handle header logic easily
+
+    const svg = container.append("svg")
+      .attr("width", (cellSize + gap) * 7)
+      .attr("height", (cellSize + gap) * 2 + headerHeight)
+      .attr("overflow", "visible");
+
+    // 1. ADD STATIC HEADERS (Mon / Sun)
+    const headerGroup = svg.append("g")
+        .attr("class", "calendar-headers")
+        .style("fill", "var(--pico-muted-color)")
+        .style("font-size", "12px")
+        .style("font-weight", "bold");
+
+    headerGroup.append("text")
+        .attr("x", cellSize / 2)
+        .attr("y", headerHeight - 10)
+        .attr("text-anchor", "middle")
+        .text("SUN");
+
+    headerGroup.append("text")
+        .attr("x", (cellSize + gap) * 6 + cellSize / 2)
+        .attr("y", headerHeight - 10)
+        .attr("text-anchor", "middle")
+        .text("SAT");
+
+    // 2. DRAW DAYS
+    const chartArea = svg.append("g")
+        .attr("transform", `translate(0, ${headerHeight})`);
+
+    const cells = chartArea.selectAll(".day-cell")
+      .data(days, d => d.getTime())
+      .enter()
+      .append("g")
+      .attr("class", "day-cell")
+      .attr("transform", (d, i) => {
+        const x = (i % 7) * (cellSize + gap);
+        const y = Math.floor(i / 7) * (cellSize + gap);
+        return `translate(${x}, ${y})`;
+      })
+      .style("cursor", "pointer");
+
+    // Background Rect
+    cells.append("rect")
+      .attr("width", cellSize)
+      .attr("height", cellSize)
+      .attr("rx", 6)
+      .attr("fill", d => {
+        const dateStr = d3.timeFormat("%Y-%m-%d")(d);
+        const dayData = dataMap.get(dateStr);
+        return dayData ? colorScale(dayData.ratio) : "#0F1114";
+      })
+      .attr("stroke", d => {
+        const isToday = d3.timeDay.floor(new Date()).getTime() === d.getTime();
+        return isToday ? "#ffbf00" : "rgba(255,255,255,0.1)";
+      })
+      .attr("stroke-width", d => (d3.timeDay.floor(new Date()).getTime() === d.getTime() ? 3 : 1));
+
+    // Day Label (with Month Logic)
+    cells.append("text")
+      .attr("class", "day-label")
+      .attr("x", cellSize / 2)
+      .attr("y", cellSize / 2 + 5)
+      .attr("text-anchor", "middle")
+      .style("font-size", cellSize < 50 ? "12px" : "18px")
+      .style("font-weight", "bold")
+      .style("fill", "#fff")
+      .text(d => {
+        // If it's the 1st of the month, or the very first cell in the view
+        if (d.getDate() === 1 || d.getTime() === days[0].getTime()) {
+            return d3.timeFormat("%b %-d")(d); // e.g. "Jan 1"
+        }
+        return d.getDate();
+      });
+
+    // Ratio Helper
+    cells.append("text")
+      .attr("class", "ratio-helper")
+      .attr("x", cellSize / 2)
+      .attr("y", cellSize - 8)
+      .attr("text-anchor", "middle")
+      .style("font-size", cellSize < 60 ? "0px" : "10px")
+      .style("fill", "rgba(255,255,255,0.8)")
+      .text(d => {
+        const dateStr = d3.timeFormat("%Y-%m-%d")(d);
+        const dayData = dataMap.get(dateStr);
+        return dayData ? `${Math.round(dayData.ratio * 100)}%` : "";
+      });
+
+    // Click logic remains the same
+    cells.on("click", (event, d) => {
+      const today = d3.timeDay.floor(new Date());
+      const dateStr = d3.timeFormat("%Y-%m-%d")(d);
+      if (d <= today) {
+        setSelectedDate(dateStr);
+        htmx.ajax('GET', `/day/${dateStr}`, { target: '#day-container' });
+      };
+    });
+
+    d3.select("#current-range").text(() => {
+      const endDate = d3.timeDay.offset(viewStart, 13);
+      const format = d3.timeFormat("%b %-d");
+      return `${format(viewStart)} - ${format(endDate)}`;
     });
   }
 
-  const container = d3.select("#d3-calendar");
-  // D3 layout constants
-  const cellGap = 10;
-  const cols = 7, rows = 4;
-//  const width = cols * (cellSize + cellGap);
-//  const height = rows * (cellSize + cellGap);
-  const width = container.node().clientWidth;
-  const height = width * 0.6;
-  const cellSize = width / 7;
-  // remove previous svg if present
-  d3.select(node).selectAll("svg").remove();
-
-  const svg = d3.select(node)
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("viewBox", `0 0 ${width+60} ${height}`)
-    .attr("role", "img")
-    .attr("aria-label", "Monthly calendar heatmap");
-
-  // color scale: ratio 0 -> red, 1 -> green (via RdYlGn)
-  const color = d3.scaleLinear()
-    .domain([0, 0.5, 1])
-    .range(["#cb0014", "#ffd966", "#207948"])  // red -> yellow -> green
-
-  // tooltip
-  const tooltip = d3.select(node)
-    .append("div")
-    .attr("class", "calendar-tooltip")
-    .style("position", "absolute")
-    .style("pointer-events", "none")
-    .style("padding", "6px 8px")
-    .style("background", "#222")
-    .style("color", "white")
-    .style("border-radius", "4px")
-    .style("font-size", "12px")
-    .style("display", "none");
-
-  // draw cells
-  const g = svg.append("g").attr("transform", `translate(0,0)`);
-
-  g.selectAll("rect.day")
-    .data(days)
-    .join("rect")
-      .attr("class", "day")
-      .attr("x", (d,i) => (i % cols) * (cellSize + cellGap))
-      .attr("y", (d,i) => Math.floor(i / cols) * (cellSize + cellGap))
-      .attr("width", cellSize)
-      .attr("height", cellSize)
-      .attr("rx", 2)
-      .attr("ry", 2)
-      .attr("fill", "#0f0f0f")
-      .style("stroke-width", 1)
-      .style("stroke", d => {
-         if (!d.data) {
-           // no data: black/dark box (future/not-tracked)
-           return "#0f0f0f";
-         }
-      if (d.data.ratio >= 1.0){ return "var(--accent)"; }
-         // with data: color by ratio (0..1)
-         const r = +d.data.ratio;
-         // clamp r
-         const rr = Math.max(0, Math.min(1, isNaN(r) ? 0 : r));
-         return color(rr);
-      })
-      .on("mouseenter", (e, d) => {
-         const iso = d.iso;
-         const dd = d.data;
-         const dayLabel = `${iso}`;
-         const html = dd
-            ? `<strong>${dayLabel}</strong><div>ratio: ${dd.ratio}</div>`
-            : `<strong>${dayLabel}</strong><div>No data</div>`;
-         tooltip.style("display", "block")
-                .html(html);
-      })
-      .on("mousemove", (e) => {
-         tooltip
-           .style("left", (e.offsetX) + "px")
-           .style("top", (e.offsetY) + "px");
-      })
-      .on("mouseleave", () => tooltip.style("display", "none"))
-      .on("click", (e, d) => {
-         setSelectedDate(d.iso);
-         // highlightSelectedCell(d.date)
-         htmx.ajax('GET', `/day/${d.iso}`, {target: '#day-info'})
-         console.log("clicked day", d.iso);
-      });
-
-  // optionally add day numbers (small text)
-  g.selectAll("text.daynum")
-    .data(days)
-    .join("text")
-      .attr("class", "daynum")
-      .attr("x", (d,i) => (i % cols) * (cellSize + cellGap) + 6)
-      .attr("y", (d,i) => Math.floor(i / cols) * (cellSize + cellGap) + 14)
-      .text(d => d.date.getDate())
-      .style("font-size", "11px")
-      .style("fill", d => d.data ? "#fff" : "#666");
-
-  // small legend
-//  const legendW = 120;
-//  const legend = svg.append("g").attr("transform", `translate(${width - legendW - 4}, ${height+4})`);
-//  legend.append("rect").attr("width", legendW).attr("height", 14).attr("rx", 6).attr("ry", 6).style("fill", "transparent");
-  // gradient squares legend (3 stops)
-//  const stops = [0, 0.5, 1];
-//  legend.selectAll("rect.stop")
-//    .data(stops)
-//    .join("rect")
-//    .attr("x", (s,i) => i*36)
-//    .attr("y", 0)
-//    .attr("width", 36)
-//    .attr("height", 12)
-//    .style("fill", s => color(s));
-
-//  legend.append("text").attr("x", 0).attr("y", -4).text("calorie ratio (0→1)").style("font-size","10px").style("fill","#aaa");
-
+  // Navigation logic...
+  d3.select("#prev").on("click", () => { viewStart = d3.timeDay.offset(viewStart, -7); renderWindow(viewStart); });
+  d3.select("#next").on("click", () => { viewStart = d3.timeDay.offset(viewStart, 7); renderWindow(viewStart); });
+  // set #current-range to current 2 week range
+  renderWindow(viewStart);
 })();
 </script>

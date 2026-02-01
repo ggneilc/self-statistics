@@ -1,27 +1,31 @@
-<!-- display button for push/pull/legs/etc -->
-
-<div class="horz_scroll"
-    style="overflow-y: auto; width: 100%; flex: 5;">
-        <div class="button-container">
-        {% for workout_type in workout_types %}
-        <button class="btn"
+<dialog open>
+<article>
+    <header>
+        <button rel="prev"
+            hx-get="{% url 'workouts:clear' %}"
+            hx-target="#modal-workout-add"
+            hx-on:click="event.stopPropagation()"></button>
+        <p>
+            New Workout : Select Type
+        </p>
+    </header>
+    <div class="horizontal-group">
+    {% for workout_type in workout_types %}
+        <button class="outline"
                 style="
-		color: {{workout_type.color}};
-		border: 1px solid {{workout_type.color}};
-		"
+                    color: {{workout_type.color}};
+                    border: 1px solid {{workout_type.color}};
+                    "
                 hx-post="{% url 'workouts:addw' workout_type.id %}"
                 hx-trigger="click"
-                hx-target="#workout_list"
-                hx-swap="innerHTML swap:0.4s">
+                hx-target="#workout-history"
+                hx-swap="innerHTML swap:0.4s"
+                hx-on:click="this.closest('dialog').removeAttribute('open')">
             {{workout_type.name}}
         </button>
-        {% endfor %}
-	<button id="m_entry__btn" class="back-btn"
-                hx-get="{% url 'workouts:back'%}"
-                hx-target="#lift_entry__container"
-                hx-swap="outerHTML swap:0.4s"
-                hx-trigger="click">
-            CANCEL
-        </button>
-        </div>
-</div>
+    {% endfor %}
+    </div>
+</article>
+</dialog>
+
+        

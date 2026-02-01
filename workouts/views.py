@@ -7,10 +7,12 @@
 """
 from django.shortcuts import render, HttpResponse, get_object_or_404
 from django.template.loader import render_to_string
-from .models import Workout, WorkoutType, Lift, Set, BODYPARTS, LIFT_TYPES
+from .models import Workout, WorkoutType, Lift, Set, WeeklyVolume, BODYPARTS, LIFT_TYPES
 from core.utils import get_or_create_day
 from .forms import LiftForm, SetForm
 from copy import copy
+from datetime import datetime, timezone, timedelta
+from django.db.models import Q
 
 
 # get_x : returns list of x
@@ -24,6 +26,9 @@ def get_workouts(request):
         .prefetch_related("lifts__sets")
         .order_by("-day__date", "-id")
     )
+    # add total volume to each workout
+    for w in workouts:
+        w.total = int(w.total_volume())
     # TODO: handle event that user has an active workout -> return active workout
     context = {
         "workouts": workouts
@@ -33,9 +38,15 @@ def get_workouts(request):
 
 def get_workout_types(request):
     ''' returns list of workout types to start an active workout '''
+    url_name = request.resolver_match.url_name
     w_types = WorkoutType.objects.filter(user=request.user)
-    return render(request,
+    if url_name == "load_entry":
+        return render(request,
                   'workouts/type_entry.html',
+                  context={"workout_types": w_types})
+    else:
+        return render(request,
+                  'workouts/type_select.html',
                   context={"workout_types": w_types})
 
 
@@ -70,15 +81,25 @@ def filterBodyparts(request, workout_type):
 def get_bodyparts(request, workout_type_id):
     workout_type = WorkoutType.objects.get(pk=workout_type_id)
     bodyparts = filterBodyparts(request, workout_type)
-    return render(request, 'workouts/bodypart_buttons.html', {'bodyparts': bodyparts})
-
+    url_name = request.resolver_match.url_name
+    if url_name == 'bpb':
+        ctx = {'bodyparts': bodyparts, 'in_overview': False}
+    else:
+        ctx = {'bodyparts': bodyparts, 'in_overview': True}
+    return render(request, 'workouts/bodypart_buttons.html', ctx)
 
 def get_machines(request):
     bodypart = request.GET.get("bodypart")
-    return render(request,
-                  'workouts/machines.html',
-                  {'machines': ('Machine', 'Cable', 'Barbell', 'Dumbbell'),
-                   'bodypart': bodypart})
+    url_name = request.resolver_match.url_name
+    ctx = {
+        'machines': ('Machine', 'Cable', 'Barbell', 'Dumbbell'),
+        'bodypart': bodypart,
+    }
+    if url_name == 'machines':
+        ctx['in_overview'] = False
+    else:
+        ctx['in_overview'] = True
+    return render(request, 'workouts/machines.html', ctx)
 
 
 LIFT_TYPES_MAP = {label: code for code, label in LIFT_TYPES}
@@ -123,15 +144,15 @@ def get_lift_details(request, lift_id):
     workout = lift.workout
     # determine if there exists a template of a left -> don't allow user to save
     lift.is_template = Lift.objects.filter(workout__day__user=request.user,
-                                           exercise_name=lift.exercise_name, is_template=True)
+                                           exercise_name=lift.exercise_name, is_template=True).exists()
     return render(request, 'workouts/lift_details.html', {"lift": lift, "workout": workout})
 
 
-def get_workout(request, workout_id):
+def get_workout_details(request, workout_id):
     '''workout to remain expanded'''
-    # prefetch lifts
     workout = Workout.objects.get(pk=workout_id)
-    return render(request, 'workouts/workout.html', {"workout": workout, "expanded": True})
+    workout.total = int(workout.total_volume())
+    return render(request, 'workouts/workout_details.html', {"workout": workout})
 
 # CRUD : Adding new x
 
@@ -190,26 +211,40 @@ def add_lift(request):
     if request.POST:
         f = LiftForm(request.POST)
         if f.is_valid():
-            cur_workout = Workout.objects.get(
-                day__user=request.user, is_active=True)
+            url_name = request.resolver_match.url_name
             new_lift = f.save(commit=False)
             bodypart = request.POST.get("bodypart")
             machine = request.POST.get("machine")
             print(f"creating lift with {bodypart} , {machine}")
-            new_lift.workout = cur_workout
-            new_lift.lift_type = machine
-            new_lift.bodypart = bodypart
-            new_lift.save()
-            context = {
-                "lift": new_lift,
-                "templated": False,
-                "set_form": SetForm()
-            }
-            return render(request, 'workouts/active_lift.html', context)
+            bp_code = BODYPARTS_MAP.get(bodypart)
+            lift_code = LIFT_TYPES_MAP.get(machine)
+            new_lift.lift_type = lift_code
+            new_lift.bodypart = bp_code
+            if url_name == 'addl':
+                cur_workout = Workout.objects.get(
+                    day__user=request.user, is_active=True)
+                new_lift.workout = cur_workout
+                new_lift.save()
+                context = {
+                    "lift": new_lift,
+                    "templated": False,
+                    "set_form": SetForm()
+                }
+                return render(request, 'workouts/active_lift.html', context)
+            else:  # submit form from dashboard
+                new_lift.is_template = True
+                new_lift.user = request.user
+                new_lift.save()
+                return lift_overview_dashboard(request)
     bodypart = request.GET.get("bodypart")
     machine = request.GET.get("machine")
     form = LiftForm()
+    url_name = request.resolver_match.url_name
     context = {"form": form, "bodypart": bodypart, "machine": machine}
+    if url_name == 'addl':
+        context['in_overview'] = False
+    elif url_name == 'get_lift_form':
+        context['in_overview'] = True
     return render(request, 'workouts/lift_entry.html', context)
 
 
@@ -299,7 +334,7 @@ def end_workout(request):
     cur_workout.is_active = False
     cur_workout.save()
 #    workouts = Workout.objects.get(day__user=request.user)
-    return render(request, 'workouts/workout_refresh.html')
+    return render(request, 'workouts/workout_history.html')
 
 
 def del_workout(request, workout_id):
@@ -316,7 +351,7 @@ def back(request):
 
 def clear(request):
     '''returns empty'''
-    return HttpResponse()
+    return HttpResponse("")
 
 
 
@@ -331,3 +366,53 @@ def change_color(request):
     workout.workout_type.color = request.POST.get('color')
     workout.workout_type.save()
     return get_workouts(request)
+
+
+# lift details
+
+def weekly_sets_dashboard(request):
+    date = request.GET['selected_date']
+    today = datetime.strptime(date, "%Y-%m-%d").date()
+    print(f"{today=}")
+    this_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
+    
+    # Get the user's goal
+    goal = request.user.profile.weekly_set_goal
+    
+    # Get volumes from our WeeklyVolume model
+    volumes = WeeklyVolume.objects.filter(user=request.user, start_date=this_sunday)
+    
+    stats = []
+    # Loop through your BODYPARTS constant to ensure all muscles show up
+    for code, name in BODYPARTS:
+        # Find the count for this specific muscle
+        volume_entry = volumes.filter(muscle_group=code).first()
+        count = volume_entry.set_count if volume_entry else 0
+        
+        # Calculate percentage (capped at 100% for the bar height)
+        percent = min((count / goal) * 100, 100) if goal > 0 else 0
+        print(f"{percent=} for {name=}")
+        stats.append({
+            'name': name,
+            'count': count,
+            'percent': percent,
+            'is_complete': count >= goal
+        })
+    ctx = {
+        'stats': stats,
+        'goal': goal,
+        'date': this_sunday
+    }
+    
+    return render(request, 'workouts/weekly_sets.html', ctx)
+
+def lift_overview_dashboard(request):
+    ''' Return list of all templated lifts '''
+    lifts = Lift.objects.filter(
+        Q(user=request.user, is_template=True) | 
+        Q(workout__day__user=request.user, is_template=True)
+    )
+    ctx = {
+        "lifts": lifts
+    }
+    return render(request, 'workouts/lift_overview.html', ctx)

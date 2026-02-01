@@ -1,41 +1,56 @@
-<div id="day-container">
-    <div id="day-hud-info">
-	  <div id="day-date" class="main-chip" style="flex: 1; background-color: var(--bg);">
-		<span>{{ date }}</span>
-	  </div>
+<header style="display: flex; justify-content: space-around; align-items: center; padding: 0.5rem 1rem;position:relative;"> 
 
-	  <div id="bw-chip" class="main-chip">
-	    <div id="day-weight"
+<div style="position:absolute; left:1rem;"
+  hx-get="{% url 'core:curr_streak' %}"
+  hx-trigger="load"></div>
+<div style="display: flex; align-items: center; justify-content: center;">
+<i class="fa-solid fa-calendar-day"></i>{{day.date}} 
+</div>
+
+<span style="position:absolute; right: 1rem;">
+  <button style="padding: 0 0.3rem;">
+    <i class="fa-solid fa-rotate"></i>
+  </button>
+</span>
+    
+</header>
+
+<div class="grid nutrition-breakdown" style="flex:1;">
+  <div id="macro-breakdown"
+  hx-get="{% url 'graphs:macros' %}"
+  hx-trigger="load, dayUpdated from:body"></div>
+  <div id="mineral-breakdown"
+  hx-get="{% url 'graphs:minerals' %}"
+  hx-trigger="load, dayUpdated from:body"></div>
+  <div id="vitamin-breakdown"
+  hx-get="{% url 'graphs:vitamins' %}"
+  hx-trigger="load, dayUpdated from:body"></div>
+</div>
+
+<div class="grid">
+  <div class="vertical-group" style="justify-content: space-evenly;">
+    <div id="sleep-input" style="flex:1"
+      hx-get="{% url 'core:get_sleep' %}"
+      hx-trigger="load"
+      hx-swap="innerHTML swap:0.5s">
+    </div>
+    <div id="day-weight" style="flex:1"
 	      hx-get="{% url 'core:get_bw' %}"
 	      hx-trigger="load"
 	      hx-swap="innerHTML swap:0.5s">
-	    </div>
-	    <i class="fa-solid fa-weight-scale"></i>
 	  </div>
+    <div id="water-input" style="flex:1">
+      {% include 'core/water_input.html' %}
     </div>
-    <div id="day-macros">
-    {% for m in macros %}
-    <div class="main-chip task" style="position: relative;">
-      <span class="macro-label">{{m.name}}</span>
-	{% if m.goal %}
-	{{m.amount}} / {{m.goal}}
-	{% else%}
-	{{m.amount}}
-	{% endif %}
-    </div>
-    {% endfor %}
-    </div>
-    <div id="day-tasks">
-    {% for t in tasks %}
-    {% if t.done %}
-    <div class="main-chip done task" style="font-size:0.8rem;">
-      {{t.name}}
-    </div>
-    {% else %}
-    <div class="main-chip todo task">
-      {{t.name}}
-    </div>
-    {% endif %}
-    {% endfor %}
-    </div>
+  </div>
+  <div id="meal-plan" style="position:relative">
+    <span class="meal-macro-label">Meal Plan</span>
+    <ul class="overflow-auto" style="padding: 0.2rem; margin: 0;">
+      <li class="meal">Ramen 2 Egg</li>
+      <li class="meal">Pad Thai</li>
+      <li class="meal">Burrito</li>
+      <li class="meal">Steak & Potatoes</li>
+      <li class="meal">Reese's Cup</li>
+    </ul>
+  </div>
 </div>

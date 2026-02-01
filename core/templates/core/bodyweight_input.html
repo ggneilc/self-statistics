@@ -1,23 +1,20 @@
-    <form id="bw_entry_form" style="flex-direction: row; padding:0;margin:0;border-radius:0;gap:5px;"
-        hx-post="{% url 'core:set_bw' %}"
-        hx-target="#day-weight"
-        >
-        <div class="input_container" style="flex:1; margin:0;">
+<form class="day_value_form" 
+	hx-post="{% url 'core:set_bw' %}"
+	hx-target="#day-weight">
+  <fieldset role="group">
 	{% if edit %}
-            <input class="input"
-		type="number"
-		step="0.1"
-	    	value="{{bw}}"
-		name="weight">
+    <input
+	name="weight"
+	type="number"
+	step="0.1"
+	value="{{bw}}">
 	{% else %}
-            <input class="input" type="number" step="0.1" placeholder=" " name="weight">
+    <input 
+	name="weight"
+	type="number"
+	step="0.1"
+	placeholder="Bodyweight">
 	{% endif %}
-            <label style="font-size:16px;left:2px;" for="weight">Bodyweight:</label>
-        </div>
-        <div class="button-container" style="position: relative;">
-            <button class="form_btn" type="submit" 
-                    name="action" value="submit"
-                    style="width:20px;font-size:12px;background-color:var(--bg); color: var(--button);">
-                ></button>
-        </div>
-    </form>
+    <input type="submit" value=">">
+  </fieldset>
+</form>

@@ -1,0 +1,29 @@
+<dialog open>
+<article>
+    <header>
+        <button rel="prev"
+            hx-get="{% url 'workouts:clear' %}"
+            hx-target="#lift-modal"
+            hx-on:click="event.stopPropagation()"></button>
+        <p>
+            New Lift
+        </p>
+    </header>
+    <div id="selection-target" class="horizontal-group">
+    {% for workout_type in workout_types %}
+        <button class="outline"
+                style="
+                    color: {{workout_type.color}};
+                    border: 1px solid {{workout_type.color}};
+                    "
+                hx-get="{% url 'workouts:bp_selection' workout_type.id %}"
+                hx-target="#selection-target"
+                hx-swap="innerHTML swap:0.4s">
+            {{workout_type.name}}
+        </button>
+    {% endfor %}
+    </div>
+</article>
+</dialog>
+
+        

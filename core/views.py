@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from random import randint
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.views import LoginView, LogoutView
@@ -15,8 +15,7 @@ from workouts.models import Workout
 
 
 def home(request):
-    template = "core/base.html"
-    return render(request, 'core/dashboard.html', {"template": template})
+    return render(request, 'core/base.html')
 
 
 def index(request):
@@ -30,7 +29,7 @@ def auth_modal(request):
 
 
 def close_profile(request):
-    return render(request, "core/profile_nav.html")
+    return HttpResponse("")
 
 
 def get_profile(request):
@@ -110,6 +109,22 @@ def del_workout_type(request, w_type):
 def random_color():
     return "#{:06x}".format(randint(0, 0xFFFFFF))
 
+# === Navbar Pages ===
+
+
+def dashboard_page(request):
+    return render(request, 'core/dashboard.html')
+
+
+def workout_page(request):
+    return render(request, 'core/workout_dashboard.html')
+
+
+def nutrition_page(request):
+    return render(request, 'core/nutrition_dashboard.html')
+
+# === Authentication Pages ===
+
 
 class HTMXLogoutView(LogoutView):
     next_page = reverse_lazy("core:home")
@@ -151,13 +166,65 @@ def signup_view(request):
 
 # === Day Stuff ===
 
+def get_current_streak(request):
+    today = date.today()
+    streak = 0
+    curr = today
+
+    while request.user.days.filter(date=curr).exists():
+        streak += 1
+        curr -= timedelta(days=1)
+
+    return render(request, "core/streak_highlight.html", {"streak": streak})
+
+
+# TODO: update to return an animation of water filling the input,
+# then return to input : (no display, macro-chart shows data)
+def add_water(request):
+    date = request.POST.get('selected_date')
+    day = get_or_create_day(user=request.user, selected_date=date)
+    water = request.POST.get('water')
+    if water:
+        day.water_consumed += float(water)
+        day.save()
+        print(f"added new water: {water}L")
+    return render(request, 'core/water_input.html')
+
+
+def get_sleep(request):
+    date = request.GET.get('selected_date')
+    day = get_or_create_day(user=request.user, selected_date=date)
+    if day.sleep == 0:
+        print("no sleep for the current day found")
+        return render(request, 'core/sleep_input.html')
+    else:
+        print("sleep already set")
+        return render(request, 'core/sleep_update.html', context={"sleep": day.sleep})
+
+def edit_sleep(request):
+    date = request.GET.get('selected_date')
+    day = get_or_create_day(user=request.user, selected_date=date)
+    return render(request,
+                  'core/sleep_input.html',
+                  {"edit": True, "sleep": day.sleep})
+
+
+def add_sleep(request):
+    date = request.POST.get('selected_date')
+    day = get_or_create_day(user=request.user, selected_date=date)
+    sleep = request.POST.get('sleep')
+    day.sleep = sleep
+    day.save()
+    print(f"added new sleep: {request.POST.get('sleep')}")
+    return render(request, 'core/sleep_update.html', context={"sleep": sleep})
+
 def get_bodyweight(request):
     '''
         Display user's bodyweight for the selected day
         if empty : show input
     '''
-#    print(request.GET.get('selected_date'))
-    day = get_or_create_day(request.user, request.GET.get('selected_date'))
+    date = request.GET.get('selected_date')
+    day = get_or_create_day(user=request.user, selected_date=date)
     if day.bodyweight is None:
         print("no weight for the current day found")
         return render(request, 'core/bodyweight_input.html')
@@ -167,18 +234,21 @@ def get_bodyweight(request):
 
 
 def edit_bodyweight(request):
-    day = get_or_create_day(request.user, request.GET.get('selected_date'))
+    date = request.GET.get('selected_date')
+    day = get_or_create_day(user=request.user, selected_date=date)
     return render(request,
                   'core/bodyweight_input.html',
                   {"edit": True, "bw": day.bodyweight})
 
 
 def add_bodyweight(request):
-    day = get_or_create_day(request.user, request.POST.get('selected_date'))
-    day.bodyweight = request.POST.get('weight')
+    date = request.POST.get('selected_date')
+    day = get_or_create_day(user=request.user, selected_date=date)
+    bw = request.POST.get('weight')
+    day.bodyweight = bw
     day.save()
     print(f"added new bodyweight: {request.POST.get('weight')}")
-    return render(request, 'core/bodyweight_update.html', context={"bodyweight": day.bodyweight})
+    return render(request, 'core/bodyweight_update.html', context={"bodyweight": bw})
 
 
 def display_today(request):
@@ -189,26 +259,13 @@ def display_today(request):
 def display_day(request, date):
     '''
         detailed day display to graph_display__container
+        - creates day if not exists
     '''
-    # need macros, tasks for day.html
-    day = Day.objects.get(user=request.user, date=date)
-
-    tasks = [
-        {"name": "track weight", "done": True if day.bodyweight is not None else False},
-        {"name": "track meal", "done": True if Food.objects.filter(
-            day=day).exists() else False},
-        {"name": "workout", "done": True if Workout.objects.filter(
-            day=day).exists() else False},
-        {"name": "hit macros", "done": True if day.calorie_ratio >= 1 else False},
-    ]
-    macros = [
-        {"name": "calories", "amount": day.calories_consumed, "goal": day.calorie_goal},
-        {"name": "protein", "amount": day.protein_consumed, "goal": day.protein_goal},
-        {"name": "carbs", "amount": 0},
-        {"name": "fats", "amount": 0},
-    ]
-    return render(request, 'core/day.html',
-                  {"tasks": tasks, "macros": macros, "date": day.date})
+    day = get_or_create_day(user=request.user, selected_date=date)
+    response = render(request, 'core/day.html', {"day": day})
+    response['HX-Trigger'] = 'dayUpdated' # This is our custom signal
+    return response
+    
 
 
 # Task(name, done)
@@ -217,13 +274,21 @@ def daily_goals(request):
 #    day = request.user.days.latest("date")
     tasks = [
         {"name": "track weight", "done": True if day.bodyweight is not None else False},
-        {"name": "track meal", "done": True if Food.objects.filter(
-            day=day).exists() else False},
+        {"name": "track meal", "done": True},
         {"name": "workout", "done": True if Workout.objects.filter(
             day=day).exists() else False},
         {"name": "hit macros", "done": True if day.calorie_ratio >= 1 else False},
     ]
     return render(request, 'core/hud_tasks.html', {"tasks": tasks})
+
+
+def get_macro_goal(request):
+    day = get_or_create_today(request.user)
+    context = {
+        "cals": day.calorie_goal,
+        "pro": day.protein_goal
+    }
+    return render(request, 'core/macro_highlight.html', context)
 
 
 def default_hud(request):

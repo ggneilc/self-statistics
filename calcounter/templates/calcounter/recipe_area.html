@@ -1,0 +1,29 @@
+<header style="position:relative;">
+    <i class="fa-solid fa-scroll"></i>
+    Recipes
+
+    <span style="position: absolute; right: 1rem;">
+        <button data-tooltip="Shop Recipe Plans" data-placement="bottom" style="padding: 0 0.3rem;">
+            <i class="fa-solid fa-sack-dollar"></i>
+        </button>
+        <button data-tooltip="Add from link" data-placement="bottom" style="padding: 0 0.3rem;">
+            <i class="fa-solid fa-link"></i>
+        </button>
+        <button data-tooltip="All Recipes" data-placement="bottom" style="padding: 0 0.3rem;"
+            hx-get="{% url 'calcounter:list_recipes' %}"
+            hx-target="#recipe-list">
+          <i class="fa-solid fa-list-ul"></i>
+        </button>
+
+        <button data-tooltip="New Recipe" data-placement="bottom" style="padding: 0 0.3rem;"
+            hx-get="{% url 'calcounter:add_recipe' %}"
+            hx-target="#recipe-list">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+    </span>
+
+</header>
+<div id="recipe-list" class="vertical-group" style="flex:1; overflow-y:auto;"
+    hx-get="{% url 'calcounter:list_recipes' %}"
+    hx-trigger="load">
+</div>
