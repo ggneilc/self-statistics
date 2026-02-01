@@ -1,4 +1,5 @@
 <header style="position:relative;"> 
+  <i class="fa-solid fa-burger"></i>
   {% if date == today %}
     Today's Meals
   {% else %}
@@ -20,8 +21,7 @@
     {% endfor %}
   </ul>
 {% else %}
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;
-  box-shadow: 0 0 0.25rem inset black; color: var(--pico-muted-color);">
+  <div class="blank-inspect">
 	Eat a Meal
   </div>
 {% endif %}

@@ -2,10 +2,10 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from calcounter.models import MealConsumption
-from workouts.models import Workout, WorkoutType
+from workouts.models import Workout, WorkoutType, Set, WeeklyVolume
 from django.contrib.auth.models import User
 from .models import Day, Profile
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from datetime import datetime, timedelta
 
 
@@ -108,3 +108,30 @@ def create_default_workout_types(sender, instance, created, **kwargs):
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
+
+
+@receiver([post_save, post_delete], sender=Set)
+def update_weekly_volume(sender, instance, **kwargs):
+    # 1. Find the Sunday of the week this set belongs to
+    workout_date = instance.lift.workout.day.date
+    days_since_sunday = (workout_date.weekday() + 1) % 7
+    sunday = workout_date - timedelta(days=days_since_sunday)
+    
+    user = instance.lift.workout.day.user
+    bodypart = instance.lift.bodypart
+
+    # 2. Recalculate total sets for this specific user/week/muscle
+    total_sets = Set.objects.filter(
+        lift__workout__day__user=user,
+        lift__workout__day__date__range=[sunday, sunday + timedelta(days=6)],
+        lift__bodypart=bodypart
+    ).count()
+
+    # 3. Update or create the volume record
+    WeeklyVolume.objects.update_or_create(
+        user=user,
+        start_date=sunday,
+        muscle_group=bodypart,
+        defaults={'set_count': total_sets}
+    )

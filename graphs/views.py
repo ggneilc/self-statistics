@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from core.models import Day, RDA_LOOKUP
 from calcounter.models import Food
-from workouts.models import Workout
+from workouts.models import Lift, Workout
 import json
 from datetime import date, datetime
 from calendar import monthrange
@@ -75,7 +75,33 @@ def weekly_calendar(request):
                    "avg_cals": avg_cals,
                    "avg_bw": avg_bw})
 
+
 # === Line Graphs ===
+    
+def get_lift_history(user, exercise_name):
+    return Lift.objects.filter(
+        workout__day__user=user,
+        exercise_name__iexact=exercise_name # Use iexact to be case-insensitive
+    ).select_related(
+        'workout__day' # Join these tables to avoid N+1 queries in the template
+    ).prefetch_related(
+        'sets' # Load the reps/weight data in one go
+    ).order_by(
+        'workout__day__date'
+    )
+
+
+def get_lift_graph_orm(request, lift_name):
+    history = get_lift_history(request.user, lift_name)
+    data = []
+    for lift in history:
+        orm = lift.estimated_1rm()
+        if orm:
+            data.append({
+                "date": lift.workout.day.date.isoformat(),
+                "one_rm": round(orm, 2),
+            })
+    return render(request, "graphs/lift_graph_orm.html", {'data': json.dumps(data)})
 
 
 def get_bw_graph(request):

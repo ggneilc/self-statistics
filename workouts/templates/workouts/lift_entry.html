@@ -1,17 +1,21 @@
 <form id="l_entry_form" 
+    {% if in_overview %}
+    hx-post="{% url 'workouts:submit_lift_form' %}"
+    hx-target="#overview-target"
+    {% else %}
     hx-post="{% url 'workouts:addl' %}"
     hx-target="#lift_entry__container"
+    {% endif %}
     hx-vals='{"machine": "{{ machine }}", "bodypart": "{{bodypart}}"}'>
 
     {% csrf_token %}
 
-    <div class="input_container">
-        {{form.exercise_name}}
-        <label for="{{ form.exercise_name.id_for_label }}">Lift Name</label>
-    </div>
+    {{form.exercise_name}}
     <div class="button-container">
-        <!-- Standard Submit Button -->
-        <button class="form_btn" type="submit" name="action" value="submit">Submit</button>
+        <button type="submit" name="action" value="submit"
+         {% if in_overview %}
+         hx-on:click="this.closest('dialog').removeAttribute('open')"
+         {% endif %}>Submit</button>
     </div>
 
 </form>

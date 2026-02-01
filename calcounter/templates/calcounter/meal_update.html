@@ -1,9 +1,0 @@
-{% include './entry_buttons.html' %}
-
-<div id="meal_list__container" hx-swap-oob="True"> 
-	<ul id="form_target">
-	{% for food in foods %}
-	    {% include './meal.html' with food=food%}
-	{% endfor %}
-	</ul>
-</div>

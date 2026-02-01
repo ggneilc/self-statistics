@@ -1,0 +1,12 @@
+<div id="lift-carosel" class="list-container">
+    {% for lift in lifts %}
+    <div hx-get="{% url 'workouts:lift_details' lift.id %}"
+         hx-trigger="click"
+         hx-target="#overview-target">
+        {{lift.exercise_name}}
+    </div>
+    {% endfor %}
+    <div style="font-size:large;"
+        hx-get="{% url 'workouts:type_select' %}"
+        hx-target="#lift-modal"> + </div>
+</div>

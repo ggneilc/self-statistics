@@ -1,11 +1,3 @@
-<!-- 
- workouts will probably be displayed like the 
- 'match history' found in other stat tracking sites
- -->
-
-
-<ul>
-    {% for workout in workouts %}
-        {% include 'workouts/workout.html' with workout=workout expanded=False%}
-    {% endfor %}
-</ul>
+{% for workout in workouts %}
+    {% include 'workouts/workout.html' with workout=workout expanded=False%}
+{% endfor %}

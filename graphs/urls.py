@@ -19,4 +19,6 @@ urlpatterns = [
     path("graph/calories/monthly", views.get_cals_monthly, name="cals-monthly"),
     path("graph/volume", views.get_volume_graph, name="vol"),
     path("graph/volume/<int:type_id>", views.get_type_stats, name="w_type_graph"),
+    path("graph/lift/<str:lift_name>/orm", views.get_lift_graph_orm, name="lift_orm"),
+
 ]

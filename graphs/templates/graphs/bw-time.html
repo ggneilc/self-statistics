@@ -1,17 +1,3 @@
-<div id="time-buttons" style="display:none;" class="horizontal-group">
-  <button style="flex:1;"
-	hx-target="#graph-area"
-	hx-get="{% url 'graphs:bw' %}"
-	hx-trigger="click">DAILY</button>
-  <button style="flex:1;"
-	hx-target="#graph-area"
-	hx-get="{% url 'graphs:bw-weekly'%}"
-	hx-trigger="click">WEEKLY</button>
-  <button style="flex:1;"
-	hx-target="#graph-area"
-	hx-get="{% url 'graphs:bw-monthly'%}"
-	hx-trigger="click">MONTHLY</button>
-</div>
 
 <div id="d3-line" data-days='{{ day_data|safe }}'></div>
 

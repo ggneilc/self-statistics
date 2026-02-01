@@ -1,10 +1,15 @@
 <div id="machines" class="list-container">
   {% for machine in machines %}
 	<div class="lift"
+	{% if in_overview %}
+	hx-get="{% url 'workouts:get_lift_form' %}"
+	hx-target="#selection-target"
+	{% else %}
 	hx-get="{% url 'workouts:lift_templates' %}"
+	hx-target="#lift_entry__container"
+	{% endif %}
 	hx-trigger="click"
-	hx-target="#machines"
-	hx-swap="outerHTML swap:0.4s"
+	hx-swap="innerHTML swap:0.4s"
 	hx-vals='{"machine": "{{ machine }}", "bodypart": "{{bodypart}}"}'>
 		{{machine}} 
 	</div>

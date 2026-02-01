@@ -1,41 +1,31 @@
-<li class="lift-expanded">
-    <div class="lift_main">
-      <div class="lift_name" style="flex:1;">{{lift.exercise_name}}</div>
-      <div class="lift-chart" style="flex:4;"> chart here </div>
-      <div class="lift-accolades" style="flex:1;">
-        <div> PR: </div>
+<div class="vertical-group" style="flex:1;">
+  <div class="horizontal-group" style="flex:3;">
+      <div id="lift-graph"
+        hx-get="{% url 'graphs:lift_orm' lift.exercise_name %}"
+        hx-trigger="load">
       </div>
-    </div>
-  <div class="lift_set_list">
-    {% for set in lift.sets.all %}
-    <div class="lift_set">
-        <div class="lift_reps">{{set.reps}}</div>
-        x
-        <div class="lift_weight">{{set.weight}}</div>
-    </div>
-    {% endfor %}
+      <div id="lift-details" style="flex:1;border:1px solid #0d0f0f;"class="vertical-group">
+        <div id="lift-info" class="horizontal-group" style="flex:1;">
+          <div id="lift-name">{{lift.exercise_name}}</div>
+          <div id="lift-level">
+            <span style="margin-top:6px;">Lv </span>
+            <span style="font-size:large;margin-left:3px;"> 77 </span>
+          </div>
+        </div>
+        <div id="lift-sets" class="vertical-group">
+          {% for set in lift.sets.all %}
+          <div class="lift_set_detail">
+            <div class="lift_reps">{{set.reps}}</div>
+              x
+            <div class="lift_weight">{{set.weight}}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
   </div>
-
-<div class="button-container left-crud-buttons" >
-    <button class="delete-btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
-      hx-get="{% url 'workouts:get_workout' workout.id %}"
-      hx-trigger="click"
-      hx-target="closest .lift-expanded"
-      hx-swap="outerHTML swap:0.4s"
-    >
-      <i class="fa-solid fa-arrow-left"></i>
-    </button>
-    {% if lift.is_template %}
-    {% include 'calcounter/checkmark.html' %}
-    {% else %}
-    <button id="tmp-btn" class="form_btn" style="font-size:12px;margin:2px; padding: 5px 10px;"
-      hx-get="{% url 'workouts:add_tmp' lift.id %}"
-      hx-trigger="click"
-      hx-swap="outerHTML">
-      <i class="fa-solid fa-floppy-disk"></i>
-    </button>
-    {% endif %}
+  <div id="bottom-track" class="horizontal-group" style="flex:1;">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
 </div>
-
-
-</li>

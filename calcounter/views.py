@@ -64,16 +64,6 @@ MealConsumptionFormSet = inlineformset_factory(
 )
 
 # --- Listing foods ---
-def meal_area(request):
-    ''' meal log fills #change with container & entry '''
-    return render(request, 'calcounter/meal_area.html')
-
-
-def food_area(request):
-    ''' pantry fills #change with container & entry '''
-    return render(request, 'calcounter/food_area.html')
-
-
 def list_meals(request, just_added=False):
     ''' Returns `meal_list.html` with the `selected_date` '''
     if just_added:
@@ -145,8 +135,6 @@ def food_fingerprint(user, pantry_item):
 
 def list_foods(request, action, just_added=False):
     ''' Returns `food_list.html` with the `selected_date` '''
-       
-
     if action == 'all':
         foods = PantryItem.objects.prefetch_related(
             'food__ingredient_set__ingredient',
@@ -179,26 +167,6 @@ def list_foods(request, action, just_added=False):
         "added": just_added
     }
     return render(request, "calcounter/food_list.html", context)
-
-# can delete templates
-def list_meal_templates(request):
-    ''' returns `template_list.html` with meal templates '''
-    meals = Meal.objects.filter(day__user=request.user)
-    template_meals = [f for f in meals if f.is_template]
-    if len(template_meals) == 0:      # if no templates, return entry form
-        return add_meal(request)
-    context = {'foods': template_meals}
-    return render(request, "calcounter/template_list.html", context)
-
-
-def list_food_templates(request):
-    ''' Returns `template_list.html` with pantry foods '''
-    foods = Food.objects.filter(day__user=request.user)
-    template_meals = [f for f in foods if f.is_template]
-    if len(template_meals) == 0:      # if no templates, return entry form
-        return add_meal(request)
-    context = {'foods': template_meals}
-    return render(request, "calcounter/template_list.html", context)
 
 
 def list_recipes(request):
@@ -605,17 +573,6 @@ def get_unit(request, unit_id):
     unit = get_object_or_404(FoodUnit, id=unit_id)
     return render(request, 'calcounter/unit_display_row.html', {'unit': unit})
 
-def update_food(request, food_id):
-    food = get_object_or_404(Food, id=food_id)
-    food.calories = request.POST['calories']
-    food.protein = request.POST['protein']
-    food.fat = request.POST['fat'] or None
-    food.carb = request.POST['carb'] or None
-    food.save()
-    food.is_template = Food.objects.filter(
-        name=food.name, is_template=True).exists()
-    return render(request, 'calcounter/meal.html', {"food": food})
-
 
 def update_recipe(request, recipe_id):
     if request.POST:
@@ -628,12 +585,6 @@ def update_recipe(request, recipe_id):
     form = RecipeForm(instance=recipe, user=request.user)
     return render(request, 'calcounter/recipe_entry.html', {'form': form, 'recipe': recipe, 'editing': True })
 
-def save_template(request, food_id):
-    food = get_object_or_404(Food, id=food_id)
-    food.is_template = True
-    food.save()
-    return render(request, 'calcounter/checkmark.html')
-
 
 # --- Display ---
 
@@ -645,11 +596,6 @@ def get_meal_type_of_input(request):
 
 def get_food_input(request):
     return render(request, 'calcounter/food_entry_button.html')
-
-
-def get_auto_buttons(request):
-    return render(request, 'calcounter/meal_auto_buttons.html')
-
 
 def get_search_area(request):
     return render(request, 'calcounter/ingred_search_area.html')
@@ -667,42 +613,6 @@ def cancel_form_f(request):
 def clear(request):
     ''' returns empty response to clear target '''
     return HttpResponse("")
-
-# render food in open state
-def render_food(request, food_id):
-    food = get_object_or_404(Food, id=food_id)
-    food.is_template = Food.objects.filter(
-        name=food.name, is_template=True).exists()
-    return render(request, 'calcounter/meal.html', {
-        "food": food,
-        "just_updated": True})
-
-
-def meal_update(request, day, rm=False):
-    '''
-        returns `meal_update.html` to oob-swap `totals` and `meal_list`.
-        Called after add/delete of food.
-        add : returns entry buttons to caller
-        rm  : returns "" to caller
-    '''
-    foods = Food.objects.filter(day=day)
-    totals = foods.aggregate(
-        calories=Sum('calories'),
-        protein=Sum('protein')
-    )
-    for food in foods:
-        food.is_template = Food.objects.filter(
-            name=food.name, is_template=True).exists()
-    print("returning meal and totals")
-    context = {
-        "foods": foods,
-        "calories": totals['calories'] or 0,
-        "protein": totals['protein'] or 0,
-    }
-    if rm:  # content inserted into meal
-        return render(request, 'calcounter/meal_update_rm.html', context)
-    else:
-        return render(request, 'calcounter/meal_list.html', context)
 
 
 # CRUD : Deleteing food
@@ -753,13 +663,3 @@ def delete_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
     recipe.delete()
     return clear(request)
-
-
-def delete_food_template(request, food_id):
-    '''
-        Delete a saved food template
-    '''
-    food = get_object_or_404(Food, id=food_id)
-    food.is_template = False
-    food.save()
-    return HttpResponse("")

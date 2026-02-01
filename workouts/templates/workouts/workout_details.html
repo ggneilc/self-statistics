@@ -1,0 +1,26 @@
+<header style="position:relative;">
+    <i class="fa-solid fa-magnifying-glass-chart"></i>
+    Workout Details
+
+    <span style="position:absolute;right:1rem;">
+      <button data-tooltip="Weekly Sets" data-placement="bottom" style="padding: 0 0.3rem;"
+        hx-get="{% url 'workouts:weekly_dash' %}"
+        hx-target="#inspected-workout">
+        <i class="fa-solid fa-bars-progress"></i>
+      </button>
+    </span>
+</header>
+<div class="horizontal-group">
+    <div class="vertical-group" style="flex:3;">
+        <div id="workout-info" class="horizontal-group">
+            <div class="workout-name">{{workout.workout_type.name}}</div>
+            <div class="workout-date">{{workout.day.date|date:"m/d/Y"}}</div>
+            <div class="workout-total">Total Weight: {{workout.total}} lbs</div>
+        </div>
+        <div id="workout-lifts" class="horizontal-group">
+            {% include 'workouts/lifts.html' with lifts=workout.lifts.all active=False id=workout.id total=workout.total %}
+        </div>
+    </div>
+    <div id="weekly-sets">
+    </div>
+</div>

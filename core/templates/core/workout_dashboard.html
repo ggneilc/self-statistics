@@ -1,13 +1,32 @@
 <div class="horizontal-group">
   <article id="workout-history">
-    <header>Workout History</header>
+    {% include 'workouts/workout_history.html' %}
   </article>
   <div class="vertical-group" style="flex: 2;">
-    <article id="inspected-workout">
-      <header>Details</header>
+    <article id="inspected-workout"
+        hx-get="{% url 'workouts:weekly_dash' %}"
+        hx-trigger="load">
     </article>
     <article id="lifts-overview">
-      <header>Overview</header>
+      <header style="position:relative;">
+        <i class="fa-solid fa-weight-hanging"></i>
+        Lift Overview
+        <span style="position:absolute;right:1rem;">
+          <div id="lift-modal"></div>
+          <button data-tooltip="Create Workout Plan" data-placement="bottom" style="padding: 0 0.3rem;">
+            <i class="fa-solid fa-calendar-days"></i>
+          </button>
+          <button data-tooltip="All Lifts" data-placement="bottom" style="padding: 0 0.3rem;"
+            hx-get="{% url 'workouts:lift_dash' %}"
+            hx-target="#overview-target">
+            <i class="fa-solid fa-grip"></i>
+          </button>
+        </span>
+      </header>
+      <div id="overview-target"
+        hx-get="{% url 'workouts:lift_dash' %}"
+        hx-trigger="load">
+      </div>
     </article>
   </div>
 </div>

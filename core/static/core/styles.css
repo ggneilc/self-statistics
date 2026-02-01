@@ -184,6 +184,12 @@ main { flex: 1; }
   color: var(--pico-primary);
 }
 
+.fa-chart-line,
+.fa-burger,
+.fa-jar,
+.fa-scroll,
+.fa-magnifying-glass-chart,
+.fa-weight-hanging,
 .fa-bed,
 .fa-weight-scale,
 .fa-calendar-day,
@@ -246,13 +252,6 @@ main { flex: 1; }
 #workout-history {
   flex: 1;
   height: 96vh;
-}
-
-#inspected-workout {
-  flex: 1;
-}
-#lifts-overview {
-  flex: 2;
 }
 
 #stats {
@@ -350,7 +349,7 @@ main { flex: 1; }
 .ingredient-name { color: var(--pico-color)}
 .ingredient-unit { color: var(--pico-primary)}
 
-
+.workout,
 .recipe,
 .meal,
 .food {
@@ -361,7 +360,7 @@ main { flex: 1; }
   background-color: var(--pico-background-color);
   box-shadow: -3px 3px 0px 0px #0d0d0f;
 }
-.meal:hover,
+.workout:hover,
 .meal:hover,
 .food:hover {
   transform: translateY(-3px);
@@ -564,6 +563,174 @@ text {
 }
 
 
+
+
+.workout { position: relative; }
+#workout_list {
+  padding: 0.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.inline-workout {
+  justify-content: space-evenly;
+  width: 80%;
+  align-items: center;
+}
+.workout-name {
+  font-size: 1.2rem;
+}
+.workout-date {
+  background-color: var(--pico-secondary-background);
+  border-radius: var(--pico-border-radius);
+  padding: 0.2rem 0.5rem;
+}
+.workout-total { 
+  background-color: var(--pico-card-sectioning-background-color);
+  color: var(--pico-primary);
+  border-radius: var(--pico-border-radius);
+  padding: 0.2rem 0.5rem;
+}
+#inspected-workout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: 30vh;
+}
+.blank-inspect {
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 0 0.25rem inset black;
+  color: var(--pico-muted-color);
+}
+#workout-info {
+  justify-content: space-evenly;
+}
+#workout-lifts {
+  overflow-x: auto;
+  max-width: 38vw;
+  padding: 0.2rem;
+}
+.lift {
+  padding: 0.5rem;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid #0d0f0f;
+  list-style-type: none;
+  background-color: var(--pico-background-color);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+.lift_set {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.lift_main {
+  text-align:center;
+}
+#weekly-sets {
+  flex: 1;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  border: 1px solid #0d0f0f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+
+#lifts-overview {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  max-height: 63vh;
+}
+#overview-target {
+  flex: 1;
+  display: flex;
+}
+
+#lift-graph {
+  flex: 3;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+}
+
+#lift-name {
+  flex:3;
+  font-size:large;
+}
+#lift-level {
+  flex:1;
+  font-size:small;
+}
+#lift-name,
+#lift-level {
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem;
+}
+#lift-details {
+  flex:1;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+}
+
+#lift-sets {
+  flex: 3;
+  padding: 0 0.5rem;
+}
+.lift_set_detail {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  padding: 0.2rem 0.5rem;
+}
+#bottom-track > div {
+  flex: 1;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+}
+
+#lift-carosel {
+  flex: 1;
+  padding: 1rem;  
+  max-height: 50vh;
+  overflow-y: auto;
+}
+.list-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 1rem;
+}
+.list-container > div {
+  min-width: 150px;
+  max-width: 150px;
+  min-height: 150px;
+  max-height: 150px;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .ts-wrapper {
   flex: 3;
 }
@@ -668,4 +835,32 @@ article:not(.htmx-added) {
     opacity: 1;
     transform: translateY(0);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+
+/* === Color Picker === */
+.color-patch {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 100%;
+  background: var(--color);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  cursor: pointer;
+}
+
+.c-icon {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: black;
+}
+
+.color-patch i {
+    display: none;
+}
+
+.color-patch:hover i {
+    display: inline-block;
 }

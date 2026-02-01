@@ -1,0 +1,64 @@
+<header>
+    <i class="fa-solid fa-magnifying-glass-chart"></i>
+    Weekly Sets (Week of {{ date|date:"m/d"}})
+</header>
+<div class="volume-container" style="flex:1;">
+    {% for item in stats %}
+    <div class="column-wrapper">
+        <div class="v-progress-track"
+        data-tooltip="{{ item.count }} / {{ goal }} sets">
+            <div class="v-progress-fill {% if item.is_complete %}complete{% endif %}" 
+                    style="height: {{ item.percent }}%;">
+            </div>
+        </div>
+        
+        <span class="label-text">{{ item.name }}</span>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .volume-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding: 1rem 0;
+    gap: 10px;
+}
+
+.column-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+}
+
+.v-progress-track {
+    width: 30px;
+    height: 100%;
+    background-color: var(--pico-secondary-background);
+    border-radius: var(--pico-border-radius);
+    display: flex;
+    flex-direction: column-reverse; /* Fills from bottom */
+    position: relative;
+}
+
+.v-progress-fill {
+    width: 100%;
+    background-color: var(--pico-primary);
+    border-radius: var(--pico-border-radius);
+    transition: height 0.5s ease-out;
+}
+
+.v-progress-fill.complete {
+    background-color: #43a047; /* Success Green */
+}
+
+.label-text {
+    font-size: 0.7rem;
+    text-orientation: mixed;
+    margin-top: 10px;
+    white-space: nowrap;
+}
+</style>

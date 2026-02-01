@@ -1,21 +1,21 @@
 <li class="lift"
-	{% if drag %}
-	draggable="true"
-	data-lift-id="{{ lift.id }}"
-	{% endif %}
     hx-get="{% url 'workouts:lift_details' lift.id %}"
     hx-trigger="click"
-    hx-target="closest .workout"
-    hx-swap="outerHTML swap:0.4s">
+    hx-target="#overview-target"
+>
     <div class="lift_main">
         <div class="lift_name">{{lift.exercise_name}}</div>
     </div>
-    {% for set in lift.sets.all %}
     <div class="lift_set">
-        <div class="lift_sets">{{set.reps}}</div>
-        x
-        <div class="lift_reps">{{set.weight}}</div>
+        <div class="lift_sets">
+            {{lift.set_count}}
+        <small>sets</small></div>
+        |
+        <div class="lift_reps">
+            {{lift.total_reps}}
+        <small>reps</small></div>
     </div>
-    {% endfor %}
+    <div class="lift_set">
+        {{lift.total_volume}} lbs
+    </div>
 </li>
-

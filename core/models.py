@@ -96,6 +96,7 @@ class Profile(models.Model):
         default='M',
     )
     age = models.IntegerField(default=18)
+    weekly_set_goal = models.IntegerField(default=15)
 
     def __str__(self):
         return f"{self.user.username} Profile"
@@ -123,12 +124,12 @@ class Day(models.Model):
     sleep_goal = models.FloatField(default=9)
     # protein_goal = Bodyweight !
 
-    # task stuff
+    # task stuff -- unused
     did_workout = models.BooleanField(default=False)
     entered_meal = models.BooleanField(default=False)
     entered_bodyweight = models.BooleanField(default=False)
 
-    # Graph stuff
+    # Graph stuff -- avg_x unused
     bodyweight = models.FloatField(null=True, blank=True)
     avg_calories = models.FloatField(null=True, blank=True)
     avg_protein = models.FloatField(null=True, blank=True)

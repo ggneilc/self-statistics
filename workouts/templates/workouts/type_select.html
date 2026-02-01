@@ -3,24 +3,22 @@
     <header>
         <button rel="prev"
             hx-get="{% url 'workouts:clear' %}"
-            hx-target="#modal-workout-add"
+            hx-target="#lift-modal"
             hx-on:click="event.stopPropagation()"></button>
         <p>
-            New Workout : Select Type
+            New Lift
         </p>
     </header>
-    <div class="horizontal-group">
+    <div id="selection-target" class="horizontal-group">
     {% for workout_type in workout_types %}
         <button class="outline"
                 style="
                     color: {{workout_type.color}};
                     border: 1px solid {{workout_type.color}};
                     "
-                hx-post="{% url 'workouts:addw' workout_type.id %}"
-                hx-trigger="click"
-                hx-target="#workout-history"
-                hx-swap="innerHTML swap:0.4s"
-                hx-on:click="this.closest('dialog').removeAttribute('open')">
+                hx-get="{% url 'workouts:bp_selection' workout_type.id %}"
+                hx-target="#selection-target"
+                hx-swap="innerHTML swap:0.4s">
             {{workout_type.name}}
         </button>
     {% endfor %}
