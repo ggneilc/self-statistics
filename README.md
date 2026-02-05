@@ -73,6 +73,8 @@ Keep in mind the database file (`db.sqlite3`) is only tracked for the initial re
 - Query Optimization
 - Caching
 
+![Database Schema](./assets/ss-er-diagram.svg)
+
 ## Backend Development
 
 - REST Api development
