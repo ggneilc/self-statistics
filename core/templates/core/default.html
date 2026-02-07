@@ -18,6 +18,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
     <!-- htmx installation -->
     <script src="{% static 'core/js/htmx.min.js' %}"></script>
+    <!-- theme switcher -->
+    <script src="{% static 'core/js/theme.js' %}"></script>
     <!-- D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <!-- font awesome icons -->
@@ -27,6 +29,7 @@
     <title>Self Stats</title>
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <div id="toast-container"></div>
     {% block main_content %}
     {% endblock %}
 <script src="{% static 'calcounter/js/tomselect-setup.js' %}"></script>
@@ -36,6 +39,48 @@
 document.body.addEventListener('configRequest.htmx', (event) => {
     // This ensures every HTMX request has a 200ms settle delay by default
     event.detail.parameters['hx-swap'] = 'innerHTML settle:500ms';
+});
+
+// Toast notification system
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Listen for custom toast events
+document.body.addEventListener('showToast', (event) => {
+    showToast(event.detail.message, event.detail.type || 'success');
+});
+
+// Listen for profile saved event from HTMX
+document.body.addEventListener('profileSaved', () => {
+    showToast('Profile saved successfully!', 'success');
+});
+
+// Listen for workout type events
+document.body.addEventListener('workoutTypeCreated', () => {
+    showToast('Workout type created!', 'success');
+});
+
+document.body.addEventListener('workoutTypeUpdated', () => {
+    showToast('Workout type updated!', 'success');
+});
+
+document.body.addEventListener('workoutTypeDeleted', () => {
+    showToast('Workout type deleted!', 'success');
 });
 </script>
 </body>

@@ -372,17 +372,26 @@ def get_bodyweight_summary(request, time=7):
     fluctation = df['diff'].std()
     # -- 7d difference
     df['weight_7d_ago'] = df['bodyweight'].shift(freq='7D')
-    bw_7d_diff = df['bodyweight'].iloc[0] - df['weight_7d_ago'].iloc[0]
+    if pd.notna(df['bodyweight'].iloc[0]) and pd.notna(df['weight_7d_ago'].iloc[0]):
+        bw_7d_diff = df['bodyweight'].iloc[0] - df['weight_7d_ago'].iloc[0]
+    else:
+        bw_7d_diff = 0
     # -- biggest drop
-    max_drawdown = df['diff'].min()
-    max_runup = df['diff'].max()
+    max_drawdown = df['diff'].min() if pd.notna(df['diff'].min()) else 0
+    max_runup = df['diff'].max() if pd.notna(df['diff'].max()) else 0
     # -- simple stats
-    total_change = df['bodyweight'].iloc[0] - df['bodyweight'].min()
+    if pd.notna(df['bodyweight'].iloc[0]) and pd.notna(df['bodyweight'].min()):
+        total_change = df['bodyweight'].iloc[0] - df['bodyweight'].min()
+    else:
+        total_change = 0
     # -- linear regression slope (trend)
     df_cleaned = df['bodyweight'].dropna()
-    x = np.arange(len(df_cleaned))
-    y = df_cleaned.values
-    slope, intercept = np.polyfit(x, y, 1)
+    if len(df_cleaned) >= 2:
+        x = np.arange(len(df_cleaned))
+        y = df_cleaned.values
+        slope, intercept = np.polyfit(x, y, 1)
+    else:
+        slope, intercept = 0, 0
     stats = {
         "mean": round(float(avg_weight), 2),
         "stddev": round(float(fluctation), 2),

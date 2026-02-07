@@ -43,7 +43,9 @@ def update_timezone(request):
     form = ProfileForm(request.POST or None, instance=profile)
     if request.method == "POST" and form.is_valid():
         form.save()
-        return get_profile(request)
+        response = get_profile(request)
+        response['HX-Trigger'] = 'profileSaved'
+        return response
     return render(request, "core/update_timezone.html", {"form": form})
 
 
@@ -82,7 +84,9 @@ def add_workout_type(request):
                 new_type.color = random_color()
             new_type.save()
             types = request.user.workout_types.all()
-            return render(request, 'core/workout_settings.html', {"workout_types": types})
+            response = render(request, 'core/workout_settings.html', {"workout_types": types})
+            response['HX-Trigger'] = 'workoutTypeCreated'
+            return response
     form = WTypeForm()
     return render(request, 'workouts/new_type_entry.html', {"form": form})
 
@@ -95,7 +99,9 @@ def edit_workout_type(request, type_id):
         if f.is_valid():
             new_type = f.save()
             types = request.user.workout_types.all()
-            return render(request, 'core/workout_settings.html', {"workout_types": types})
+            response = render(request, 'core/workout_settings.html', {"workout_types": types})
+            response['HX-Trigger'] = 'workoutTypeUpdated'
+            return response
     form = WTypeForm(instance=w_type)
     return render(request, 'workouts/edit_type_entry.html', {"form": form, "type_id": type_id})
 
@@ -103,7 +109,10 @@ def edit_workout_type(request, type_id):
 def del_workout_type(request, w_type):
     workout_t = WorkoutType.objects.get(pk=w_type)
     workout_t.delete()
-    return workout_setting(request)
+    types = request.user.workout_types.all()
+    response = render(request, 'core/workout_settings.html', {"workout_types": types})
+    response['HX-Trigger'] = 'workoutTypeDeleted'
+    return response
 
 
 def random_color():

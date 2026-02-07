@@ -1,56 +1,63 @@
 <dialog open>
 <article>
 <div id="profile-container" class="horizontal-group">
-	<ul id="profile-list" >
-		<li class="profile-item">
-			<div class="button-container">
-				<button class="profile-btn"
+	<nav id="profile-nav">
+		<ul id="profile-list">
+			<li class="profile-item">
+				<button class="profile-btn active"
 					hx-get="{% url 'core:info_setting' %}"
 					hx-trigger="click"
 					hx-swap="innerHTML"
-					hx-target="#profile-main">PERSONAL INFO</button></div></li>
-		<li class="profile-item">
-			<div class="button-container">
+					hx-target="#profile-main"
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Personal Info</button>
+			</li>
+			<li class="profile-item">
 				<button class="profile-btn"
 					hx-get="{% url 'core:theme_setting' %}"
 					hx-trigger="click"
 					hx-swap="innerHTML"
-					hx-target="#profile-main">THEME</button></div></li>
-		<li class="profile-item">
-			<div class="button-container">
+					hx-target="#profile-main"
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Theme</button>
+			</li>
+			<li class="profile-item">
 				<button class="profile-btn"
 					hx-get="{% url 'core:food_setting' %}"
 					hx-trigger="click"
 					hx-swap="innerHTML"
-					hx-target="#profile-main">FOODS</button></div></li>
-		<li class="profile-item">
-			<div class="button-container">
+					hx-target="#profile-main"
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Foods</button>
+			</li>
+			<li class="profile-item">
 				<button class="profile-btn"
 					hx-get="{% url 'core:graph_setting' %}"
 					hx-trigger="click"
 					hx-swap="innerHTML"
-					hx-target="#profile-main">GRAPHS</button></div></li>
-		<li class="profile-item">
-			<div class="button-container">
+					hx-target="#profile-main"
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Graphs</button>
+			</li>
+			<li class="profile-item">
 				<button class="profile-btn"
 					hx-get="{% url 'core:workout_setting' %}"
-					hx-trigger="click"
-					hx-target="#profile-main">WORKOUTS</button></div></li>
-		<li class="profile-item">
-		  <div class="button-container">
-		    <button class="back-btn" style="margin:0;"
-			hx-post="{% url 'core:logout' %}">LOGOUT</button>
-		  </div></li>
-		<li class="profile-item">
-		  <div class="button-container">
-		    <button class="back-btn" style="margin:0;"
-			hx-get="{% url 'core:close_profile' %}"
-			hx-swap="innerHTML"
-			hx-target="#dummy"
-			onclick="event.stopPropagation()"
-			>CLOSE</button>
-		  </div></li>
-	</ul>
+					hx-target="#profile-main"
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Workouts</button>
+			</li>
+		</ul>
+
+		<div class="profile-nav-footer">
+			<button class="profile-logout-btn"
+				hx-post="{% url 'core:logout' %}">
+				<i class="fa fa-right-from-bracket"></i> Logout
+			</button>
+			<button class="profile-close-btn"
+				hx-get="{% url 'core:close_profile' %}"
+				hx-swap="innerHTML"
+				hx-target="#dummy"
+				onclick="event.stopPropagation()">
+				<i class="fa fa-xmark"></i>
+			</button>
+		</div>
+	</nav>
+
 	<div id="profile-main">
 		{% include './personal_info.html' with user=user %}
 	</div>

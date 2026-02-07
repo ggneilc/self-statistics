@@ -962,3 +962,300 @@ article:not(.htmx-added) {
   background: var(--pico-primary) !important;
   color: var(--pico-background-color) !important;
 }
+
+/* === Profile Settings === */
+dialog[open] article {
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#profile-container {
+  height: 100%;
+  overflow: hidden;
+}
+
+#profile-nav {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 200px;
+  min-width: 200px;
+  max-width: 200px;
+  padding-right: 1rem;
+  border-right: 1px solid var(--pico-muted-border-color);
+}
+
+#profile-list {
+  list-style: none !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  padding-top: 10px;
+}
+
+.profile-item {
+  margin: 0;
+  padding: 0;
+}
+
+.profile-btn {
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: transparent;
+  border: 2px solid var(--pico-primary);
+  color: var(--pico-primary);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.profile-btn:hover {
+  background: var(--pico-card-sectioning-background-color);
+  border-color: var(--pico-primary);
+  color: var(--pico-primary);
+}
+
+.profile-btn.active {
+  background: var(--pico-primary);
+  border-color: var(--pico-primary);
+  color: white;
+  font-weight: bold;
+}
+
+#profile-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.settings-content {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settings-content h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.profile-nav-footer {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+  margin-top: 2rem !important;
+  padding-top: 1rem !important;
+  border-top: 1px solid var(--pico-muted-border-color) !important;
+}
+
+.profile-logout-btn {
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--pico-del-color);
+  border: 2px solid var(--pico-del-color);
+  color: white;
+  font-size: 1rem;
+}
+
+.profile-logout-btn:hover {
+  background: #c52a2a;
+  border-color: #c52a2a;
+}
+
+.profile-close-btn {
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--pico-background-color);
+  border: 2px solid var(--pico-muted-border-color);
+  color: var(--pico-color);
+  font-size: 1.2rem;
+}
+
+.profile-close-btn:hover {
+  background: var(--pico-card-sectioning-background-color);
+  border-color: var(--pico-primary);
+  color: var(--pico-primary);
+}
+/* === Profile Settings OVERRIDES === */
+dialog[open] {
+  padding: 0 !important;
+}
+
+dialog[open] > article {
+  height: 70vh !important;
+  max-height: 70vh !important;
+  min-height: 70vh !important;
+  max-width: 900px !important;
+  width: 900px !important;
+  overflow: hidden !important;
+  margin: auto !important;
+}
+
+#profile-container {
+  display: flex !important;
+  height: 100% !important;
+}
+
+#profile-nav {
+  width: 200px !important;
+  min-width: 200px !important;
+  max-width: 200px !important;
+  flex-shrink: 0 !important;
+  overflow-y: auto !important;
+}
+
+.profile-item {
+  width: 100% !important;
+}
+
+.profile-btn,
+.profile-logout-btn,
+.profile-close-btn {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+/* === Toast Notifications === */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  min-width: 250px;
+  padding: 1rem 1.5rem;
+  border-radius: var(--pico-border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateX(400px);
+  transition: all 0.3s ease-out;
+  color: white;
+  font-weight: 500;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast-success {
+  background: var(--pico-primary);
+  border-left: 4px solid #2d8659;
+}
+
+.toast-error {
+  background: var(--pico-del-color);
+  border-left: 4px solid #a12020;
+}
+
+.toast-info {
+  background: #3b82f6;
+  border-left: 4px solid #1d4ed8;
+}
+
+/* === Theme Buttons === */
+.theme-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: transparent;
+  border: 2px solid var(--pico-primary);
+  color: var(--pico-primary);
+  margin: 0;
+}
+
+.theme-btn:hover {
+  background: var(--pico-card-sectioning-background-color);
+}
+
+.theme-btn.active {
+  background: var(--pico-primary);
+  color: white;
+  font-weight: bold;
+}
+
+/* === Workout Type Settings === */
+.workout-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.workout-type-btn {
+  padding: 1rem;
+  background: var(--pico-background-color);
+  border: 2px solid var(--workout-color);
+  border-radius: var(--pico-border-radius);
+  color: var(--pico-color);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.workout-type-btn:hover {
+  background: var(--pico-card-sectioning-background-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.workout-type-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--workout-color);
+  flex-shrink: 0;
+}
+
+.add-workout-type-btn {
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  border: 2px dashed var(--pico-primary);
+  color: var(--pico-primary);
+  border-radius: var(--pico-border-radius);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.add-workout-type-btn:hover {
+  background: var(--pico-card-sectioning-background-color);
+  border-style: solid;
+}
+
+.delete-btn {
+  padding: 0.75rem 1rem;
+  background: var(--pico-del-color);
+  border: none;
+  color: white;
+  border-radius: var(--pico-border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  background: #c52a2a;
+}
