@@ -864,3 +864,101 @@ article:not(.htmx-added) {
 .color-patch:hover i {
     display: inline-block;
 }
+
+/* === Auth Forms === */
+.auth-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.auth-card {
+  max-width: 450px;
+  width: 100%;
+  padding: 2rem;
+  background: var(--pico-card-background-color);
+  border-radius: var(--pico-border-radius);
+  box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--pico-muted-border-color);
+}
+
+.auth-card header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-card h2 {
+  margin-bottom: 0.5rem;
+  color: var(--pico-primary);
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--pico-color);
+}
+
+.form-field input {
+  width: 100%;
+}
+
+.form-field.has-error input {
+  border-color: var(--pico-del-color);
+}
+
+.help-text {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--pico-muted-color);
+  font-size: 0.85rem;
+}
+
+.error-text {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--pico-del-color);
+  font-size: 0.85rem;
+}
+
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.auth-buttons .form_btn {
+  width: 100%;
+  margin: 0;
+}
+
+.auth-buttons .back-btn {
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  color: var(--pico-muted-color);
+  border: 1px solid var(--pico-muted-border-color);
+}
+
+.auth-buttons .back-btn:hover {
+  background: var(--pico-card-sectioning-background-color);
+  color: var(--pico-color);
+}
+
+.signup-btn-outline {
+  background: transparent !important;
+  border: 2px solid var(--pico-primary) !important;
+  color: var(--pico-primary) !important;
+}
+
+.signup-btn-outline:hover {
+  background: var(--pico-primary) !important;
+  color: var(--pico-background-color) !important;
+}

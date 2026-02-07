@@ -1,37 +1,48 @@
 <!-- core/templates/core/login.html -->
+<div class="auth-card-container">
+  <article class="auth-card">
+    <header>
+      <h2>Welcome Back</h2>
+      <p style="margin-top: -1rem; color: var(--pico-muted-color);">Login to continue your health journey</p>
+    </header>
 
-<div class="signup">
-<form style="flex:1;"
-	hx-post="{% url 'core:login' %}"
-	hx-target="#modal-target">
-  {% csrf_token %}
-  {% for field in form %}
-    <div class="input_container{% if field.errors %} has-error{% endif %}">
-      {{ field }}
-      <label for="{{ field.id_for_label }}">{{ field.label|upper }}</label>
+    <form hx-post="{% url 'core:login' %}" hx-target="#modal-target">
+      {% csrf_token %}
 
-      {% if field.help_text %}
-        <small class="help-text">{{ field.help_text }}</small>
-      {% endif %}
+      {% for field in form %}
+        <div class="form-field{% if field.errors %} has-error{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
 
-      {% for error in field.errors %}
-        <small class="error">{{ error }}</small>
+          {% if field.help_text %}
+            <small class="help-text">{{ field.help_text }}</small>
+          {% endif %}
+
+          {% for error in field.errors %}
+            <small class="error-text">{{ error }}</small>
+          {% endfor %}
+        </div>
       {% endfor %}
-    </div>
-  {% endfor %}
-  <div class="button-container" style="position: relative;">
-  <button class="back-btn"
-        hx-get="{% url 'core:auth_modal' %}" 
-        hx-target="#modal-target"
-        hx-swap="innerHTML swap:0.5s"
-        hx-trigger="click">BACK</button>
-  <button type="submit" class="form_btn">LOGIN</button>
-  <p style="position:absolute;right:1rem;bottom:-60px;">Don't have an account?</p>
-        <button class="form_btn"
-            hx-get="{% url 'core:signup' %}"
-            hx-target="#modal-target"
-	    hx-swap="innerHTML swap:0.5s"
-            hx-trigger="click">SIGN UP</button>
-  </div>
-</form>
+
+      <div class="auth-buttons">
+        <button type="submit" class="form_btn">Login</button>
+        <button type="button" class="back-btn"
+                hx-get="{% url 'core:auth_modal' %}"
+                hx-target="#modal-target"
+                hx-swap="innerHTML swap:0.5s">
+          Back
+        </button>
+      </div>
+
+      <p style="text-align: center; margin-top: 1.5rem; color: var(--pico-muted-color);">
+        Don't have an account?
+        <a href="#" hx-get="{% url 'core:signup' %}"
+           hx-target="#modal-target"
+           hx-swap="innerHTML swap:0.5s"
+           style="color: var(--pico-primary); text-decoration: underline;">
+          Sign Up
+        </a>
+      </p>
+    </form>
+  </article>
 </div>
