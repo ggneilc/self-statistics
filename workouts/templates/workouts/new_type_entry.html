@@ -1,24 +1,26 @@
 <form id="t_entry_form"
-    hx-post="{% url 'core:addt' %}"
-    hx-target="#profile-main">
+      hx-post="{% url 'core:addt' %}"
+      hx-target="#profile-main"
+      style="width: 100%; max-width: 400px; margin: 0 auto;">
 
-    {% csrf_token %}
+  {% csrf_token %}
 
-<div class="main-nut">
-    <div class="input_container">
-        {{form.name}}
-        <label for="{{ form.name.id_for_label }}">Group</label>
-    </div>
+  <div class="form-field">
+    <label for="{{ form.name.id_for_label }}">Workout Type Name</label>
+    {{form.name}}
+  </div>
 
-    <div class="input_container">
-        {{form.color}}
-        <label for="{{ form.color.id_for_label }}">Color</label>
-    </div>
-</div>
-    <div class="button-container">
-	<button class="back-btn"
-		hx-target="#type_entry__container"
-		hx-get="{% url 'workouts:clear' %}">CANCEL</button>
-        <button class="form_btn" type="submit" name="action" value="submit">Submit</button>
-    </div>
+  <div class="form-field">
+    <label for="{{ form.color.id_for_label }}">Color</label>
+    {{form.color}}
+  </div>
+
+  <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+    <button class="form_btn" type="submit" style="flex: 1;">Create Workout Type</button>
+    <button type="button" class="back-btn"
+            hx-target="#type_entry__container"
+            hx-get="{% url 'workouts:clear' %}">
+      Cancel
+    </button>
+  </div>
 </form>

@@ -1,33 +1,41 @@
-
 <!-- templates/profile/update_timezone.html -->
 
-<form 
+<form
     hx-post="{% url 'core:set_tz' %}"
-    hx-target="#profile">
+    hx-target="#profile-main"
+    hx-swap="innerHTML"
+    hx-on::after-request="if(event.detail.successful) { document.body.dispatchEvent(new CustomEvent('showToast', { detail: { message: 'Profile saved successfully!', type: 'success' } })); }"
+    style="width: 100%; max-width: 400px; margin: 0 auto;">
   {% csrf_token %}
 
-  <div class="input_container">
+  <div class="form-field">
+    <label for="{{form.timezone.id_for_label}}">Timezone</label>
     {{ form.timezone }}
-    <label for="{{form.timezone.id_for_label}}">TIMEZONE</label>
   </div>
 
-  <div class="input_container">
+  <div class="form-field">
+    <label for="{{form.gender.id_for_label}}">Gender</label>
     {{ form.gender }}
-    <label for="{{form.gender.id_for_label}}">GENDER</label>
   </div>
 
-  <div class="input_container">
+  <div class="form-field">
+    <label for="{{form.age.id_for_label}}">Age</label>
     {{ form.age }}
-    <label for="{{form.age.id_for_label}}">AGE</label>
-  </div>
-  <div class="input_container">
-    {{ form.height_ft }}
-    <label for="{{form.height_ft.id_for_label}}">Feet</label>
-  </div>
-  <div class="input_container">
-    {{ form.height_in }}
-    <label for="{{form.height_in.id_for_label}}">Inches</label>
   </div>
 
-  <button type="submit" class="form_btn">Save Profile</button>
+  <div class="form-field">
+    <label>Height</label>
+    <div style="display: flex; gap: 1rem;">
+      <div style="flex: 1;">
+        <label for="{{form.height_ft.id_for_label}}" style="font-size: 0.85rem; font-weight: normal; color: var(--pico-muted-color);">Feet</label>
+        {{ form.height_ft }}
+      </div>
+      <div style="flex: 1;">
+        <label for="{{form.height_in.id_for_label}}" style="font-size: 0.85rem; font-weight: normal; color: var(--pico-muted-color);">Inches</label>
+        {{ form.height_in }}
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="form_btn" style="width: 100%; margin-top: 1rem;">Save Profile</button>
 </form>

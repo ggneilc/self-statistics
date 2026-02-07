@@ -417,8 +417,8 @@ def query_ingredient(request):
     foods = r.json().get("foods", [])
     results = []
     for food in foods:
-        print(f"{food["description"]=}")
-        print(f"{food["fdcId"]=}\n")
+        print(f"food description={food['description']}")
+        print(f"food fdcId={food['fdcId']}\n")
         results.append({
             "name": food["description"],
             "fdcId": food["fdcId"]

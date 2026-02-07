@@ -1,8 +1,7 @@
-<div class="personal-left">
-	  <div class="profile-pic-large"></div>
-	  <h1>{{user.username}}</h1>
-</div>
-<div class="personal-right"
-  hx-get="{% url 'core:set_tz'%}"
-  hx-trigger="load">
+<div class="settings-content">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <div class="profile-pic-large" style="margin: 0 auto;"></div>
+    <h2>{{user.username}}</h2>
+  </div>
+  <div hx-get="{% url 'core:set_tz'%}" hx-trigger="load"></div>
 </div>

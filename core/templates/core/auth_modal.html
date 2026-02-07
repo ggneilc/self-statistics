@@ -1,14 +1,25 @@
-    <div class="modal-content">
-        <h1>Welcome to Self Stats</h1>
-        <h2>Complete Data Driven Dashboard for Survival</h2>
-	<div class="button-container" style="flex-direction: column;">
-        <button class="form_btn"
-           hx-get="{% url 'core:login' %}"
-           hx-target="#modal-target"
-           hx-swap="innerHTML swap:0.4s">Log In</a>
-        <button class="form_btn"
-           hx-get="{% url 'core:signup' %}"
-           hx-target="#modal-target"
-           hx-swap="innerHTML swap:0.4s">Sign Up</a>
-	</div>
+<div class="auth-card-container">
+  <article class="auth-card">
+    <header>
+      <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Welcome to Self Stats</h1>
+      <p style="margin-top: -0.5rem; color: var(--pico-muted-color); font-size: 1.1rem;">
+        Complete Data Driven Dashboard for Survival
+      </p>
+    </header>
+
+    <div class="auth-buttons" style="margin-top: 2.5rem;">
+      <button class="form_btn"
+              hx-get="{% url 'core:login' %}"
+              hx-target="#modal-target"
+              hx-swap="innerHTML swap:0.4s">
+        Log In
+      </button>
+      <button class="form_btn signup-btn-outline"
+              hx-get="{% url 'core:signup' %}"
+              hx-target="#modal-target"
+              hx-swap="innerHTML swap:0.4s">
+        Sign Up
+      </button>
     </div>
+  </article>
+</div>
