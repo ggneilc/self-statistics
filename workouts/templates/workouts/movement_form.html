@@ -1,0 +1,15 @@
+<form
+    hx-post="{% url 'workouts:add_custom_mv' %}"
+    hx-target="#overview-target"
+    hx-on:click="this.closest('dialog').removeAttribute('open')">
+    {% csrf_token %}
+
+    <fieldset role="group">
+        {{ form.name }}
+        {{ form.bodypart }}
+        {{ form.category }}
+        {{ form.secondary_bodypart }}
+    </fieldset>
+
+    <button type="submit">Create Movement</button>
+</form>

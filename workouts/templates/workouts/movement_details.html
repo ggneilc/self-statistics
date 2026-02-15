@@ -1,25 +1,17 @@
 <div class="vertical-group" style="flex:1;">
   <div class="horizontal-group" style="flex:3;">
       <div id="lift-graph"
-        hx-get="{% url 'graphs:lift_orm' lift.exercise_name %}"
         hx-trigger="load">
       </div>
       <div id="lift-details" style="flex:1;border:1px solid #0d0f0f;"class="vertical-group">
         <div id="lift-info" class="horizontal-group" style="flex:1;">
-          <div id="lift-name">{{lift.exercise_name}}</div>
+          <div id="lift-name">{{movement.name}}</div>
           <div id="lift-level">
             <span style="margin-top:6px;">Lv </span>
-            <span style="font-size:large;margin-left:3px;"> 77 </span>
+            <span style="font-size:large;margin-left:3px;"> {{movement.level|floatformat:0}} </span>
           </div>
         </div>
         <div id="lift-sets" class="vertical-group">
-          {% for set in lift.sets.all %}
-          <div class="lift_set_detail">
-            <div class="lift_reps">{{set.reps}}</div>
-              x
-            <div class="lift_weight">{{set.weight}}</div>
-          </div>
-          {% endfor %}
         </div>
       </div>
   </div>

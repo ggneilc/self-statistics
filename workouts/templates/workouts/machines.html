@@ -1,17 +1,31 @@
-<div id="machines" class="list-container">
-  {% for machine in machines %}
-	<div class="lift"
-	{% if in_overview %}
-	hx-get="{% url 'workouts:get_lift_form' %}"
-	hx-target="#selection-target"
-	{% else %}
-	hx-get="{% url 'workouts:lift_templates' %}"
-	hx-target="#lift_entry__container"
-	{% endif %}
-	hx-trigger="click"
-	hx-swap="innerHTML swap:0.4s"
-	hx-vals='{"machine": "{{ machine }}", "bodypart": "{{bodypart}}"}'>
-		{{machine}} 
-	</div>
-  {% endfor %}
-</div>
+{% if not active %}
+<input type="radio" name="category" value="" id="cat-all" 
+		class="hidden-radio"
+		hx-get="{% url 'workouts:movements_global' %}"
+		hx-include="#filter-selection"
+		hx-target="#available-movements">
+<label for="cat-all" class="category-chip">All</label>
+{% endif %}
+
+{% for code, name in categories %}
+	<input type="radio" name="category" value="{{ code }}" id="cat-{{ code }}" 
+           class="hidden-radio"
+           {% if active %}
+           hx-get="{% url 'workouts:movements_active' %}"
+           hx-include="#bodypart-chips"
+           hx-target="#available-movements"
+           {% else %}
+           hx-get="{% url 'workouts:movements_global' %}"
+           hx-include="#filter-selection"
+           hx-target="#available-movements"
+           {% endif %}>
+    <label for="cat-{{ code }}" class="category-chip">{{ name }}</label>
+{% endfor %}
+
+{% if active %}
+<style>
+	.category-chip {
+		padding: 0.2rem 0.7rem;
+	}
+</style>
+{% endif %}

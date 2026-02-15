@@ -1,0 +1,24 @@
+{% for code, name in bodyparts %}
+	<input type="radio" name="bodypart" value="{{ code }}" id="bp-{{ code }}" 
+           class="hidden-radio"
+           {% if not active %}
+           hx-get="{% url 'workouts:movements_global' %}"
+           hx-include="#filter-selection"
+           hx-target="#available-movements"
+           {% else %}
+           hx-get="{% url 'workouts:movements_active' %}"
+           hx-include="#category-chips"
+           hx-target="#available-movements"
+           {% endif %}>
+    <label for="bp-{{ code }}" class="bodypart-chip">{{ name }}</label>
+{% endfor %}
+
+{% if active %}
+<style>
+	.bodypart-chip {
+        padding: 0.2rem 1rem;
+        margin-bottom: -8px;
+        border-radius: var(--pico-border-radius) var(--pico-border-radius) 0 0;
+	}
+</style>
+{% endif %}

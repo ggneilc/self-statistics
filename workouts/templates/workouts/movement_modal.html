@@ -1,0 +1,41 @@
+<dialog open>
+<article>
+    <header>
+        <button rel="prev"
+            hx-get="{% url 'workouts:clear' %}"
+            hx-target="#lift-modal"
+            hx-on:click="event.stopPropagation()"></button>
+        <p>
+            Track a Movement
+        </p>
+    </header>
+    <div class="vertical-group">
+        <div id="filter-selection">
+            <div id="bodypart-chips" class="chip-grid"
+                hx-get="{% url 'workouts:bodyparts' %}"
+                hx-trigger="load">
+            </div>
+            <div id="category-chips"
+                hx-get="{% url 'workouts:categories' %}"
+                hx-trigger="load">
+            </div>
+        </div>
+        <div id="movement-area" class="vertical-group">
+            <div id="available-movements"></div>
+        </div>
+    </div>
+</article>
+</dialog>
+
+<style>
+
+#category-chips {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(1, auto);
+  gap: 10px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+</style>

@@ -17,6 +17,12 @@
     {% endfor %}
 </div>
 
+
+{% if delete_workout %}
+<div id="workout-{{workout_id}}" hx-swap-oob="true" style="display: none;">
+</div>
+{% endif %}
+
 <style>
     .volume-container {
     display: flex;

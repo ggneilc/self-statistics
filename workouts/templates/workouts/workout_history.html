@@ -4,12 +4,13 @@
     <span style="position:absolute; right:1rem;">
     <div id="modal-workout-add"></div>
     <button data-tooltip="Add" data-placement="bottom" style="padding: 0 0.3rem;"
-    hx-get="{% url 'workouts:load_entry' %}"
-    hx-target="#modal-workout-add">
+        hx-get="{% url 'workouts:wtype_entry' %}"
+        hx-target="#modal-workout-add"
+        hx-swap="innerHTML">
     <i class="fa-solid fa-plus"></i></button>
     </span>
 </header>
 <ul id="workout_list" class="overflow-auto"
-    hx-get="{% url 'workouts:list' %}"
+    hx-get="{% url 'workouts:workouts' %}"
     hx-trigger="load">
 </ul>

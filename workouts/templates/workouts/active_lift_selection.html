@@ -1,0 +1,39 @@
+{% if workout.lifts.exists %}
+<div id="completed-lifts" class="horizontal-group"> 
+	{% for lift in workout.lifts.all %}
+		{% include 'workouts/lift_small.html' with lift=lift active=True %}
+	{% endfor %}
+</div>
+{% endif %}
+<div id="lift-area" class="vertical-group" style="flex:4;"> 
+	<div id="bodypart-chips" class="horizontal-group">
+		{% include 'workouts/bodypart_chips.html' with bodyparts=bodyparts active=True %}
+	</div>
+	<div id="lift-selection" class="vertical-group">
+		<div id="category-chips" class="horizontal-group"
+			hx-get="{% url 'workouts:categories_active'  %}"
+			hx-trigger="load">
+		</div>
+		<div id="available-movements"></div>
+	</div>
+</div>
+
+<style>
+	#bodypart-chips {
+		padding-left: 0.5rem;
+		gap: 0.2rem;
+	}
+	#category-chips {
+		justify-content: space-evenly;
+	}
+
+	#completed-lifts {
+		flex: 1;
+		max-width: 28vw;
+		overflow-x: auto;
+		padding: 3px;
+	}
+	#completed-lifts > div {
+		min-width: 100px; 
+	}
+</style>
