@@ -511,9 +511,93 @@ text {
 }
 
 
+#active-workout {
+  height: 100%;
+  border-radius: var(--pico-border-radius);
+}
+#active-info {
+  align-items: center;
+  justify-content: space-between;
+}
+#lift-selection {
+  flex: 1;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid #0d0f0f;
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  padding: 0.5rem;
+  background-color: var(--pico-card-sectioning-background-color);
+}
+.lift-small {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid #0d0f0f;
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  padding: 0.5rem;
+  background-color: var(--pico-card-sectioning-background-color);
+}
 
 
+.hidden-radio { display: none; }
+.hidden-radio:checked + .bodypart-chip,
+.hidden-radio:checked + .category-chip {
+    background-color: var(--pico-primary);
+    color: white;
+}
 
+.chip-grid {
+    display: grid;
+    /* Create 3 columns of equal width */
+    grid-template-columns: repeat(5, 1fr); 
+    /* Create 5 rows */
+    grid-template-rows: repeat(3, auto);
+    /* Space between the chips */
+    gap: 10px; 
+    width: 100%;
+    margin: 0 auto;
+}
+
+.category-chip,
+.bodypart-chip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+    border-radius: var(--pico-border-radius);
+    background-color: var(--pico-background-color);
+    box-shadow: -1px 1px 0px 0px #0d0f0f;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.2s, transform 0.1s;
+    border: 1px solid #0d0d0f;
+}
+
+.category-chip:hover,
+.bodypart-chip:hover {
+    background-color: var(--pico-secondary-background);
+}
+.bodypart-chip:hover {
+    transform: translateY(-4px);
+    margin-bottom: -12px;
+}
+/* HTMX "Active" state if you want to highlight the selected chip */
+
+.category-chip.htmx-request,
+.bodypart-chip.htmx-request {
+    opacity: 0.7;
+}
+
+[type=checkbox]~label:not(:last-of-type),
+[type=radio]~label:not(:last-of-type) {
+    margin-inline-end: 0;
+}
+
+[type=radio]~label {
+  margin-bottom: -8px;
+}
 
 
 
@@ -668,6 +752,7 @@ text {
 #lift-name {
   flex:3;
   font-size:large;
+  text-align:center;
 }
 #lift-level {
   flex:1;
@@ -708,9 +793,10 @@ text {
 
 #lift-carosel {
   flex: 1;
-  padding: 1rem;  
-  max-height: 50vh;
+  padding: 1rem 2rem 3px;  
+  max-height: 45vh;
   overflow-y: auto;
+  margin-top: 0.5rem;
 }
 .list-container {
   display: flex;
@@ -718,18 +804,43 @@ text {
   flex-direction: row;
   gap: 1rem;
 }
-.list-container > div {
+.movement {
   min-width: 150px;
   max-width: 150px;
-  min-height: 150px;
-  max-height: 150px;
+  min-height: 130px;
+  max-height: 130px;
   border: 1px solid #0d0f0f;
   border-radius: var(--pico-border-radius);
   box-shadow: -3px 3px 0px 0px #0d0f0f;
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  flex-direction: column;
+} .movement:hover {
+  transform: translateY(-2px);
+  box-shadow: -5px 5px 0px 0px #0d0f0f;
+  transition: all 0.2s ease-in-out;
 }
+.movement-name {
+  flex: 1;
+  padding-top: 0.5rem;
+}
+.movement-level {
+  flex: 3;
+  font-size: large;
+  display: flex;
+  align-items: center;
+}
+.movement-exp { flex: 1}
+
+
+
+
+
+
+
+
 
 .ts-wrapper {
   flex: 3;
@@ -811,6 +922,7 @@ article {
     
     /* Apply the animation */
     animation: globalFallIn 0.5s ease-out forwards;
+    box-shadow: none;
 }
 
 /* Ensure HTMX content doesn't double-animate if it's inside an article */

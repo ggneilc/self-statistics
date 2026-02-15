@@ -1,11 +1,11 @@
-# core/signals.py
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from calcounter.models import MealConsumption
-from workouts.models import Workout, WorkoutType, Set, WeeklyVolume
 from django.contrib.auth.models import User
-from .models import Day, Profile
 from django.db.models import Sum, Count
+from django.conf import settings
+from .models import Day, Profile
+from calcounter.models import MealConsumption
+from workouts.models import Workout, WorkoutType, Set, WeeklyVolume, Movement, MovementLibrary
 from datetime import datetime, timedelta
 
 
@@ -119,13 +119,13 @@ def update_weekly_volume(sender, instance, **kwargs):
     sunday = workout_date - timedelta(days=days_since_sunday)
     
     user = instance.lift.workout.day.user
-    bodypart = instance.lift.bodypart
+    bodypart = instance.lift.movement.bodypart
 
     # 2. Recalculate total sets for this specific user/week/muscle
     total_sets = Set.objects.filter(
         lift__workout__day__user=user,
         lift__workout__day__date__range=[sunday, sunday + timedelta(days=6)],
-        lift__bodypart=bodypart
+        lift__movement__bodypart=bodypart
     ).count()
 
     # 3. Update or create the volume record
@@ -135,3 +135,23 @@ def update_weekly_volume(sender, instance, **kwargs):
         muscle_group=bodypart,
         defaults={'set_count': total_sets}
     )
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def provision_starter_movements(sender, instance, created, **kwargs):
+    if created:
+        # Get the "Starter" movements from the Global Library
+        # You can mark these in the DB with a specific flag or pack_name
+        starter_blueprints = MovementLibrary.objects.filter(pack_name="Starter Pack")
+        
+        starter_movements = [
+            Movement(
+                user=instance,
+                base_movement=bp,
+                name=bp.name,
+                bodypart=bp.bodypart,
+                category=bp.category
+            ) for bp in starter_blueprints
+        ]
+        
+        Movement.objects.bulk_create(starter_movements)

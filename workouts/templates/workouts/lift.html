@@ -1,10 +1,10 @@
 <li class="lift"
-    hx-get="{% url 'workouts:lift_details' lift.id %}"
+    hx-get="{% url 'workouts:movement' lift.movement.id %}"
     hx-trigger="click"
     hx-target="#overview-target"
 >
     <div class="lift_main">
-        <div class="lift_name">{{lift.exercise_name}}</div>
+        <div class="lift_name">{{lift.movement.name}}</div>
     </div>
     <div class="lift_set">
         <div class="lift_sets">

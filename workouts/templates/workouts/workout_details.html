@@ -3,8 +3,14 @@
     Workout Details
 
     <span style="position:absolute;right:1rem;">
+      <button data-tooltip="Delete Workout" data-placement="bottom" style="padding: 0 0.3rem;"
+        hx-delete="{% url 'workouts:delete_workout' workout.id %}"
+        hx-target="#inspected-workout"
+        hx-swap="innerHTML">
+         <i class="fa-solid fa-trash"></i>
+      </button>
       <button data-tooltip="Weekly Sets" data-placement="bottom" style="padding: 0 0.3rem;"
-        hx-get="{% url 'workouts:weekly_dash' %}"
+        hx-get="{% url 'workouts:weekly_sets' %}"
         hx-target="#inspected-workout">
         <i class="fa-solid fa-bars-progress"></i>
       </button>

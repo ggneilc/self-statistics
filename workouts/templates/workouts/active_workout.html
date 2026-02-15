@@ -1,29 +1,42 @@
-<div id="active-workout" style="
-    border: 1px solid {{workout.workout_type.color}};
-    color: {{workout.workout_type.color}};
-    text-align: center;">
+<div id="active-workout" class="vertical-group">
 
-    {{workout}}
-
-
-    <div style="
-	display: flex;
-	flex-direction: column;
-	max-height: 100%;
-	height: 100%;">
-
-	<!-- Main lift section -->
-	<!-- initially displays bodypart buttons -->
-	<div id="lift_entry__container" style="flex:4; display:flex; flex-direction:column;">
-	
-	{% include './active_lift_info.html' with workout=workout total=0%}
+	<div id="active-info" class="horizontal-group" style="flex:1;">
+		<div id="workout_time"> 00:31 </div>
+		<div id="workout-name">{{workout.workout_type.name}}</div>
+		<div id="end-workout"> <button class="end"
+			hx-get="{% url 'workouts:end_workout' workout.id %}"
+			hx-target="#workout-history"
+			hx-swap="innerHTML"> End </button></div>
 	</div>
-
-	<div id="lift_list">
+	<div id="meters" class="vertical-group" style="flex:1;">
+		<div id="energy-meter" class="meter"> </div>
+		<div id="water-meter" class="meter"> </div>
 	</div>
-
-	{% include './end_workout.html' %}
-
-    </div>
+	<div id="lift-target" class="vertical-group" style="flex:10;">
+		{% include 'workouts/active_lift_selection.html' with workout=workout bodyparts=bodyparts %}
+	</div>
 </div>
 
+
+<style>
+	#workout-name { font-size: x-large; font-weight: bold; }
+	#active-info {
+		border: 1px solid {{workout.workout_type.color}};
+		background-color: var(--pico-background-color);
+		padding: 0 0.5rem;
+		border-radius: var(--pico-border-radius);
+	}
+	#meters { margin-bottom: 0.5rem; }
+	#energy-meter { border: 1px dashed red; }
+	#water-meter { border: 1px dashed blue; }
+	.meter {
+		border-radius: var(--pico-border-radius);
+		background-color: var(--pico-background-color);
+		height: 100%;
+	}
+	.end {
+		padding: 0 1rem;
+		background-color: var(--pico-del-color);
+		border: 1px solid var(--pico-del-color);
+	}
+</style>

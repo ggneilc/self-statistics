@@ -3,6 +3,38 @@ from django.conf import settings
 from core.models import Day
 from django.db.models import F, Sum
 
+# Can add bodyweight & banded (support calisentics & women)
+LIFT_TYPES = [
+    ('M', 'Machine'),
+    ('C', 'Cable'),
+    ('B', 'Barbell'),
+    ('D', 'Dumbbell')
+]
+
+BODYPARTS = [
+    # Pull
+    ('BI', 'Bicep'),
+    ('TR', 'Trap'),
+    ('LT', 'Lat'),
+    ('RS', 'R. Delts'),
+    ('FO', 'Forearms'),
+    # Push
+    ('CH', 'Chest'),
+    ('TI', 'Tricep'),
+    ('LS', 'L. Delts'),
+    ('FS', 'F. Delts'),
+    ('AB', 'Abs'),
+    # Legs
+    ('QD', 'Quadricep'),
+    ('HM', 'Hamstring'),
+    ('CV', 'Calf'),
+    ('HP', 'Ab|Ads'),
+    ('GL', 'Glutes'),
+    # misc
+]
+
+bodypart_map = dict(BODYPARTS)
+
 
 class WorkoutType(models.Model):
     '''
@@ -18,8 +50,21 @@ class WorkoutType(models.Model):
         related_name='workout_types')
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.user.username})"
 
+
+class WorkoutTypeBodypart(models.Model):
+    '''Links a WorkoutType to a specific muscle group code'''
+    workout_type = models.ForeignKey(
+        WorkoutType, on_delete=models.CASCADE, related_name='target_muscles'
+    )
+    bodypart = models.CharField(max_length=2, choices=BODYPARTS)
+
+    class Meta:
+        unique_together = ('workout_type', 'bodypart')
+
+    def __str__(self):
+        return f"{self.workout_type} - {self.bodypart}"
 
 class Workout(models.Model):
     '''
@@ -59,63 +104,66 @@ class Workout(models.Model):
             .aggregate(total=Sum(F('sets__weight') * F('sets__reps')))['total']
             or 0
         )
+    
+    def bodypart_list(self):
+        codes = self.workout_type.target_muscles.values_list('bodypart', flat=True)
+        return [(code, bodypart_map[code]) for code in codes if code in bodypart_map]
 
 
-# Can add bodyweight & banded
-LIFT_TYPES = [
-    ('M', 'Machine'),
-    ('C', 'Cable'),
-    ('B', 'Barbell'),
-    ('D', 'Dumbbell')]
+# Similar to Foods database : globally accessible to all users, stores static information
+class MovementLibrary(models.Model):
+    '''
+        The 'Master' definition of an exercise. 
+        Global Storage of all basic movements. 
+        Stores both 'free' movements and 'premium' dlc packs
+    '''
+    name = models.CharField(max_length=100)
+    bodypart = models.CharField(max_length=2, choices=BODYPARTS)
+    secondary_bodypart = models.CharField(max_length=2, choices=BODYPARTS, blank=True, null=True)
+    category = models.CharField(max_length=1, choices=LIFT_TYPES)
+    is_premium = models.BooleanField(default=False)
+    pack_name = models.CharField(max_length=50, blank=True, null=True) # e.g., "PPL Pack"
+    
+    def __str__(self):
+        return f"{self.name} ({self.pack_name or 'Global'})"
 
-BODYPARTS = [
-    # Pull
-    ('BI', 'Bicep'),
-    ('TR', 'Trap'),
-    ('LT', 'Lat'),
-    # Push
-    ('CH', 'Chest'),
-    ('TI', 'Tricep'),
-    ('SH', 'Shoulder'),
-    # Legs
-    ('QD', 'Quadricep'),
-    ('HM', 'Hamstring'),
-    ('CV', 'Calf'),
-    ('HP', 'Ad/Abuctor'),
-    ('GL', 'Glutes'),
-    # misc
-    ('AB', 'Abs'),
-    ('FO', 'Forearms'),
-]
+# Similar to PantryItem : a movement the user is registering to themselves
+class Movement(models.Model):
+    '''
+        A user's specific instance of a movement.
+        Links back to the global library OR is a custom user creation.
+    '''
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # Link to global (null if they made a custom one)
+    base_movement = models.ForeignKey(
+        MovementLibrary, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    # Override fields (for custom movement)
+    name = models.CharField(max_length=100) 
+    bodypart = models.CharField(max_length=2, choices=BODYPARTS)
+    secondary_bodypart = models.CharField(max_length=2, choices=BODYPARTS, null=True, blank=True)
+    category = models.CharField(max_length=1, choices=LIFT_TYPES)
+
+    level = models.FloatField(default=1)
+    is_archived = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'name')
+
+    def __str__(self):
+        return f"{self.user} | {self.base_movement.name or self.name}"
 
 
 class Lift(models.Model):
     '''
-        Represents a movement performed, i.e. 'barbell bench press'
+        Represents an instance of a movement performed
         - exercise_name
     '''
+    movement = models.ForeignKey(Movement, on_delete=models.CASCADE, related_name='instances')
     workout = models.ForeignKey(
         Workout,
         on_delete=models.CASCADE,
-        related_name='lifts',
-        null=True,
-        blank=True)
-    # user for initial lift tracking 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE,
-                             null=True)
-    exercise_name = models.CharField(max_length=100)
-    is_template = models.BooleanField(default=False)
-    order = models.PositiveIntegerField(default=0)
-
-    lift_type = models.CharField(
-        max_length=1,
-        choices=LIFT_TYPES,
-        null=True)
-    bodypart = models.CharField(
-        max_length=2,
-        choices=BODYPARTS,
-        null=True)
+        related_name='lifts')
 
     @property
     def set_count(self):
@@ -143,7 +191,7 @@ class Lift(models.Model):
         return 0
 
     def __str__(self):
-        return f"{self.exercise_name}: ({self.workout.workout_type if self.workout else ''} - {self.workout.day.date if self.workout else ''})"
+        return f"{self.movement.name}: ({self.workout.workout_type} | {self.workout.day.date})"
 
 
 class Set(models.Model):
@@ -168,7 +216,7 @@ class Set(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        return f"{self.reps} reps @ {self.weight} ({self.lift.exercise_name})"
+        return f"{self.reps} reps @ {self.weight} ({self.lift.movement.name})"
 
 
 # Stored statistics of sets per muscle group per week

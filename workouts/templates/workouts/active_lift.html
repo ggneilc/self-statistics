@@ -1,35 +1,28 @@
-<h1>{{lift.exercise_name}}</h1>
+<h1>{{lift.movement.name}}</h1>
 
-<div id="set-list">
-  <div id="sets">
-{% if not templated %}
-{% for set in lift.sets.all %}
-	{% include 'workouts/set_row.html' with set=set %}
-{% endfor %}
-{% include 'workouts/set_entry.html' with form=set_form %}
-{% else %}
-{% for set in sets %}
-	{% include 'workouts/set_entry.html' with form=set editing=False %}
-{% endfor %}
-{% endif %}
-  </div>
+<div id="set-list" class="vertical-group">
+	<div id="sets">
+		{% if editing %}
+			{% for form in set_forms %}
+				{% include 'workouts/set_entry.html' with form=form set=form.instance editing=True %}
+			{% endfor %}
+		{% else %} {# new lift #}
+		{% include 'workouts/set_entry.html' with form=set_form lift=lift editing=False %}
+		{% endif %}
+	</div>
 
-  <div class="button-container">
-    <button class="add" 
-	hx-get="{% url 'workouts:adds' lift.id %}"
+	<button class="outline" style="padding: 0 1rem;"
+	hx-get="{% url 'workouts:add_set' lift.id %}"
 	hx-trigger="click"
 	hx-target="#sets"
 	hx-swap="beforeend">
-      +
-    </button>
-  </div>
+		+
+	</button>
 </div>
 
 
-<div class="button-container">
-  <button class="back-btn"
-	hx-get="{% url 'workouts:end_l' lift.id %}"
-	hx-target="#lift_entry__container"
-	hx-swap="innerHTML swap:0.4s"
-	>FINISHED</button>
-</div>
+<button class="outline" style="padding: 0.3rem 1rem;"
+hx-get="{% url 'workouts:end_lift' lift.id %}"
+hx-target="#lift-target"
+hx-swap="innerHTML swap:0.4s"
+>FINISHED</button>

@@ -1,42 +1,38 @@
-<form 
-{% if not editing %}
-  hx-post="{% url 'workouts:adds' lift.id %}" 
-{% else %}
-  hx-post="{% url 'workouts:edit_set' set.id %}" 
-{% endif %}
-  hx-swap="outerHTML">
+<form  class="horizontal-group"
+    {% if not editing %}
+    hx-post="{% url 'workouts:add_set' lift.id %}" 
+    {% else %}
+    hx-post="{% url 'workouts:edit_set' set.id %}" 
+    {% endif %}
+    hx-swap="outerHTML">
 
 <!-- if not editing, the set doesn't exist yet; just clear. -->
-<div class="main-nut">
-  <div class="button-container" style="display:inline;">
-  <button class="back-btn" style="background-color:var(--bg);
-  color: #cb0014; font-size:12px;
-  box-shadow: 0px 0px 0px 0px rgba(0,0,0,0);" 
-{% if not editing %}
+  <button class="del outline" 
+    {% if not editing %}
     hx-get="{% url 'workouts:clear'%}" 
-{% else %}
+    {% else %}
     hx-delete="{% url 'workouts:del_set' set.id %}" 
-{% endif %}
+    {% endif %}
     hx-target="closest form"
-    hx-swap="outerHTML"
-  >
-    ✕
-  </button>
-  </div>
+    hx-swap="outerHTML"> x </button>
 
-	  <div class="input_container">
-	    {{ form.reps }} 
-	    <label for="{{form.reps.id_for_label}}"> REPS </label>
-	  </div>
-	  <div class="input_container">
-	    {{ form.weight }} 
-	    <label for="{{form.weight.id_for_label}}"> WEIGHT </label>
-	  </div>
+  {{ form.reps }} 
+  {{ form.weight }} 
 
-	  <div class="button-container" style="display:inline;">
-	    <button class="form_btn" name="action" type="submit" value="submit" style="font-size:12px;">
-		>
-	    </button>
-	  </div>
-  </div>
+  <button class="enter outline" name="action" type="submit" value="submit"> > </button>
 </form>
+
+<style>
+  .enter {
+    border: 1px solid var(--pico-ins-color);
+    color: var(--pico-ins-color);
+    flex: 1;
+  }
+
+  .del {
+    border: 1px solid var(--pico-del-color);
+    color: var(--pico-del-color);
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+</style>

@@ -1,4 +1,4 @@
-<div class="workout" 
+<div id="workout-{{workout.id}}" class="workout" 
     style="background: linear-gradient(135deg,
           var(--pico-background-color) 85%,
           var(--pico-background-color) 85%,
@@ -26,12 +26,9 @@
     value="{{ workout.workout_type.color }}"
     class="sr-only"
     hx-trigger="change"
-    hx-target="#workout_list__container"
+    hx-target="#workout_list"
     hx-post="{% url 'workouts:change_color' %}"
     hx-vals='{"workout_id": "{{ workout.id }}"}'
     hx-swap="innerHTML"
   >
-  {% if workout.is_active %}
-  {% include './end_workout.html' %}
-  {% endif %}
 </div>

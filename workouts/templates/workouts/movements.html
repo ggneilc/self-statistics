@@ -1,0 +1,146 @@
+{% load static %}
+{% if mode == 'view' %} {# include workout type filter#}
+<div id="workout-type-chips" class="horizontal-group"
+    hx-get="{% url 'workouts:workout_types' %}"
+    hx-trigger="load">
+</div>
+{% endif %}
+
+<div id="lift-carosel"
+{% if mode == 'select' or mode == 'active' %}
+class="horizontal-group overflow-auto"
+style="padding: 1rem; margin-top: revert;"
+{% elif mode == 'view' %}
+class="list-container"
+{% endif %}>
+    {% for mv in movements %}
+    <div style="position: relative;"
+        {% if mode == 'active' %}
+        hx-get="{% url 'workouts:add_lift' mv.id %}"
+        hx-target="#lift-target"
+        class="smaller-movement"
+        {% elif mode == 'select' %} 
+        hx-get="{% url 'workouts:add_mv' mv.id %}"
+        hx-target="#overview-target"
+        hx-on:click="this.closest('dialog').removeAttribute('open')"
+        class="smaller-movement"
+        {% elif mode == 'view' %}
+        hx-get="{% url 'workouts:movement' mv.id %}"
+        hx-target="#overview-target"
+        class="movement"
+        {% endif %}
+        hx-trigger="click">
+        {% if mode == 'view' %} {# show exp / icon / level#}
+        <div class="movement-name">
+            {{mv.name}} {# include icon based on category #}
+            <svg class="custom-icon" aria-hidden="true"
+            {% if mv.category == 'M' %}
+            viewBox="0 0 64 80"
+            {% else %}
+            viewBox="-5.0 -10.0 110.0 135.0"
+            {% endif %}>
+                <use href="#{{ mv.category }}"></use>
+            </svg>
+        </div>
+        <div class="movement-level">
+            <span style="font-size:small;margin-top:6px;">Lv </span>
+            <span style="margin-left:3px;"> {{mv.level|floatformat:0}} </span>
+        </div>
+        {% widthratio mv.level|add:"-0.0" 1 100 as total_progress %}
+        {# Check if the level ends in .5 #}
+        <div class="exp-container" style="flex:1;"
+            data-tooltip="{{ lift.level|stringformat:'.1f'|slice:'-2:'|yesno:'1/2 workouts to next level,0/2 workouts to next level' }}"
+            data-placement="bottom">
+            <div class="exp-bar" 
+             style="width: {% if mv.level|stringformat:'.1f'|slice:'-2:' == '.5' %}50%{% else %}0%{% endif %};">
+            </div>
+        </div>
+        {% else %}
+        {{mv.name}}
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% if mode == 'select' %}
+    <div style="font-size:large;"
+        hx-get="{% url 'workouts:mv_form' %}"
+        hx-target="#available-movements"
+        hx-include="#filter-selection"
+        class="smaller-movement"
+        hx-on:click="event.stopPropagation()"
+        hx-trigger="click"> + </div>
+    {% endif %}
+</div>
+
+<style>
+.smaller-movement {
+  min-width: 70px;
+  max-width: 70px;
+  min-height: 70px;
+  max-height: 70px;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#workout-type-chips {
+    height: 1rem;
+    padding: 0 2rem;
+}
+#workout-type-chips > button {
+    flex:1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.exp-container {
+    width: 85%;
+    background-color: var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    position: relative;
+    margin: 10px;
+}
+
+.exp-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pico-primary) 0%, #00d4ff 100%);
+    transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 8px var(--pico-primary);
+}
+
+/* Optional: Add a subtle divider in the middle to show the "2-step" nature */
+.exp-container::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.custom-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 6em;
+    height: 6em;
+    fill: currentColor; /* Allows it to change color with text */
+    vertical-align: -0.125em; /* Matches Font Awesome's alignment */
+    display: inline-block;
+    opacity: 0.1;
+}
+
+/* Ensure paths inside follow the color of the text */
+.custom-icon path {
+    fill: currentColor;
+}
+</style>

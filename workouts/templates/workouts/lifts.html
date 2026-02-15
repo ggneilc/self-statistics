@@ -1,9 +1,9 @@
-{% if active %} {# lift list on active workout #}
+{% if active %}   {# lift list on active workout #}
   {% for lift in lifts %}
-  {% include './lift.html' with lift=lift drag=True %}
+  {% include './lift_small.html' with lift=lift %}
   {% endfor %}
-{% else %} {# lift list in workout history #}
+{% else %}        {# lift list in workout history #}
   {% for lift in lifts %}
-  {% include './lift.html' with lift=lift drag=False %}
+  {% include './lift.html' with lift=lift %}
   {% endfor %}
 {% endif %}

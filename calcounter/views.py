@@ -430,14 +430,17 @@ def get_specific_usda_item(request, fdcId):
     single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}"
     foodItem = Food.objects.filter(fdc_id=fdcId).first()
     if not foodItem:
-        item = requests.get(single_url).json()
+        response = requests.get(single_url)
+        print(f"{response.status_code=}")
+        print(f"{response.text=}")
+        item = response.json()
         print("made request to USDA")
         # --- 1. Extract All Available Nutrients and Map by ID ---
         # - extract portion info
         portion = item.get("foodPortions", [])[0] if item.get("foodPortions", []) else {}
         portion_name = portion.get("modifier", "serving")
         portion_amt = portion.get("amount", 1)
-        portion_gram = portion.get("gramWeight", 1)
+        portion_gram = portion.get("gramWeight", 100)
         # 1 gram = no portion info
         print(f"{portion_gram} grams per {portion_amt} {portion_name}")
         # - extract nutrients
