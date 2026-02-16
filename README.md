@@ -78,8 +78,6 @@ Keep in mind the database file (`db.sqlite3`) is only tracked for the initial re
 - SQL
 - Query Optimization
 - Caching
-<img width="1518" height="897" alt="image" src="https://github.com/user-attachments/assets/a9e89813-76ab-4322-8ec5-4b42ba9c9425" />
-
 
 ![Database Schema](./assets/ss-er-diagram.svg)
 
