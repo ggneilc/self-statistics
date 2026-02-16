@@ -19,9 +19,9 @@ style="width:100%;"></div>
     const parseDate = d3.isoParse;
     data.forEach(d => { d.date = parseDate(d.date); });
 
-    // 2. Set dimensions
+    // 2. Dimensions & SVG Setup
     const margin = {top: 20, right: 30, bottom: 40, left: 50};
-    const width = document.getElementById('lift-chart-container').clientWidth - margin.left - margin.right;
+    const width = container.clientWidth - margin.left - margin.right;
     const height = 250 - margin.top - margin.bottom;
 
     const svg = d3.select(container)
@@ -30,6 +30,19 @@ style="width:100%;"></div>
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    // --- NEW: EMPTY STATE CHECK ---
+    if (data.length < 2) {
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", height / 2)
+            .attr("text-anchor", "middle")
+            .style("font-size", "14px")
+            .style("fill", "var(--pico-muted-color)") // Using Pico.css variables
+            .text("Perform 2 lifts to see trends");
+        return; // Stop execution here
+    }
+    // ------------------------------
 
     // 3. Set Scales
     const x = d3.scaleTime()
@@ -52,7 +65,7 @@ style="width:100%;"></div>
     const line = d3.line()
         .x(d => x(d.date))
         .y(d => y(d.one_rm))
-        .curve(d3.curveMonotoneX); // Smooths the line
+        .curve(d3.curveMonotoneX);
 
     svg.append("path")
         .datum(data)
@@ -68,8 +81,8 @@ style="width:100%;"></div>
         .attr("r", 5)
         .attr("cx", d => x(d.date))
         .attr("cy", d => y(d.one_rm))
-        .attr("fill", "var(--primary)")
-        .append("title") // Simple browser tooltip
+        .attr("fill", "var(--pico-primary)")
+        .append("title")
         .text(d => `${d.one_rm}kg on ${d.date.toLocaleDateString()}`);
 })();
 </script>

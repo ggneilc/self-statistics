@@ -791,6 +791,21 @@ text {
   box-shadow: -3px 3px 0px 0px #0d0f0f;
 }
 
+
+.lift-accolade-value,
+.lift-accolade-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lift-accolade-header {
+  margin-top: 2px;
+  background-color: var(--pico-card-sectioning-background-color);
+}
+.lift-accolade-value {
+  font-size: x-large;
+}
+
 #lift-carosel {
   flex: 1;
   padding: 1rem 2rem 3px;  
@@ -833,10 +848,6 @@ text {
   align-items: center;
 }
 .movement-exp { flex: 1}
-
-
-
-
 
 
 
@@ -1205,7 +1216,7 @@ dialog[open] {
   padding: 0 !important;
 }
 
-dialog[open] > article {
+dialog[open] > #profile-article {
   height: 70vh !important;
   max-height: 70vh !important;
   min-height: 70vh !important;

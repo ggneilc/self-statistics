@@ -93,6 +93,7 @@ class Workout(models.Model):
     def __str__(self):
         return f"{self.workout_type} | {self.day.date}"
 
+    @property
     def total_volume(self):
         """
         Computes total volume lifted in this workout:
@@ -151,7 +152,7 @@ class Movement(models.Model):
         unique_together = ('user', 'name')
 
     def __str__(self):
-        return f"{self.user} | {self.base_movement.name or self.name}"
+        return f"{self.user} | {self.base_movement.name if self.base_movement else self.name}"
 
 
 class Lift(models.Model):

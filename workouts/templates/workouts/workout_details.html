@@ -21,7 +21,7 @@
         <div id="workout-info" class="horizontal-group">
             <div class="workout-name">{{workout.workout_type.name}}</div>
             <div class="workout-date">{{workout.day.date|date:"m/d/Y"}}</div>
-            <div class="workout-total">Total Weight: {{workout.total}} lbs</div>
+            <div class="workout-total">Total Weight: {{workout.total_volume}} lbs</div>
         </div>
         <div id="workout-lifts" class="horizontal-group">
             {% include 'workouts/lifts.html' with lifts=workout.lifts.all active=False id=workout.id total=workout.total %}

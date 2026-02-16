@@ -81,7 +81,7 @@ def weekly_calendar(request):
 def get_lift_history(user, exercise_name):
     return Lift.objects.filter(
         workout__day__user=user,
-        exercise_name__iexact=exercise_name # Use iexact to be case-insensitive
+        movement__name__iexact=exercise_name # Use iexact to be case-insensitive
     ).select_related(
         'workout__day' # Join these tables to avoid N+1 queries in the template
     ).prefetch_related(

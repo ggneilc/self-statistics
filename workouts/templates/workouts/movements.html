@@ -44,7 +44,7 @@ class="list-container"
         </div>
         <div class="movement-level">
             <span style="font-size:small;margin-top:6px;">Lv </span>
-            <span style="margin-left:3px;"> {{mv.level|floatformat:0}} </span>
+            <span style="margin-left:3px;"> {{mv.level|stringformat:"d"}} </span>
         </div>
         {% widthratio mv.level|add:"-0.0" 1 100 as total_progress %}
         {# Check if the level ends in .5 #}

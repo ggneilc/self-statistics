@@ -5,7 +5,7 @@ from django.db.models import Sum, Count
 from django.conf import settings
 from .models import Day, Profile
 from calcounter.models import MealConsumption
-from workouts.models import Workout, WorkoutType, Set, WeeklyVolume, Movement, MovementLibrary
+from workouts.models import Workout, WorkoutType, Set, WeeklyVolume, Movement, MovementLibrary, Lift
 from datetime import datetime, timedelta
 
 
@@ -155,3 +155,18 @@ def provision_starter_movements(sender, instance, created, **kwargs):
         ]
         
         Movement.objects.bulk_create(starter_movements)
+
+
+@receiver(post_save, sender=Lift)
+def level_up_movements(sender, instance, **kwargs):
+    # level up the movements in the workout
+    instance.movement.level += 0.5
+    instance.movement.save()
+    print(f"Leveled up {instance.movement.name} to {instance.movement.level}")
+
+@receiver(post_delete, sender=Lift)
+def level_down_movements(sender, instance, **kwargs):
+    # level down the movements in the workout
+    instance.movement.level -= 0.5
+    instance.movement.save()
+    print(f"Leveled down {instance.movement.name} to {instance.movement.level}")

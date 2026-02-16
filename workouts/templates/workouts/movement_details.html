@@ -1,6 +1,7 @@
 <div class="vertical-group" style="flex:1;">
   <div class="horizontal-group" style="flex:3;">
       <div id="lift-graph"
+        hx-get="{% url 'graphs:lift_orm' movement.name %}"
         hx-trigger="load">
       </div>
       <div id="lift-details" style="flex:1;border:1px solid #0d0f0f;"class="vertical-group">
@@ -8,16 +9,35 @@
           <div id="lift-name">{{movement.name}}</div>
           <div id="lift-level">
             <span style="margin-top:6px;">Lv </span>
-            <span style="font-size:large;margin-left:3px;"> {{movement.level|floatformat:0}} </span>
+            <span style="font-size:large;margin-left:3px;"> {{movement.level|stringformat:"d"}} </span>
           </div>
         </div>
-        <div id="lift-sets" class="vertical-group">
+        <div id="lift-sets" class="vertical-group" style="flex:2; overflow-y:auto; ">
+          {% for lift in movement.instances.all %}
+          <div class="lift-set" style="border:1px solid #0d0f0f; border-radius: 5px; padding: 5px; margin-bottom: 5px;">
+            <div class="lift-set-name" style="display: flex; align-items: center; justify-content: center;">{{lift.workout.day.date|date:"m/d/Y"}}</div>
+            {% for set in lift.sets.all %}
+            <div class="horizontal-group" style="align-items: center; justify-content: center;">
+              <div class="set-reps">{{set.reps}}</div>
+              <div>×</div>
+              <div class="set-weight">{{set.weight}}</div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endfor %}
         </div>
       </div>
   </div>
   <div id="bottom-track" class="horizontal-group" style="flex:1;">
-    <div></div>
-    <div></div>
-    <div></div>
+    <div class="vertical-group">
+      <header class="lift-accolade-header">Current (estimated) 1RM</header>
+      <div class="lift-accolade-value">{{movement.instances.all.0.estimated_1rm|floatformat:0}} lbs</div>
+    </div>
+    <div class="vertical-group">
+      <header class="lift-accolade-header">Top Set</header>
+      <div class="lift-accolade-value">{{movement.instances.all.0.get_best_set.weight}}</div>
+    </div>
+    <div>
+    </div>
   </div>
 </div>

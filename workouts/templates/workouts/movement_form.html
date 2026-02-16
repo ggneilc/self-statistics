@@ -1,7 +1,6 @@
 <form
     hx-post="{% url 'workouts:add_custom_mv' %}"
-    hx-target="#overview-target"
-    hx-on:click="this.closest('dialog').removeAttribute('open')">
+    hx-target="#overview-target">
     {% csrf_token %}
 
     <fieldset role="group">
@@ -11,5 +10,5 @@
         {{ form.secondary_bodypart }}
     </fieldset>
 
-    <button type="submit">Create Movement</button>
+    <button type="submit" hx-on:click="this.closest('dialog').removeAttribute('open')">Create Movement</button>
 </form>
