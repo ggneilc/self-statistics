@@ -164,3 +164,23 @@ display:flex;
 tr {
   border-bottom: 1px solid var(--outline); /* horizontal line */
 }
+
+/* Nutrition pie charts: responsive via SVG viewBox, container defines size */
+.nutrition-pies-row {
+  display: flex;
+  gap: 0;
+  width: 100%;
+}
+
+.nutrition-pie-container {
+  flex: 1;
+  aspect-ratio: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.nutrition-pie-container svg {
+  display: block;
+  position: absolute;
+  inset: 0;
+}

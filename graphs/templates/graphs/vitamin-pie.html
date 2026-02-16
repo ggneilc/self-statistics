@@ -1,4 +1,4 @@
-<div id="vitamin-chart"
+<div id="vitamin-chart" class="chart-container"
     data-raw='{{ day_data|safe }}'
     data-goal='{{ goals|safe }}'></div>
 
@@ -30,13 +30,12 @@
     const container = d3.select("#vitamin-chart");
     container.selectAll("svg").remove();
 
-    // 2. Responsive SVG setup
+    // 2. Responsive SVG: viewBox + fill container (container uses .chart-container for size)
     const svg = container.append("svg")
-        // These attributes make it responsive
         .attr("viewBox", `0 0 ${baseSize} ${baseSize}`)
         .attr("preserveAspectRatio", "xMidYMid meet")
-        .style("width", "100%")  // Fills the container
-        .style("height", "auto") // Maintains aspect ratio
+        .style("width", "100%")
+        .style("height", "100%")
         .append("g")
         .attr("transform", `translate(${baseSize / 2}, ${baseSize / 2})`);
 
