@@ -40,6 +40,7 @@ Humans tend to eat the same few things day in and day out, the food companion ca
 - Attach a recipe to a templated meal; each day you can receive a meal plan based on your recipes and target macros, which then gives you a daily grocery list to ensure you have everything you need to hit the days macro goal! (MCP integration for automatic ordering groceries to your door coming soon) 
 
 ## Workout Log
+<img width="1919" height="1015" alt="image" src="https://github.com/user-attachments/assets/4682f206-bec2-4eda-9c25-1620a7eaae00" />
 
 - See all your workouts you have completed in your life in a 'match history' style.
 - Start tracking a particular lift to see and save your progression
