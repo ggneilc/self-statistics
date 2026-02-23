@@ -7,6 +7,8 @@ app_name = "core"
 urlpatterns = [
     path("", views.index, name="index"),
     path("home/", views.home, name="home"),
+    path("manifest.json", views.manifest_view, name="manifest"),
+    path("sw.js", views.service_worker_view, name="service_worker"),
     path("dashboard/", views.dashboard_page, name="dashboard_page"),
     path("user/streak", views.get_current_streak, name="curr_streak"),
     path("wt/", views.workout_page, name="workout_page"),
@@ -20,6 +22,7 @@ urlpatterns = [
     path("sleep/edit",  views.edit_sleep, name="edit_sleep"),
     path("sleep/set",   views.add_sleep, name="add_sleep"),
 
+    path("water/",      views.get_water, name="get_water"),
     path("water/add",   views.add_water, name="update_water"),
 
     path("bodyweight/", views.get_bodyweight, name="get_bw"),

@@ -24,7 +24,7 @@
     // 1. Internal Coordinate System (Always stays 400x400 internally)
     const baseSize = 450; 
     const chartRadius = baseSize / 2;
-    const ringWidth = 22; // Slightly wider for better visibility
+    const ringWidth = 30; // Wider to accommodate icons in sleep/water tracks
     const ringSpacing = 6;
 
     const container = d3.select("#vitamin-chart");
@@ -47,6 +47,22 @@
     const color = d3.scaleOrdinal()
         .domain(data.map(d => d.name))
         .range(colorScheme);
+    
+    // Helper function to get muted version of a color (with opacity)
+    function getMutedColor(colorVar, i) {
+        // Get computed color value from CSS variable
+        const tempEl = document.createElement('div');
+        tempEl.style.color = colorVar;
+        document.body.appendChild(tempEl);
+        const computedColor = window.getComputedStyle(tempEl).color;
+        document.body.removeChild(tempEl);
+        
+        // Parse RGB and create muted version with reduced opacity
+        const rgb = d3.rgb(computedColor);
+        // Return rgba with reduced opacity (0.15 = 15% opacity for muted background)
+        return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+    }
+    
     const angleScale = d3.scaleLinear().domain([0, 100]).range([0, 2 * Math.PI]);
 
     // 3. Dynamic Radius Calculation
@@ -67,7 +83,7 @@
         .attr("class", "ring-group")
         .style("cursor", "pointer");
 
-    // Add Background Track to the group
+    // Add Background Track to the group - use muted version of each ring's color
     ringGroups.append("path")
         .attr("class", "background-arc")
         .attr("d", (d, i) => d3.arc()
@@ -76,7 +92,10 @@
             .startAngle(0)
             .endAngle(2 * Math.PI)()
         )
-        .attr("fill", "rgba(255, 255, 255, 0.08)");
+        .attr("fill", (d, i) => {
+            const colorVar = colorScheme[i];
+            return getMutedColor(colorVar, i);
+        });
 
     // Add Foreground Progress to the same group
     const foregroundPaths = ringGroups.append("path")
@@ -84,10 +103,17 @@
         .attr("fill", (d, i) => color(i))
         .datum((d, i) => ({ ...d, index: i })); // Pass index for the tween
 
+    // Track animation state - disable interactions until animations complete
+    let isAnimating = true;
+    const animationDuration = 1200;
+    const delayPerRing = 80;
+    const totalAnimationTime = (data.length - 1) * delayPerRing + animationDuration;
+    let completedAnimations = 0;
+
     // Entrance Animation
     foregroundPaths.transition()
-        .duration(1200)
-        .delay((d, i) => i * 80)
+        .duration(animationDuration)
+        .delay((d, i) => i * delayPerRing)
         .attrTween("d", function(d) {
             const i = d.index;
             const interpolate = d3.interpolate(0, d.percentage);
@@ -95,9 +121,21 @@
                 d.endAngle = angleScale(interpolate(t));
                 return arc(d, i);
             };
+        })
+        .on("end", function() {
+            completedAnimations++;
+            // Enable interactions when all animations complete
+            if (completedAnimations >= data.length) {
+                isAnimating = false;
+            }
         });
+    
+    // Fallback: enable interactions after total animation time (in case on("end") doesn't fire)
+    setTimeout(() => {
+        isAnimating = false;
+    }, totalAnimationTime + 100);
 
-    // 6. Labels (Initial state: Hidden)
+    // 6. Labels - show ghost labels if all tracks are empty
     const labels = ringGroups.append("text")
         .attr("class", "ring-label")
         .attr("x", 12)
@@ -107,11 +145,23 @@
         .style("fill", "white")
         .style("font-weight", "bold")
         .style("pointer-events", "none")
-        .style("opacity", 0)
         .text(d => `${d.name}: ${Math.round(d.percentage)}%`);
+    
+    // Check if all tracks are empty (all percentages < 1%)
+    const allEmpty = data.every(d => d.percentage < 1);
+    
+    if (allEmpty) {
+        // Show ghost labels faintly
+        labels.style("opacity", 0.25);
+    } else {
+        // Hide labels initially (will show on hover)
+        labels.style("opacity", 0);
+    }
 
-    // 7. HOVER LOGIC (Attached to the Group)
+    // 7. HOVER LOGIC (Attached to the Group) - disabled during animation
     ringGroups.on("mouseenter", function(event, d) {
+        if (isAnimating) return; // Ignore hover during entrance animation
+        
         const group = d3.select(this);
 
         // Show label with shift
@@ -134,12 +184,9 @@
         ringGroups.selectAll("text").classed("text-active", true);
     })
     .on("mouseleave", function(event, d) {
+        if (isAnimating) return; // Ignore hover during entrance animation
+        
         const group = d3.select(this);
-
-        group.select(".ring-label")
-            .transition().duration(200)
-            .style("opacity", 0)
-            .attr("transform", "translate(0, 0)");
 
         group.select(".foreground-arc")
             .transition().duration(200)
@@ -149,6 +196,13 @@
         // Reset all rings
         ringGroups.transition().duration(200).style("opacity", 1);
         ringGroups.selectAll("text").classed("text-active", false);
+        
+        // Reset label: show ghost label if all empty, otherwise hide
+        const allEmpty = data.every(d => d.percentage < 1);
+        group.select(".ring-label")
+            .transition().duration(200)
+            .style("opacity", allEmpty ? 0.25 : 0)
+            .attr("transform", "translate(0, 0)");
     });
 })();
 </script>
