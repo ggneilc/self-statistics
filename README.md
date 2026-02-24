@@ -64,9 +64,19 @@ Humans tend to eat the same few things day in and day out, the food companion ca
 
 `python manage.py migrate` (test to see if any changes to database has been made with most recent commit) 
 
-You can now run the development server from `self-statistics/` with `python manage.py runserver`. 
+## Running Server
 
-Keep in mind the database file (`db.sqlite3`) is only tracked for the initial repository upload so that dummy data could exist. 
+(can copy & paste into terminal) 
+
+```
+. ./env/bin/activate && 
+. ./load_env.sh dev &&
+python manage.py runserver
+```
+
+to then perform mobile testing, run
+
+`ngrok http 8000`
 
 ---
 
