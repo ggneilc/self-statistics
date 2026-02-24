@@ -128,11 +128,10 @@ class MovementLibrary(models.Model):
     def __str__(self):
         return f"{self.name} ({self.pack_name or 'Global'})"
 
-# Similar to PantryItem : a movement the user is registering to themselves
 class Movement(models.Model):
     '''
-        A user's specific instance of a movement.
-        Links back to the global library OR is a custom user creation.
+        defines something you do in the gym
+        i.e. Bench Press, Deadlift, Squat, etc.
     '''
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     # Link to global (null if they made a custom one)

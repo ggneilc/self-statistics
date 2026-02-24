@@ -1,70 +1,70 @@
+<dialog open>
+<article class="weekly-sets-modal">
 <header>
-    <i class="fa-solid fa-magnifying-glass-chart"></i>
-    Weekly Sets (Week of {{ date|date:"m/d"}})
+    <button rel="prev"
+        hx-get="{% url 'workouts:clear' %}"
+        hx-target="#modal-workout"
+        hx-on:click="event.stopPropagation()"></button>
+    <p>
+        <i class="fa-solid fa-magnifying-glass-chart"></i>
+        Weekly Sets (Week of {{ date|date:"m/d"}})
+    </p>
 </header>
-<div class="volume-container" style="flex:1;">
+<div class="weekly-sets-scroll">
     {% for item in stats %}
-    <div class="column-wrapper">
-        <div class="v-progress-track"
-        data-tooltip="{{ item.count }} / {{ goal }} sets">
-            <div class="v-progress-fill {% if item.is_complete %}complete{% endif %}" 
-                    style="height: {{ item.percent }}%;">
-            </div>
+    <div class="weekly-sets-row" data-tooltip="{{ item.count }} / {{ goal }} sets">
+        <span class="weekly-sets-label">{{ item.name }}</span>
+        <div class="weekly-sets-track">
+            <div class="weekly-sets-fill {% if item.is_complete %}complete{% endif %}" style="width: {{ item.percent }}%;"></div>
         </div>
-        
-        <span class="label-text">{{ item.name }}</span>
     </div>
     {% endfor %}
 </div>
-
-
-{% if delete_workout %}
-<div id="workout-{{workout_id}}" hx-swap-oob="true" style="display: none;">
-</div>
-{% endif %}
+</article>
+</dialog>
 
 <style>
-    .volume-container {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    padding: 1rem 0;
-    gap: 10px;
-}
-
-.column-wrapper {
+.weekly-sets-modal {
+    max-height: 70vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    flex: 1;
-    height: 100%;
 }
-
-.v-progress-track {
-    width: 30px;
-    height: 100%;
+.weekly-sets-modal header {
+    flex-shrink: 0;
+}
+.weekly-sets-scroll {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.5rem 0;
+    min-height: 0;
+}
+.weekly-sets-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+}
+.weekly-sets-label {
+    flex-shrink: 0;
+    min-width: 5rem;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+.weekly-sets-track {
+    flex: 1;
+    min-width: 0;
+    height: 1rem;
     background-color: var(--pico-secondary-background);
     border-radius: var(--pico-border-radius);
-    display: flex;
-    flex-direction: column-reverse; /* Fills from bottom */
-    position: relative;
+    overflow: hidden;
 }
-
-.v-progress-fill {
-    width: 100%;
+.weekly-sets-fill {
+    height: 100%;
     background-color: var(--pico-primary);
     border-radius: var(--pico-border-radius);
-    transition: height 0.5s ease-out;
+    transition: width 0.5s ease-out;
 }
-
-.v-progress-fill.complete {
-    background-color: #43a047; /* Success Green */
-}
-
-.label-text {
-    font-size: 0.7rem;
-    text-orientation: mixed;
-    margin-top: 10px;
-    white-space: nowrap;
+.weekly-sets-fill.complete {
+    background-color: #43a047;
 }
 </style>

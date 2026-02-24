@@ -2,7 +2,7 @@
   {% for lift in lifts %}
   {% include './lift_small.html' with lift=lift %}
   {% endfor %}
-{% else %}        {# lift list in workout history #}
+{% else %}        {# lift list in inspected workout #}
   {% for lift in lifts %}
   {% include './lift.html' with lift=lift %}
   {% endfor %}
