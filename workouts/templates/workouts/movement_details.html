@@ -12,7 +12,7 @@
             <span style="font-size:large;margin-left:3px;"> {{movement.level|stringformat:"d"}} </span>
           </div>
         </div>
-        <div id="lift-sets" class="vertical-group" style="flex:2; overflow-y:auto; ">
+        <div id="lift-sets" class="vertical-group" style="flex:2; overflow-y:auto; max-height: 20vh;">
           {% for lift in movement.instances.all %}
           <div class="lift-set" style="border:1px solid #0d0f0f; border-radius: 5px; padding: 5px; margin-bottom: 5px;">
             <div class="lift-set-name" style="display: flex; align-items: center; justify-content: center;">{{lift.workout.day.date|date:"m/d/Y"}}</div>

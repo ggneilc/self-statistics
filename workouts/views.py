@@ -108,7 +108,7 @@ def get_wtypes(request: HttpRequest) -> HttpResponse:
     }
     return render(request, "workouts/workout_types.html", context) 
 
-def get_weekly_sets(request: HttpRequest, workout_id: int | None = None) -> HttpResponse:
+def get_weekly_sets(request: HttpRequest) -> HttpResponse:
     ''' sets performed per muscle group this week '''
     date = request.GET['selected_date']
     today = datetime.strptime(date, "%Y-%m-%d").date()
@@ -140,9 +140,6 @@ def get_weekly_sets(request: HttpRequest, workout_id: int | None = None) -> Http
         'goal': goal,
         'date': this_sunday
     }
-    if workout_id:
-        ctx['delete_workout'] = True
-        ctx['workout_id'] = workout_id
     return render(request, 'workouts/weekly_sets.html', ctx)
 
 def get_bodyparts(request: HttpRequest,
@@ -306,7 +303,7 @@ def change_color(request: HttpRequest) -> HttpResponse:
 def delete_workout(request: HttpRequest, workout_id: int) -> HttpResponse:
     workout = get_object_or_404(Workout, pk=workout_id, day__user=request.user)
     workout.delete()
-    return get_weekly_sets(request, workout_id)
+    return get_workouts(request)
 
 def delete_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     ''' if no lifts, delete movement, otherwise archive '''

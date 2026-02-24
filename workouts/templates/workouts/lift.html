@@ -1,20 +1,19 @@
-<li class="lift"
-    hx-get="{% url 'workouts:movement' lift.movement.id %}"
-    hx-trigger="click"
-    hx-target="#overview-target"
->
+<li class="lift">
+
     <div class="lift_main">
         <div class="lift_name">{{lift.movement.name}}</div>
     </div>
+    {% for set in lift.sets.all %}
     <div class="lift_set">
         <div class="lift_sets">
-            {{lift.set_count}}
-        <small>sets</small></div>
-        |
-        <div class="lift_reps">
-            {{lift.total_reps}}
+            {{set.reps}}
         <small>reps</small></div>
+        x
+        <div class="lift_reps">
+            {{set.weight}}
+        <small>lbs</small></div>
     </div>
+    {% endfor %}
     <div class="lift_set">
         {{lift.total_volume}} lbs
     </div>

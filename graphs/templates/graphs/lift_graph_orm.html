@@ -19,16 +19,21 @@ style="width:100%;"></div>
     const parseDate = d3.isoParse;
     data.forEach(d => { d.date = parseDate(d.date); });
 
-    // 2. Dimensions & SVG Setup
+    // 2. Fixed internal dimensions (viewBox) — SVG scales to container
     const margin = {top: 20, right: 30, bottom: 40, left: 50};
-    const width = container.clientWidth - margin.left - margin.right;
-    const height = 250 - margin.top - margin.bottom;
+    const baseWidth = 800;
+    const baseHeight = 250;
+    const width = baseWidth - margin.left - margin.right;
+    const height = baseHeight - margin.top - margin.bottom;
 
-    const svg = d3.select(container)
+    const svgEl = d3.select(container)
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+        .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .style("width", "100%")
+        .style("height", "100%");
+
+    const svg = svgEl.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // --- NEW: EMPTY STATE CHECK ---

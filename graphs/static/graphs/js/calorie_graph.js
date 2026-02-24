@@ -7,13 +7,18 @@ function draw_calorie_graph() {
     if (!container) return;
     const rawData = JSON.parse(container.dataset.days);
 
-    // Setup dimensions - increased bottom margin for legend
+    // Fixed internal dimensions (viewBox) — SVG scales to container
     const margin = {top: 30, right: 60, bottom: 65, left: 60},
           width = 600 - margin.left - margin.right,
           height = 200 - margin.top - margin.bottom;
+    const totalWidth = width + margin.left + margin.right;
+    const totalHeight = height + margin.top + margin.bottom;
 
     const svg = d3.select(selector).append("svg")
-        .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+        .attr("viewBox", `0 0 ${totalWidth} ${totalHeight}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .style("width", "100%")
+        .style("height", "100%")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 

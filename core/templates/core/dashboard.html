@@ -1,8 +1,25 @@
+<div class="horizontal-group dashboard-columns">
+  <div id="day-area">
+  	<article id="calendar-container">
+	  <header><nav>
+	    <ul><li style="padding:0;"><button id="prev" class="outline" style="font-size:small;">« Prev Week</button></li></ul>
+	    <ul><li style="padding:0;"><strong id="current-range">Range</strong></li></ul>
+	    <ul><li style="padding:0;"><button id="next" class="outline" style="font-size:small;">Next Week »</button></li></ul>
+	  </nav></header>
+  	  <div hx-get="{% url 'graphs:calendar' %}" hx-trigger="load"></div>
+  	</article>
 
-
-
-<div class="horizontal-group">
-
+  	<article id="day-container" class="vertical-group">
+  	</article>
+	<script>
+	(function() {
+		const date_container = document.getElementById('hidden-date');
+		const date = date_container.value;
+		console.log(date);
+        htmx.ajax('GET', `/day/${date}`, { target: '#day-container' });
+	})();
+	</script>
+  </div>
   <article id="graph-area">
 	<header style="position:relative;">
 		<i class="fa-solid fa-chart-line"></i>
@@ -25,31 +42,5 @@
 		hx-swap="innerHTML swap:0.5s">
 
 	</div>
-	
-
   </article>
-
-
-  <div id="day-area">
-
-  	<article id="calendar-container">
-	  <header><nav>
-	    <ul><li style="padding:0;"><button id="prev" class="outline" style="font-size:small;">« Prev Week</button></li></ul>
-	    <ul><li style="padding:0;"><strong id="current-range">Range</strong></li></ul>
-	    <ul><li style="padding:0;"><button id="next" class="outline" style="font-size:small;">Next Week »</button></li></ul>
-	  </nav></header>
-  	  <div hx-get="{% url 'graphs:calendar' %}" hx-trigger="load"></div>
-  	</article>
-
-  	<article id="day-container">
-  	</article>
-	<script>
-	(function() {
-		const date_container = document.getElementById('hidden-date');
-		const date = date_container.value;
-		console.log(date);
-        htmx.ajax('GET', `/day/${date}`, { target: '#day-container' });
-	})();
-	</script>
-    </div>
-  </div>
+</div>

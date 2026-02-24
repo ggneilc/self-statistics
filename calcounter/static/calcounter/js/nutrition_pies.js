@@ -1,14 +1,19 @@
 function drawNutrientPie(selector, data, title, colorScheme) {
-    const width = 110, height = 110, margin = 10;
-    const radius = Math.min(width, height) / 2 - margin;
+    // Fixed internal coordinate system — SVG scales to container via viewBox
+    const size = 110;
+    const margin = 10;
+    const radius = size / 2 - margin;
     const container = d3.select(selector);
     container.selectAll("svg").remove();
 
-    const svg = container.append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .append("g")
-        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+    const svgEl = container.append("svg")
+        .attr("viewBox", `0 0 ${size} ${size}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .style("width", "100%")
+        .style("height", "100%");
+
+    const svg = svgEl.append("g")
+        .attr("transform", `translate(${size / 2}, ${size / 2})`);
 
     const color = d3.scaleOrdinal().domain(data.map(d => d.name)).range(colorScheme);
     

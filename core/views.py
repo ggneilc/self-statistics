@@ -2,8 +2,11 @@ from datetime import date, timedelta
 from random import randint
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth import login
+from django.http import JsonResponse, FileResponse
+from django.conf import settings
+import os
 from django.contrib.auth.forms import UserCreationForm
 from .models import Day
 from workouts.forms import WTypeForm
@@ -20,6 +23,68 @@ def home(request):
 
 def index(request):
     return redirect('home/')
+
+
+def manifest_view(request):
+    """Web App Manifest for PWA / Add to Home Screen (standalone, no browser UI)."""
+    base = request.build_absolute_uri("/").rstrip("/")
+    # Chrome requires at least one icon that is 192x192 or larger for installability
+    icons = [
+        {
+            "src": request.build_absolute_uri("/static/core/favicon_32x32.png"),
+            "sizes": "32x32",
+            "type": "image/png",
+            "purpose": "any",
+        },
+    ]
+    
+    # Add larger icons if they exist (required for Chrome installability)
+    import os
+    from django.conf import settings
+    static_base = os.path.join(settings.BASE_DIR, 'core', 'static', 'core')
+    
+    if os.path.exists(os.path.join(static_base, 'icon_192x192.png')):
+        icons.append({
+            "src": request.build_absolute_uri("/static/core/icon_192x192.png"),
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable",
+        })
+    
+    if os.path.exists(os.path.join(static_base, 'icon_512x512.png')):
+        icons.append({
+            "src": request.build_absolute_uri("/static/core/icon_512x512.png"),
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable",
+        })
+    
+    manifest = {
+        "name": "Self Stats",
+        "short_name": "Self Stats",
+        "description": "Personal analytics, nutrition, and workouts",
+        "start_url": base + reverse("core:home"),
+        "display": "standalone",
+        "orientation": "portrait",
+        "scope": base + "/",
+        "theme_color": "#1a1a1a",
+        "background_color": "#121212",
+        "icons": icons,
+    }
+    response = JsonResponse(manifest)
+    response["Content-Type"] = "application/manifest+json"
+    return response
+
+
+def service_worker_view(request):
+    """Serve service worker from root so it can control the entire site."""
+    sw_path = os.path.join(settings.BASE_DIR, 'core', 'static', 'core', 'js', 'sw.js')
+    if os.path.exists(sw_path):
+        response = FileResponse(open(sw_path, 'rb'), content_type='application/javascript')
+        response['Service-Worker-Allowed'] = '/'  # Allow controlling entire site
+        return response
+    return HttpResponse('Service worker not found', status=404)
+
 
 # === User Profile / Settings Screen ===
 
@@ -185,6 +250,11 @@ def get_current_streak(request):
         curr -= timedelta(days=1)
 
     return render(request, "core/streak_highlight.html", {"streak": streak})
+
+
+def get_water(request):
+    """Return water input form (for modal)."""
+    return render(request, 'core/water_input.html')
 
 
 # TODO: update to return an animation of water filling the input,

@@ -3,8 +3,15 @@
 <html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token }}">
+    <!-- PWA: standalone display (no browser URL bar) when added to home screen -->
+    <link rel="manifest" href="{% url 'core:manifest' %}">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Self Stats">
+    <link rel="apple-touch-icon" href="{% static 'core/favicon_32x32.png' %}">
 
     <link rel="icon" href="{% static 'core/favicon_32x32.png'%}" type="image/x-icon">
     <!-- pico css -->
@@ -82,5 +89,33 @@ document.body.addEventListener('workoutTypeUpdated', () => {
 document.body.addEventListener('workoutTypeDeleted', () => {
     showToast('Workout type deleted!', 'success');
 });
+
+// Register Service Worker for PWA (required by Chrome on Android)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        // Register from root URL so it can control the entire site
+        navigator.serviceWorker.register('{% url "core:service_worker" %}', { scope: '/' })
+            .then((registration) => {
+                console.log('Service Worker registered successfully:', registration.scope);
+                // Check for updates
+                registration.addEventListener('updatefound', () => {
+                    console.log('Service Worker update found');
+                });
+            })
+            .catch((error) => {
+                console.error('Service Worker registration failed:', error);
+                // Log detailed error for debugging
+                if (error.message) {
+                    console.error('Error message:', error.message);
+                }
+            });
+    });
+    
+    // Listen for service worker messages (for debugging)
+    navigator.serviceWorker.addEventListener('message', (event) => {
+        console.log('Service Worker message:', event.data);
+    });
+}
 </script>
 </body>
+

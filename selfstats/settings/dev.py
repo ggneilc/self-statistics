@@ -10,9 +10,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG')
 ALLOWED_HOSTS = ['*',
                  'archlinux.tail71809f.ts.net'
+                 '.ngrok-free.dev'
                  ]
 CSRF_TRUSTED_ORIGINS = [
     'https://archlinux.tail71809f.ts.net',
+    'https://nonlustrous-overbrightly-ilda.ngrok-free.dev'
 ]
 print(f"{ALLOWED_HOSTS=}")
 DATABASES = {

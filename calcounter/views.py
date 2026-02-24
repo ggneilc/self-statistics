@@ -132,7 +132,6 @@ def food_fingerprint(user, pantry_item):
     ]
     return macros, minerals, vitamins
 
-
 def list_foods(request, action, just_added=False):
     ''' Returns `food_list.html` with the `selected_date` '''
     if action == 'all':
@@ -167,7 +166,6 @@ def list_foods(request, action, just_added=False):
         "added": just_added
     }
     return render(request, "calcounter/food_list.html", context)
-
 
 def list_recipes(request):
     ''' return list of recipes '''
@@ -222,13 +220,11 @@ def add_meal(request):
         formset = MealConsumptionFormSet()
     return render(request, 'calcounter/meal_entry.html', {'form': form, 'formset': formset})
 
-
 def add_meal_row(request):
     ''' append a food to the current meal '''
     formset = MealConsumptionFormSet()
     # Return the 'empty_form' which uses __prefix__ as the ID placeholder
     return render(request, 'calcounter/meal_row.html', {'form': formset.empty_form})
-
 
 def add_manual_meal_row(request):
     ''' append a food to the current meal '''
@@ -241,7 +237,6 @@ def add_manual_meal_row(request):
 def new_search_food(request):
     ''' return `search_ingred` and oob swap `cancel` '''
     return render(request, 'calcounter/ingred_search_area.html')
-
 
 def new_complex_food(request):
     if request.POST:
@@ -304,12 +299,10 @@ def new_complex_food(request):
         formset = IngredientFormSet()
     return render(request, 'calcounter/complex_food_entry.html', {'form': form, 'formset': formset})
 
-
 def add_ingredient_row(request):
     formset = IngredientFormSet()
     # Return the 'empty_form' which uses __prefix__ as the ID placeholder
     return render(request, 'calcounter/ingredient_row.html', {'form': formset.empty_form})
-
 
 def get_units_for_ingredient(request):
     food_id = request.GET.get('food_id')
@@ -318,7 +311,6 @@ def get_units_for_ingredient(request):
     units = FoodUnit.objects.filter(food_id=food_id)
     print(f"{units=}")
     return render(request, 'calcounter/unit_options.html', {'units': units})
-
 
 def add_pantry_food(request, food_id):
     '''Add a new food to pantry (templates)'''
@@ -424,7 +416,6 @@ def query_ingredient(request):
             "fdcId": food["fdcId"]
         })
     return render(request, 'calcounter/ingred_search.html', {"foods": results})
-
 
 def get_specific_usda_item(request, fdcId):
     single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}"
@@ -557,7 +548,6 @@ def update_pantry_item(request, item_id, action):
     # We re-render the individual LI so the detail state and status update correctly
     return render(request, 'calcounter/food.html', {'pantry': pantry_item, 'open': True})
 
-
 def edit_unit(request, unit_id):
     unit = get_object_or_404(FoodUnit, id=unit_id)
     
@@ -575,7 +565,6 @@ def get_unit(request, unit_id):
     # This handles the "Cancel" button
     unit = get_object_or_404(FoodUnit, id=unit_id)
     return render(request, 'calcounter/unit_display_row.html', {'unit': unit})
-
 
 def update_recipe(request, recipe_id):
     if request.POST:

@@ -26,17 +26,10 @@
 
     container.innerHTML = "";
 
-    // 1. Setup Internal Dimensions (The coordinate system)
+    // 1. Fixed internal dimensions (viewBox) — SVG scales to container
     const margin = { top: 20, right: 30, bottom: 40, left: 50 };
-    const baseWidth = 1000; // Large internal width for smoothness
-    
-    // Maintain your height logic for the internal scale
-    function getInternalHeight() {
-        const h = window.innerHeight;
-        if (h < 625) return 250;  
-        return 350;
-    }
-    const baseHeight = getInternalHeight();
+    const baseWidth = 1000;
+    const baseHeight = 350;
 
     // 2. Create Scales based on baseWidth/baseHeight
     const x = d3.scaleTime()
@@ -48,13 +41,13 @@
         .nice()
         .range([baseHeight - margin.bottom, margin.top]);
 
-    // 3. Create Responsive SVG using viewBox
+    // 3. Responsive SVG: viewBox defines coordinate system; scales to container
     const svg = d3.select(container)
         .append("svg")
         .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
         .attr("preserveAspectRatio", "xMidYMid meet")
         .style("width", "100%")
-        .style("height", "auto");
+        .style("height", "100%");
 
     const g = svg.append("g");
 

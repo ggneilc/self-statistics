@@ -3,17 +3,13 @@
 
 <script>
   (function() {
-  function getCellSize() {
-    const width = window.innerWidth;
-    if (width < 625) return 45;
-    if (width <= 1200) return 60; 
-    if (width <= 1400) return 70; 
-    return 100;                   
-  }
-
-  let cellSize = getCellSize();
+  // Fixed internal coordinate system — SVG scales to container via viewBox
+  const cellSize = 64;
   const gap = 4;
-  const headerHeight = 10; // Space for "Mon/Sun" labels
+  const headerHeight = 18;
+  const innerWidth = (cellSize + gap) * 7;
+  const innerHeight = (cellSize + gap) * 2 + headerHeight;
+
   const container = d3.select("#heatmap-window");
   let viewStart = d3.timeWeek.floor(new Date());
 
@@ -28,11 +24,14 @@
     const endDate = d3.timeDay.offset(startDate, 14);
     const days = d3.timeDays(startDate, endDate);
     
-    container.selectAll("svg").remove(); // Clean render to handle header logic easily
+    container.selectAll("svg").remove();
 
     const svg = container.append("svg")
-      .attr("width", (cellSize + gap) * 7)
-      .attr("height", (cellSize + gap) * 2 + headerHeight)
+      .attr("viewBox", `0 0 ${innerWidth} ${innerHeight}`)
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .style("width", "100%")
+      .style("height", "100%")
+      .style("min-height", "140px")
       .attr("overflow", "visible");
 
     // 1. ADD STATIC HEADERS (Mon / Sun)
@@ -44,13 +43,13 @@
 
     headerGroup.append("text")
         .attr("x", cellSize / 2)
-        .attr("y", headerHeight - 10)
+        .attr("y", headerHeight - 4)
         .attr("text-anchor", "middle")
         .text("SUN");
 
     headerGroup.append("text")
         .attr("x", (cellSize + gap) * 6 + cellSize / 2)
-        .attr("y", headerHeight - 10)
+        .attr("y", headerHeight - 4)
         .attr("text-anchor", "middle")
         .text("SAT");
 
@@ -92,7 +91,7 @@
       .attr("x", cellSize / 2)
       .attr("y", cellSize / 2 + 5)
       .attr("text-anchor", "middle")
-      .style("font-size", cellSize < 50 ? "12px" : "18px")
+      .style("font-size", "14px")
       .style("font-weight", "bold")
       .style("fill", "#fff")
       .text(d => {
@@ -109,7 +108,7 @@
       .attr("x", cellSize / 2)
       .attr("y", cellSize - 8)
       .attr("text-anchor", "middle")
-      .style("font-size", cellSize < 60 ? "0px" : "10px")
+      .style("font-size", "10px")
       .style("fill", "rgba(255,255,255,0.8)")
       .text(d => {
         const dateStr = d3.timeFormat("%Y-%m-%d")(d);

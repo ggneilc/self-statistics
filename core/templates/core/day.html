@@ -1,21 +1,22 @@
-<header style="display: flex; justify-content: space-around; align-items: center; padding: 0.5rem 1rem;position:relative;"> 
-
-<div style="position:absolute; left:1rem;"
-  hx-get="{% url 'core:curr_streak' %}"
-  hx-trigger="load"></div>
-<div style="display: flex; align-items: center; justify-content: center;">
-<i class="fa-solid fa-calendar-day"></i>{{day.date}} 
-</div>
-
-<span style="position:absolute; right: 1rem;">
-  <button style="padding: 0 0.3rem;">
-    <i class="fa-solid fa-rotate"></i>
-  </button>
-</span>
-    
+<header class="day-header">
+  <div class="day-header-left">
+    <div class="day-header-streak" hx-get="{% url 'core:curr_streak' %}" hx-trigger="load"></div>
+    <div id="day-weight" class="day-header-bw"
+      hx-get="{% url 'core:get_bw' %}"
+      hx-trigger="load"
+      hx-swap="innerHTML swap:0.5s"></div>
+  </div>
+  <div class="day-header-date">
+    <i class="fa-solid fa-calendar-day"></i> {{ day.date }}
+  </div>
+  <div class="day-header-actions">
+    <button type="button" style="padding: 0 0.3rem; margin-bottom: 0">
+      <i class="fa-solid fa-rotate"></i>
+    </button>
+  </div>
 </header>
 
-<div class="grid nutrition-breakdown" style="flex:1;">
+<div class="horizontal-group nutrition-breakdown">
   <div id="macro-breakdown"
   hx-get="{% url 'graphs:macros' %}"
   hx-trigger="load, dayUpdated from:body"></div>
@@ -27,30 +28,72 @@
   hx-trigger="load, dayUpdated from:body"></div>
 </div>
 
-<div class="grid">
-  <div class="vertical-group" style="justify-content: space-evenly;">
-    <div id="sleep-input" style="flex:1"
-      hx-get="{% url 'core:get_sleep' %}"
-      hx-trigger="load"
-      hx-swap="innerHTML swap:0.5s">
-    </div>
-    <div id="day-weight" style="flex:1"
-	      hx-get="{% url 'core:get_bw' %}"
-	      hx-trigger="load"
-	      hx-swap="innerHTML swap:0.5s">
-	  </div>
-    <div id="water-input" style="flex:1">
-      {% include 'core/water_input.html' %}
-    </div>
-  </div>
-  <div id="meal-plan" style="position:relative">
-    <span class="meal-macro-label">Meal Plan</span>
-    <ul class="overflow-auto" style="padding: 0.2rem; margin: 0;">
-      <li class="meal">Ramen 2 Egg</li>
-      <li class="meal">Pad Thai</li>
-      <li class="meal">Burrito</li>
-      <li class="meal">Steak & Potatoes</li>
-      <li class="meal">Reese's Cup</li>
-    </ul>
+<!-- Hidden targets for sleep/water form responses (modal submits update these, then macro refreshes) -->
+<div id="sleep-input" style="display: none;"
+  hx-get="{% url 'core:get_sleep' %}"
+  hx-trigger="load"
+  hx-swap="innerHTML"></div>
+<div id="water-input" style="display: none;"></div>
+
+<!-- Modal for sleep/water input when clicking macro pie tracks -->
+<div id="macro-track-modal" class="macro-track-modal" aria-hidden="true"
+  data-sleep-url="{% url 'core:edit_sleep' %}"
+  data-water-url="{% url 'core:get_water' %}">
+  <div class="macro-track-modal-overlay" data-close-modal></div>
+  <div class="macro-track-modal-content" role="dialog">
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <strong id="macro-track-modal-title">Log</strong>
+      <button type="button" class="close-macro-track-modal" aria-label="Close">&times;</button>
+    </header>
+    <div class="macro-track-modal-body"></div>
   </div>
 </div>
+
+<script>
+(function() {
+  const modal = document.getElementById('macro-track-modal');
+  const body = modal && modal.querySelector('.macro-track-modal-body');
+  const titleEl = document.getElementById('macro-track-modal-title');
+  if (!modal || !body) return;
+
+  window.openMacroTrackModal = function(type) {
+    const date = (document.getElementById('hidden-date') || {}).value || new Date().toLocaleDateString('en-CA');
+    const url = type === 'sleep' ? modal.dataset.sleepUrl : modal.dataset.waterUrl;
+    titleEl.textContent = type === 'sleep' ? 'Log sleep' : 'Log water';
+    body.innerHTML = '<span>Loading…</span>';
+    modal.setAttribute('aria-hidden', 'false');
+    modal.classList.add('is-open');
+    htmx.ajax('GET', url + '?selected_date=' + encodeURIComponent(date), {
+      target: body,
+      swap: 'innerHTML'
+    });
+  };
+
+  function closeModal() {
+    modal.setAttribute('aria-hidden', 'true');
+    modal.classList.remove('is-open');
+    body.innerHTML = '';
+  }
+
+  modal.querySelector('.close-macro-track-modal').addEventListener('click', closeModal);
+  modal.querySelector('[data-close-modal]').addEventListener('click', closeModal);
+
+  document.body.addEventListener('htmx:afterSwap', function(ev) {
+    if (ev.detail.target.id === 'sleep-input' || ev.detail.target.id === 'water-input') {
+      closeModal();
+      document.body.dispatchEvent(new CustomEvent('dayUpdated'));
+    }
+  });
+})();
+</script>
+
+<article class="day-bottom-section" style="margin-bottom: 0;">
+  <span class="day-bottom-section-header">Meal Plan</span>
+  <span id="today-grocery-header" class="day-bottom-section-header">Grocery List</span>
+  <span id="today-tasks-header" class="day-bottom-section-header">To Do</span>
+  <div id="track-target" class="horizontal-group">
+    <div class="day-meal-plan-item"> item 1</div>
+    <div class="day-meal-plan-item"> item 2</div>
+    <div class="day-meal-plan-item"> item 3</div>
+  </div>
+</article>

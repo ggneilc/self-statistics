@@ -1,12 +1,8 @@
-<div class="horizontal-group">
+<div class="horizontal-group dashboard-columns">
   <article id="workout-history">
     {% include 'workouts/workout_history.html' %}
   </article>
   <div class="vertical-group" style="flex: 2;">
-    <article id="inspected-workout"
-        hx-get="{% url 'workouts:weekly_sets' %}"
-        hx-trigger="load">
-    </article>
     <article id="lifts-overview">
       <header style="position:relative;">
         <i class="fa-solid fa-weight-hanging"></i>

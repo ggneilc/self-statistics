@@ -1,32 +1,44 @@
-<header style="position:relative;">
-    <i class="fa-solid fa-magnifying-glass-chart"></i>
-    Workout Details
+<dialog open>
+<article>
+    <header style="position:relative;">
+        <button rel="prev"
+            hx-get="{% url 'workouts:clear' %}"
+            hx-target="#modal-workout"
+            hx-on:click="event.stopPropagation()"></button>
+        <p>
+        <i class="fa-solid fa-magnifying-glass-chart"></i>
+        Workout Details
+        <span style="position:absolute;right:3rem;">
+          <button data-tooltip="Delete Workout" data-placement="bottom" style="padding: 0 0.3rem;"
+            hx-delete="{% url 'workouts:delete_workout' workout.id %}"
+            hx-target="#workout_list"
+            hx-swap="innerHTML"
+            hx-on:click="this.closest('dialog').removeAttribute('open')">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </span>
+        </p>
+    </header>
+    <div class="horizontal-group " >
+        <div class="vertical-group" style="flex:3;">
+            <div id="workout-info" class="horizontal-group">
+                <div class="workout-name">{{workout.workout_type.name}}</div>
+                <div class="workout-date">{{workout.day.date|date:"m/d/Y"}}</div>
+                <div class="workout-total">Total Weight: {{workout.total_volume}} lbs</div>
+            </div>
+            <div id="workout-lifts" class="horizontal-group">
+                {% include 'workouts/lifts.html' with lifts=workout.lifts.all active=False id=workout.id total=workout.total %}
+            </div>
+        </div>
+    </div>
+</article>
+</dialog>
 
-    <span style="position:absolute;right:1rem;">
-      <button data-tooltip="Delete Workout" data-placement="bottom" style="padding: 0 0.3rem;"
-        hx-delete="{% url 'workouts:delete_workout' workout.id %}"
-        hx-target="#inspected-workout"
-        hx-swap="innerHTML">
-         <i class="fa-solid fa-trash"></i>
-      </button>
-      <button data-tooltip="Weekly Sets" data-placement="bottom" style="padding: 0 0.3rem;"
-        hx-get="{% url 'workouts:weekly_sets' %}"
-        hx-target="#inspected-workout">
-        <i class="fa-solid fa-bars-progress"></i>
-      </button>
-    </span>
-</header>
-<div class="horizontal-group">
-    <div class="vertical-group" style="flex:3;">
-        <div id="workout-info" class="horizontal-group">
-            <div class="workout-name">{{workout.workout_type.name}}</div>
-            <div class="workout-date">{{workout.day.date|date:"m/d/Y"}}</div>
-            <div class="workout-total">Total Weight: {{workout.total_volume}} lbs</div>
-        </div>
-        <div id="workout-lifts" class="horizontal-group">
-            {% include 'workouts/lifts.html' with lifts=workout.lifts.all active=False id=workout.id total=workout.total %}
-        </div>
-    </div>
-    <div id="weekly-sets">
-    </div>
-</div>
+<style>
+#workout-lifts {
+  flex-wrap: wrap;
+}
+#workout-lifts > .lift{
+  flex: 0 0 calc(50% - 0.5rem);
+}
+</style>
