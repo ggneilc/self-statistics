@@ -1,0 +1,13 @@
+<div class="horizontal-group overflow-auto lift-selection-movements"
+style="padding: 0.5rem 0.2rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: center;">
+	{% for mv in movements %}
+	<div class="smaller-movement"
+		hx-get="{% url 'workouts:add_lift' mv.id %}"
+		hx-target="#lift-target"
+		hx-trigger="click"
+		hx-swap="outerHTML"
+		hx-on::after-request="if(event.detail.successful){ var c=document.getElementById('lift-selection-container'); if(c){ c.innerHTML=''; } }">
+		{{ mv.name }}
+	</div>
+	{% endfor %}
+</div>

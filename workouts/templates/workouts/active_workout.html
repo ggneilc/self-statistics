@@ -1,40 +1,53 @@
 <div id="active-workout" class="vertical-group">
 
-	<div id="active-info" class="horizontal-group" style="flex:1;">
-		<div id="workout_time"> 00:31 </div>
-		<div id="workout-name">{{workout.workout_type.name}}</div>
-		<div id="end-workout"> <button class="end"
-			hx-get="{% url 'workouts:end_workout' workout.id %}"
-			hx-target="#workout-history"
-			hx-swap="innerHTML"> End </button></div>
+	<div id="active-info" class="vertical-group" style="flex:1;">
+		<div id="workout-name">{{workout.workout_type.name}} Workout</div>
+		<div id="workout-time"> 00:31 </div>
 	</div>
 	<div id="meters" class="vertical-group" style="flex:1;">
 		<div id="energy-meter" class="meter"> </div>
 		<div id="water-meter" class="meter"> </div>
 	</div>
-	<div id="lift-target" class="vertical-group" style="flex:10;">
-		{% include 'workouts/active_lift_selection.html' with workout=workout bodyparts=bodyparts %}
+	<div id="lift-target" class="horizontal-group" style="flex:10;">
+		{% include 'workouts/active_lift_list.html' with workout=workout %}
 	</div>
+
+	<div id="lift-selection-container" class="lift-selection-container"></div>
+
+	<div id="end-workout"> <button class="end"
+			hx-get="{% url 'workouts:end_workout' workout.id %}"
+			hx-target="#workout-history"
+			hx-swap="innerHTML"> End Workout </button></div>
 </div>
 
 
 <style>
 	#workout-name { font-size: x-large; font-weight: bold; }
-	#active-info {
-		border: 1px solid {{workout.workout_type.color}};
-		background-color: var(--pico-background-color);
-		padding: 0 0.5rem;
-		border-radius: var(--pico-border-radius);
-	}
+	#workout-time { font-size: small; } 
+	#active-info { gap: 0; }
 	#meters { margin-bottom: 0.5rem; }
-	#energy-meter { border: 1px dashed red; }
-	#water-meter { border: 1px dashed blue; }
+	#meters > div { border-radius: 2rem; }
+	#energy-meter { border: 1px solid #ff4848; }
+	#water-meter { border: 1px solid #3c35ff; }
+	#lift-target {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.5rem;
+		align-content: start;
+	}
+	#lift-target > .lift-small {
+		min-height: 15vh;
+		min-width: 0;
+	}
 	.meter {
 		border-radius: var(--pico-border-radius);
 		background-color: var(--pico-background-color);
 		height: 100%;
 	}
+	#end-workout { display: flex; }
 	.end {
+		font-weight: bold;
+		flex: 1;
 		padding: 0 1rem;
 		background-color: var(--pico-del-color);
 		border: 1px solid var(--pico-del-color);

@@ -5,7 +5,7 @@ from django.db.models import Sum, Count
 from django.conf import settings
 from .models import Day, Profile
 from calcounter.models import MealConsumption
-from workouts.models import Workout, WorkoutType, Set, WeeklyVolume, Movement, MovementLibrary, Lift
+from workouts.models import Workout, WorkoutType, Set, WeeklyVolume, Movement, MovementLibrary, Lift, BODYPARTS, WorkoutTypeBodypart
 from datetime import datetime, timedelta
 
 
@@ -95,6 +95,54 @@ DEFAULT_TYPES = [
 ]
 
 
+BODYPARTS = [
+    # Pull
+    ('BI', 'Bicep'),
+    ('TR', 'Trap'),
+    ('LT', 'Lat'),
+    ('RS', 'R. Delts'),
+    ('FO', 'Forearms'),
+    # Push
+    ('CH', 'Chest'),
+    ('TI', 'Tricep'),
+    ('LS', 'L. Delts'),
+    ('FS', 'F. Delts'),
+    ('AB', 'Abs'),
+    # Legs
+    ('QD', 'Quadricep'),
+    ('HM', 'Hamstring'),
+    ('CV', 'Calf'),
+    ('HP', 'Ab|Ads'),
+    ('GL', 'Glutes'),
+    # misc
+]
+
+PUSH_BODYPARTS = [
+    ('CH', 'Chest'),
+    ('TI', 'Tricep'),
+    ('LS', 'L. Delts'),
+    ('FS', 'F. Delts'),
+    ('AB', 'Abs'),
+]
+PULL_BODYPARTS = [
+    ('BI', 'Bicep'),
+    ('TR', 'Trap'),
+    ('LT', 'Lat'),
+    ('RS', 'R. Delts'),
+    ('FO', 'Forearms'),
+    ('AB', 'Abs'),
+]
+LEGS_BODYPARTS = [
+    ('QD', 'Quadricep'),
+    ('HM', 'Hamstring'),
+    ('CV', 'Calf'),
+    ('HP', 'Ab|Ads'),
+    ('GL', 'Glutes'),
+    ('AB', 'Abs'),
+]
+
+
+
 @receiver(post_save, sender=User)
 def create_default_workout_types(sender, instance, created, **kwargs):
     if created:
@@ -102,6 +150,21 @@ def create_default_workout_types(sender, instance, created, **kwargs):
             for name, color in DEFAULT_TYPES:
                 WorkoutType.objects.create(
                     name=name, user=instance, color=color)
+
+        # assign bodyparts to workout types
+        for workout_type in WorkoutType.objects.filter(user=instance):
+            if workout_type.name == "Push":
+                for code, _ in PUSH_BODYPARTS:
+                    WorkoutTypeBodypart.objects.create(
+                        workout_type=workout_type, bodypart=code)
+            elif workout_type.name == "Pull":
+                for code, _ in PULL_BODYPARTS:
+                    WorkoutTypeBodypart.objects.create(
+                        workout_type=workout_type, bodypart=code)
+            elif workout_type.name == "Legs":
+                for code, _ in LEGS_BODYPARTS:
+                    WorkoutTypeBodypart.objects.create(
+                        workout_type=workout_type, bodypart=code)
 
 
 @receiver(post_save, sender=User)

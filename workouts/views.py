@@ -87,6 +87,8 @@ def get_movements(request: HttpRequest) -> HttpResponse:
         "movements": mvments,
         "mode": mode
     }
+    if request.GET.get('partial') == 'list' and url_name == 'movements_active':
+        return render(request, 'workouts/active_movements_list.html', context)
     return render(request, 'workouts/movements.html', context)
 
 def get_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
@@ -220,8 +222,20 @@ def add_movement(request: HttpRequest,
         }
         return render(request, 'workouts/movement_form.html', context)
 
-def add_lift(request: HttpRequest, movement_id: int) -> HttpResponse:
+def add_lift(request: HttpRequest, movement_id: int | None = None) -> HttpResponse:
     ''' instantiate a movement for current workout '''
+    if request.method == "GET" and movement_id is None:
+        # return the lift selection panel (slide-up with bodypart + equipment filters)
+        workout = Workout.objects.filter(day__user=request.user, is_active=True).first()
+        if not workout:
+            return HttpResponse(status=404)
+        bodyparts = workout.bodypart_list()
+        categories = LIFT_TYPES
+        return render(request, 'workouts/active_lift_selection.html', {
+            "workout": workout,
+            "bodyparts": bodyparts,
+            "categories": categories,
+        })
     movement = get_object_or_404(Movement, pk=movement_id, user=request.user)
     workout = Workout.objects.get(day__user=request.user, is_active=True)
     lift = Lift.objects.create(
@@ -350,11 +364,9 @@ def end_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
     if lift.sets.count() == 0:
         lift.delete()
     workout = Workout.objects.get(day__user=request.user, is_active=True)
-    bodyparts = workout.bodypart_list()
-    return render(request, 'workouts/active_lift_selection.html', {"workout": workout, "bodyparts": bodyparts})
+    return render(request, 'workouts/active_workout.html', {"workout": workout})
 
 # --- Load Areas / Helpers
 
 def clear(request: HttpRequest) -> HttpResponse:
     return HttpResponse('')
-
