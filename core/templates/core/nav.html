@@ -13,18 +13,27 @@
       <li class="username"> <strong>{{user.username}}</strong></li>
   </ul>
   <hr class="sidebar-desktop-only"/>
+  <div class="mobile-nav-left sidebar-mobile-only">
+    <a href="#" class="mobile-profile-trigger" aria-label="Settings"
+       hx-get="{% url 'core:profile' %}"
+       hx-target="#dummy"
+       hx-swap="innerHTML"><div class="profile-pic profile-pic-mobile"></div></a>
+  </div>
   <ul class="nav-dashboard-links">
-    <li><a hx-get="{% url 'core:dashboard_page' %}" data-tooltip="Dashboard" data-placement="right" hx-target="#content">
-      <i class="fa-solid fa-chart-area"></i>
+    <li><a class="{% if request.resolver_match.url_name == 'dashboard_page' %}nav-link-active{% endif %}" data-page="dashboard" hx-get="{% url 'core:dashboard_page' %}"  hx-target="#content" hx-on:click="document.querySelectorAll('.nav-dashboard-links a').forEach(a => a.classList.remove('nav-link-active')); this.classList.add('nav-link-active')">
+      <i class="fa-solid fa-chart-area icon-secondary"></i>
     </a></li>
-    <li><a hx-get="{% url 'core:nutrition_page' %}" data-tooltip="Nutrition" data-placement="right" hx-target="#content"><i class="fa-solid fa-utensils"></i></a></li>
-    <li><a hx-get="{% url 'core:workout_page' %}" data-tooltip="Workouts" data-placement="right" hx-target="#content"><i class="fa-solid fa-dumbbell"></i></a></li>
-    <li class="sidebar-desktop-only"><a data-tooltip="coming soon" data-placement="right" ><i class="fa-solid fa-book-open"></i></a></li>
-    <li class="sidebar-desktop-only"><a data-tooltip="coming soon" data-placement="right" ><i class="fa-solid fa-message"></i></a></li>
+    <li><a class="{% if request.resolver_match.url_name == 'nutrition_page' %}nav-link-active{% endif %}" data-page="nutrition" hx-get="{% url 'core:nutrition_page' %}"  hx-target="#content" hx-on:click="document.querySelectorAll('.nav-dashboard-links a').forEach(a => a.classList.remove('nav-link-active')); this.classList.add('nav-link-active')"><i class="fa-solid fa-utensils icon-secondary"></i></a></li>
+    <li><a class="{% if request.resolver_match.url_name == 'workout_page' %}nav-link-active{% endif %}" data-page="workout" hx-get="{% url 'core:workout_page' %}"  hx-target="#content" hx-on:click="document.querySelectorAll('.nav-dashboard-links a').forEach(a => a.classList.remove('nav-link-active')); this.classList.add('nav-link-active')"><i class="fa-solid fa-dumbbell icon-secondary"></i></a></li>
+    <li class="sidebar-desktop-only"><a data-tooltip="coming soon" data-placement="right" ><i class="fa-solid fa-book-open icon-secondary"></i></a></li>
+    <li class="sidebar-desktop-only"><a data-tooltip="coming soon" data-placement="right" ><i class="fa-solid fa-message icon-secondary"></i></a></li>
   </ul>
-    <div id="dummy" style=""></div>
+  <div id="dummy" style=""></div>
+  <div class="mobile-nav-right sidebar-mobile-only">
+    <span class="nav-link-disabled" data-tooltip="Coming soon" data-placement="top" title="Coming soon" aria-disabled="true"><i class="fa-solid fa-book-open"></i></span>
+  </div>
   <ul class="settings-group sidebar-desktop-only">
-      <li> <a hx-get="{% url 'core:profile' %}" hx-target="#dummy"data-tooltip="Settings" data-placement="right"><i class="fa-solid fa-gears"></i></a></li>
+      <li> <a hx-get="{% url 'core:profile' %}" hx-target="#dummy" data-tooltip="Settings" data-placement="right"><i class="fa-solid fa-gears"></i></a></li>
   </ul>
 </nav>
 </aside>
