@@ -1,4 +1,5 @@
 from .base import *
+from .local_settings import *
 from dotenv import load_dotenv
 import os
 
@@ -8,14 +9,7 @@ print(f"found : {os.getenv('SECRET_KEY')}")
 print(f"found : {os.getenv('DEBUG')}")
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG')
-ALLOWED_HOSTS = ['*',
-                 'archlinux.tail71809f.ts.net'
-                 '.ngrok-free.dev'
-                 ]
-CSRF_TRUSTED_ORIGINS = [
-    'https://archlinux.tail71809f.ts.net',
-    'https://nonlustrous-overbrightly-ilda.ngrok-free.dev'
-]
+ALLOWED_HOSTS = ['*']
 print(f"{ALLOWED_HOSTS=}")
 DATABASES = {
     'default': {
