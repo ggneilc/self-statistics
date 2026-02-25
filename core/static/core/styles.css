@@ -147,6 +147,54 @@ main { flex: 1; }
 }
 #day-area > article {margin-bottom: revert;}
 
+/* === Locked Analytics State === */
+#graph-area.locked {
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.locked-analytics-icon {
+  font-size: 3rem;
+  color: var(--pico-primary);
+}
+
+.locked-analytics-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.locked-analytics-description {
+  color: var(--pico-muted-color);
+  max-width: 320px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.locked-analytics-progress-track {
+  width: 80%;
+  background: var(--pico-card-sectioning-background-color);
+  border-radius: var(--pico-border-radius);
+  height: 12px;
+  overflow: hidden;
+  border: 1px solid #0d0d0f;
+}
+
+.locked-analytics-progress-bar {
+  height: 100%;
+  background: var(--pico-primary);
+  border-radius: var(--pico-border-radius);
+  transition: width 0.5s ease;
+}
+
+.locked-analytics-count {
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+  margin: 0;
+}
+
 /* Calendar: reserve enough height so the heatmap never overflows */
 #calendar-container {
   flex: 0 0 auto;
@@ -979,6 +1027,59 @@ text {
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Scroll indicators: visible on mobile only */
+  .scroll-indicators {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0;
+    flex-shrink: 0;
+    order: 1; /* sits above navbar */
+    background-color: transparent;
+  }
+
+  .scroll-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--pico-muted-border-color);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    flex-shrink: 0;
+    box-shadow: none;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin: 0;
+  }
+  .scroll-dot.active {
+    background-color: var(--pico-primary);
+    transform: scale(1.3);
+  }
+
+  /* Locked analytics: tighten up spacing on small screens */
+  #graph-area.locked {
+    padding: 1.5rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .locked-analytics-icon {
+    font-size: 2.5rem;
+  }
+
+  .locked-analytics-title {
+    font-size: 1.25rem;
+  }
+
+  .locked-analytics-description {
+    font-size: 0.9rem;
+    max-width: 100%;
+  }
+
+  .locked-analytics-progress-track {
+    width: 90%;
   }
 }
 

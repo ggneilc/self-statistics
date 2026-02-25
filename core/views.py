@@ -18,7 +18,20 @@ from workouts.models import Workout
 
 
 def home(request):
-    return render(request, 'core/base.html')
+    day_count = 0
+    if request.user.is_authenticated:
+        # Consider Refactoring
+        day_count = (
+            request.user.days
+            .exclude(
+                bodyweight__isnull=True,
+                sleep=0,
+                water_consumed=0,
+                calories_consumed=0,
+            )
+            .count()
+        )
+    return render(request, 'core/base.html', { 'day_count': day_count })
 
 
 def index(request):
@@ -185,9 +198,20 @@ def random_color():
 
 # === Navbar Pages ===
 
-
 def dashboard_page(request):
-    return render(request, 'core/dashboard.html')
+    # Consider Refactoring
+    day_count = (
+        request.user.days
+        .exclude(
+            bodyweight__isnull=True,
+            sleep=0,
+            water_consumed=0,
+            calories_consumed=0,
+        )
+        .count()
+    )
+
+    return render(request, 'core/dashboard.html', { 'day_count': day_count })
 
 
 def workout_page(request):
@@ -246,6 +270,15 @@ def get_current_streak(request):
     curr = today
 
     while request.user.days.filter(date=curr).exists():
+        day = request.user.days.filter(
+            date=curr,
+            bodyweight__isnull=False,
+            water_consumed=0,
+            sleep=0,
+            calories_consumed=0,
+        ).first()
+        if day is None:
+            break
         streak += 1
         curr -= timedelta(days=1)
 

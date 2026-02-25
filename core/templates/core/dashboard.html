@@ -20,27 +20,40 @@
 	})();
 	</script>
   </div>
-  <article id="graph-area">
-	<header style="position:relative;">
-		<i class="fa-solid fa-chart-line"></i>
-		Analytics
+	{% if day_count >= 7 %}
+	<article id="graph-area">
+		<header style="position:relative;">
+			<i class="fa-solid fa-chart-line"></i>
+			Analytics
+			<span style="position:absolute; right:1rem;">
+				<button style="padding:0 0.3rem;">
+					<i class="fa-solid fa-chart-column"></i>
+				</button>
+			</span>
+		</header>
+		<div class="bw-graph-container" style="flex:1;"
+			hx-get="{% url 'graphs:bw' %}"
+			hx-trigger="load"
+			hx-swap="innerHTML swap:0.5s">
+		</div>
+		<div class="cals-graph-container" style="flex:1;"
+			hx-get="{% url 'graphs:cals' %}"
+			hx-trigger="load"
+			hx-swap="innerHTML swap:0.5s">
+		</div>
+	</article>
 
-		<span style="position:absolute; right:1rem;">
-			<button style="padding:0 0.3rem;">
-				<i class="fa-solid fa-chart-column"></i></button>
-		</span>
-	</header>
-	<div class="bw-graph-container" style="flex:1;"
-	hx-get="{% url 'graphs:bw' %}"
-	hx-trigger="load"
-	hx-swap="innerHTML swap:0.5s">
-	</div>
-
-	<div class="cals-graph-container" style="flex:1;"
-		hx-get="{% url 'graphs:cals' %}"
-		hx-trigger="load"
-		hx-swap="innerHTML swap:0.5s">
-
-	</div>
-  </article>
+	{% else %}
+		<article id="graph-area" class="locked">
+			<i class="fa-solid fa-lock locked-analytics-icon"></i>
+			<h2 class="locked-analytics-title">Analytics Locked</h2>
+			<p class="locked-analytics-description">
+				Track <strong>7 days</strong> of data to unlock personalized analytics and insights.
+			</p>
+			<div class="locked-analytics-progress-track">
+				<div class="locked-analytics-progress-bar" style="width: {% widthratio day_count 7 100 %}%;"></div>
+			</div>
+			<p class="locked-analytics-count">{{ day_count }} / 7 days tracked</p>
+		</article>
+	{% endif %}
 </div>
