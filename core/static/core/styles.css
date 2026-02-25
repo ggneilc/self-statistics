@@ -91,7 +91,7 @@ main { flex: 1; }
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: 1px solid var(--pico-primary-border);
+  border: 1px solid var(--pico-secondary);
 }
 .username {
   width: 70px;
@@ -99,6 +99,21 @@ main { flex: 1; }
   overflow-wrap: break-word;
   word-break: break-word;
   text-align: center;
+}
+
+/* Mobile-only nav items: hidden on desktop */
+.sidebar-mobile-only {
+  display: none;
+}
+
+.nav-link-disabled {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pico-muted-color);
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
 }
 
 #content { padding: 1rem; }
@@ -340,6 +355,10 @@ main { flex: 1; }
 .fa-weight-scale,
 .fa-calendar-day {
   color: var(--pico-primary);
+}
+
+.icon-secondary {
+  color: var(--pico-secondary);
 }
 
 .fa-chart-line,
@@ -741,6 +760,10 @@ text {
   background-color: var(--vitamin-e-color);
 }
 
+.nav-dashboard-links a:hover {
+  cursor: pointer;
+}
+
 /* Mobile: bottom nav, full-width swipeable dashboard columns */
 @media (max-width: 768px) {
   /* Ensure body doesn't overflow and accounts for navbar */
@@ -820,42 +843,120 @@ text {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-evenly;
     width: 100%;
   }
 
-  .sidebar-desktop-only,
-  .sidebar nav #dummy {
+  .sidebar-desktop-only {
     display: none !important;
   }
 
+  /* Keep #dummy in DOM for profile modal; zero width so nav layout unchanged */
+  .sidebar nav #dummy {
+    width: 0;
+    min-width: 0;
+    flex: 0 0 0;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar-mobile-only {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Five equal-width slots: profile | food | dashboard | workouts | tutorials */
+  .mobile-nav-left {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .mobile-profile-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    text-decoration: none;
+    border-radius: var(--pico-border-radius);
+  }
+
+  .profile-pic-mobile {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  /* Match icon size across nav: FA icons same visual weight as profile pic */
+  .nav-dashboard-links a i {
+    font-size: 1.5rem;
+  }
+
+  .mobile-nav-right .nav-link-disabled i {
+    font-size: 1.5rem;
+  }
+
+  .nav-dashboard-links a.nav-link-active {
+    color: var(--pico-primary);
+  }
+
+  .nav-dashboard-links a.nav-link-active i {
+    color: var(--pico-primary);
+  }
+
+  .mobile-nav-right {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-nav-right .nav-link-disabled {
+    padding: 0.75rem;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Middle three slots: food (left), dashboard (center), workouts (right) */
   .nav-dashboard-links {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-around;
-    gap: 0.5rem;
+    flex: 3;
+    min-width: 0;
     list-style: none;
     margin: 0;
     padding: 0;
-    width: 100%;
   }
 
   .nav-dashboard-links li {
     flex: 1;
     display: flex;
     justify-content: center;
+    min-width: 0;
   }
+
+  /* Reorder so: Food | Dashboard | Workouts */
+  .nav-dashboard-links li:nth-child(1) { order: 2; } /* dashboard -> center */
+  .nav-dashboard-links li:nth-child(2) { order: 1; } /* nutrition/food -> left */
+  .nav-dashboard-links li:nth-child(3) { order: 3; } /* workouts -> right */
 
   .nav-dashboard-links a {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 0.75rem;
+    padding: 0.75rem 0.5rem;
     border-radius: var(--pico-border-radius);
-    min-width: 3rem;
-    /* Increase touch target size for easier tapping */
+    min-width: 0;
     min-height: 44px;
+    width: 100%;
   }
 
   /* Dashboard columns: one per screen, swipe horizontally */
@@ -1620,6 +1721,76 @@ dialog[open] > #profile-article {
   max-width: 200px !important;
   flex-shrink: 0 !important;
   overflow-y: auto !important;
+}
+
+/* Profile/Settings modal: mobile-friendly layout */
+@media (max-width: 768px) {
+  dialog[open] > #profile-article {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 85dvh !important;
+    max-height: 85dvh !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  #profile-container {
+    flex-direction: column !important;
+  }
+
+  #profile-nav {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    flex-shrink: 0 !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--pico-muted-border-color) !important;
+    padding-right: 0 !important;
+    padding-bottom: 0.75rem !important;
+    gap: 0.35rem !important;
+  }
+
+  #profile-list {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    padding-top: 0 !important;
+    gap: 0.35rem !important;
+  }
+
+  .profile-item {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .profile-btn {
+    padding: 0.5rem 0.65rem !important;
+    font-size: 0.875rem !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-nav-footer {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    margin-top: 0.75rem !important;
+    padding-top: 0.5rem !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+  }
+
+  .profile-logout-btn,
+  .profile-close-btn {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding: 0.5rem 0.65rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  #profile-main {
+    padding: 1rem !important;
+  }
 }
 
 .profile-item {
