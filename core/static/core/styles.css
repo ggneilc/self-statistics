@@ -1397,6 +1397,16 @@ text {
   overflow-y: auto;
   margin-top: 0.5rem;
 }
+/* Lift overview: 4 movements per row, 0.5rem gap; last row does not stretch to fill */
+#lift-carosel.list-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  justify-items: center;
+}
+#lift-carosel {
+    padding: 0.5rem 1rem 3px;
+}
 .list-container {
   display: flex;
   flex-wrap: wrap;
@@ -1416,6 +1426,13 @@ text {
   justify-content: center;
   text-align: center;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+#lift-carosel.list-container .movement {
+  width: auto;
+  max-width: 150px;
 } .movement:hover {
   transform: translateY(-2px);
   box-shadow: -5px 5px 0px 0px #0d0f0f;
@@ -1824,6 +1841,51 @@ dialog[open] > #profile-article {
   overflow-y: auto !important;
 }
 
+.smaller-movement {
+  min-width: 8vw;
+  max-width: 8vw;
+  min-height: 15vh;
+  max-height: 15vh;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+
+/* Mobile: 2 movements per row */
+/* Active Workout: 3 movements per row */
+@media (max-width: 768px) {
+  #lift-carosel.list-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .movement {
+    min-width: calc(100% - 1rem);
+    max-width: calc(100% - 1rem);
+    min-height: calc(20vh - 0.5rem);
+    max-height: calc(20vh - 0.5rem);
+    border: 1px solid #0d0f0f;
+  }
+  .movement:hover {
+    transform: translateY(-2px);
+    box-shadow: -5px 5px 0px 0px #0d0f0f;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .smaller-movement {
+    min-width: calc(50% - 1rem);
+    max-width: calc(50% - 1rem);
+    min-height: calc(20vh - 0.5rem);
+    max-height: calc(20vh - 0.5rem);
+    border: 1px solid #0d0f0f;
+  }
+}
 /* Profile/Settings modal: mobile-friendly layout */
 @media (max-width: 768px) {
   dialog[open] > #profile-article {

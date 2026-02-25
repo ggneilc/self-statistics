@@ -1,6 +1,6 @@
-<h1>{{lift.movement.name}}</h1>
+<div id="workout-name" hx-swap-oob="true"> {{lift.movement.name}} </div>
 
-<div id="set-list" class="vertical-group">
+<div id="set-list" class="vertical-group" style="flex: 10;">
 	<div id="sets">
 		{% if editing %}
 			{% for form in set_forms %}
@@ -20,9 +20,10 @@
 	</button>
 </div>
 
+<div id="end-workout" hx-swap-oob="true">
+	<button class="end"
+		hx-get="{% url 'workouts:end_lift' lift.id %}"
+		hx-target="#active-workout"
+		hx-swap="outerHTML">FINISHED</button>
+</div>
 
-<button class="outline" style="padding: 0.3rem 1rem;"
-hx-get="{% url 'workouts:end_lift' lift.id %}"
-hx-target="#lift-target"
-hx-swap="innerHTML swap:0.4s"
->FINISHED</button>

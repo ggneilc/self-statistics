@@ -1,0 +1,12 @@
+{% if workout.lifts.exists %}
+{% for lift in workout.lifts.all %}
+{% include 'workouts/lift_small.html' with lift=lift active=True %}
+{% endfor %}
+{% endif %}
+<div class="lift-small"
+    hx-get="{% url 'workouts:lift_selection' %}"
+    hx-target="#lift-selection-container"
+    hx-swap="innerHTML"
+    hx-trigger="click">
+    <i class="fa-solid fa-plus"></i>
+</div>

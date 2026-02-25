@@ -1,7 +1,8 @@
 {# small_lift is used in active lift #}
 <div class="lift-small"
 	hx-get="{% url 'workouts:edit_lift' lift.id %}"
-	hx-target="#lift-area"
+	hx-target="#lift-target"
+    hx-swap="outerHTML"
 	hx-trigger="click">
     <div class="lift-small-name">{{lift.movement.name}}</div>
     <div class="lift-small-sets">{{lift.set_count}} sets</div>

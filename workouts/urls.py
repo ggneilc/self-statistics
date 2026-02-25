@@ -29,6 +29,7 @@ urlpatterns = [
      path("categories/active/",  views.get_categories,   name="categories_active"),
      path("categories/",  views.get_categories,   name="categories"),
      # active workout
+     path("workout/add/lift/", views.add_lift, name="lift_selection"),
      path("workout/add/lift/<int:movement_id>/", views.add_lift, name="add_lift"),
      path("workout/add/set/<int:lift_id>/", views.add_set, name="add_set"),
      path("workout/edit/lift/<int:lift_id>/", views.edit_lift, name="edit_lift"),
