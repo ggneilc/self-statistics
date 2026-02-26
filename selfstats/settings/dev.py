@@ -12,7 +12,7 @@ ALLOWED_HOSTS = ['*',
                  'archlinux.tail71809f.ts.net'
                  ]
 CSRF_TRUSTED_ORIGINS = [
-    'https://archlinux.tail71809f.ts.net',
+    'https://archlinux.tail71809f.ts.net', 'https://nondiscursive-voguishly-tomoko.ngrok-free.dev'
 ]
 print(f"{ALLOWED_HOSTS=}")
 DATABASES = {
