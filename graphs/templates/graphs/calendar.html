@@ -11,7 +11,10 @@
   const innerHeight = (cellSize + gap) * 2 + headerHeight;
 
   const container = d3.select("#heatmap-window");
-  let viewStart = d3.timeWeek.floor(new Date());
+  const hiddenInput = document.getElementById("hidden-date");
+  const selectedDateStr = hiddenInput?.value || new Date().toLocaleDateString("en-CA");
+  const selectedDate = new Date(selectedDateStr + "T12:00:00");
+  let viewStart = d3.timeWeek.floor(selectedDate);
 
   const rawData = JSON.parse(container.attr("data-days"));
   const dataMap = new Map(rawData.map(d => [d.date, d]));
@@ -70,20 +73,29 @@
       .style("cursor", "pointer");
 
     // Background Rect
+    const today = d3.timeDay.floor(new Date());
+    const selected = d3.timeDay.floor(selectedDate);
     cells.append("rect")
       .attr("width", cellSize)
       .attr("height", cellSize)
       .attr("rx", 6)
       .attr("fill", d => {
+        const isToday = today.getTime() === d.getTime();
+        if (isToday) { return "var(--pico-primary)";}
         const dateStr = d3.timeFormat("%Y-%m-%d")(d);
         const dayData = dataMap.get(dateStr);
         return dayData ? colorScale(dayData.ratio) : "#0F1114";
       })
       .attr("stroke", d => {
-        const isToday = d3.timeDay.floor(new Date()).getTime() === d.getTime();
-        return isToday ? "#ffbf00" : "rgba(255,255,255,0.1)";
+        const isToday = today.getTime() === d.getTime();
+        const isSelected = selected.getTime() === d.getTime();
+        return (isToday || isSelected) ? "var(--pico-primary)" : "rgba(255,255,255,0.1)";
       })
-      .attr("stroke-width", d => (d3.timeDay.floor(new Date()).getTime() === d.getTime() ? 3 : 1));
+      .attr("stroke-width", d => {
+        const isToday = today.getTime() === d.getTime();
+        const isSelected = selected.getTime() === d.getTime();
+        return (isToday || isSelected) ? 3 : 1;
+      });
 
     // Day Label (with Month Logic)
     cells.append("text")
@@ -136,7 +148,14 @@
   // Navigation logic...
   d3.select("#prev").on("click", () => { viewStart = d3.timeDay.offset(viewStart, -7); renderWindow(viewStart); });
   d3.select("#next").on("click", () => { viewStart = d3.timeDay.offset(viewStart, 7); renderWindow(viewStart); });
-  // set #current-range to current 2 week range
+
+  // Re-render when selected date changes (e.g. user clicks a cell) so selection border updates
+  hiddenInput?.addEventListener("change", () => {
+    const val = hiddenInput.value;
+    if (val) selectedDate.setTime(new Date(val + "T12:00:00").getTime());
+    renderWindow(viewStart);
+  });
+
   renderWindow(viewStart);
 })();
 </script>

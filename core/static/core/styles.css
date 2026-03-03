@@ -226,7 +226,29 @@ main { flex: 1; }
   min-height: 140px;
   width: 100%;
   flex-shrink: 0;
+  padding: 3px;
 }
+@media (max-width: 768px) {
+  #heatmap-window {
+    margin: -1rem 0;
+  }
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+  padding: 0.3rem;
+}
+.calendar-range {
+  padding: 0 0.5rem;
+}
+.calendar-prev { margin-right: 0.5rem; }
+.calendar-prev button { border: none; padding: 0.2rem; }
+.calendar-next { margin-left: 0.5rem; }
+.calendar-next button { border: none; padding: 0.2rem; }
+
 #calendar-selector {
   text-align: end;
   padding: 0.3rem;
@@ -259,11 +281,30 @@ main { flex: 1; }
   padding: 0.5rem;
 }
 
-/* Responsive chart containers: define size so SVG viewBox can scale (height: 100%) */
+/* Responsive chart containers: fill available space without overflow (no hardcoded max) */
 .chart-container {
   width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
   aspect-ratio: 1;
-  max-width: 280px;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    width: 70vw;
+    padding-top: 2rem;
+    padding-left: 3rem;
+    padding-bottom: 2rem;
+  }
+}
+
+#day-container .nutrition-breakdown > div {
+  display: flex;
+  align-items: center;
+  min-height: 0;
 }
 
 #vitamin-chart,
@@ -273,46 +314,28 @@ main { flex: 1; }
   margin: 0.5rem;
 }
 
-.food-stat,
 .nutrition-breakdown {
   margin-top: -0.7rem;
-  margin-bottom: 1rem;
   align-items: center;
-  justify-content: center;
+}
+.nutrition-breakdown-indicators {
+  display: none;
 }
 
 /* Day view: constrain pie charts and allow flex children to shrink */
-#day-container .nutrition-breakdown {
-  flex: 0 1 auto;
-  min-height: 0;
-  min-width: 0;
-}
-
-#day-container .chart-container {
-  max-width: 140px;
-  max-height: 140px;
-  min-height: 0;
-}
 
 #day-container .horizontal-group {
   min-height: 0;
 }
 
 /* Bottom section (sleep/weight/water + meal plan) takes remaining space */
-#day-container .day-bottom-section,
-#day-container .horizontal-group:not(.nutrition-breakdown) {
-  flex: 1 1 0%;
-}
 
 .day-bottom-section {
+  flex: 1;
+  margin-bottom: 0;
   display: flex;
-  box-shadow: -3px 3px 0px 0px #0d0d0f;
-  padding: 0.5rem;
-  border: 1px solid #0d0d0f;
-  position: relative;
 }
 
-#track-target { flex: 1; }
 /* Base styles - keep your existing positioning */
 .day-bottom-section-header { 
     position: absolute;
@@ -359,7 +382,13 @@ main { flex: 1; }
   flex: 1;
   background-color: var(--pico-card-sectioning-background-color);
   border: 1px solid #0d0d0f;
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
   border-radius: var(--pico-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: bold;
 }
 
 .food-stat {
@@ -547,6 +576,7 @@ main { flex: 1; }
   gap: 0.75rem;
 }
 .day-header-left {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -576,6 +606,7 @@ main { flex: 1; }
 /* Compact bodyweight in header: override Pico form/button, short input, small button */
 .day-header-bw {
   display: flex;
+  flex: 1;
   align-items: center;
     box-shadow: -3px 3px 0px 0px #0d0d0f;
     border-radius: var(--pico-border-radius);
@@ -586,6 +617,7 @@ main { flex: 1; }
 }
 .day-header-bw .day_value_form {
   height: auto;
+  width: 100%;
   margin: 0;
   display: flex;
   align-items: center;
@@ -601,17 +633,15 @@ main { flex: 1; }
   background: none;
 }
 .day-header-bw .day_value_form input[type="number"] {
-  width: 4rem;
   min-width: 4rem;
-  height: 1.75rem;
+  height: 1.875rem;
   padding: 0.2rem 0.4rem;
   font-size: 0.875rem;
   line-height: 1.2;
 }
 .day-header-bw .day_value_form input[type="submit"] {
-  width: 1.75rem;
   min-width: 1.75rem;
-  height: 1.75rem;
+  height: 1.875rem;
   padding: 0;
   font-size: 0.875rem;
   line-height: 1;
@@ -1055,6 +1085,50 @@ text {
     margin: 0;
   }
   .scroll-dot.active {
+    background-color: var(--pico-primary);
+    transform: scale(1.3);
+  }
+
+  /* Nutrition breakdown: one chart per screen, swipe horizontally (like dashboard columns) */
+  .nutrition-breakdown {
+    display: flex;
+    direction: ltr;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+    flex: 4;
+    min-height: 0;
+    width: 100%;
+  }
+  /* Use 100vw per panel so the first panel (macro) never collapses when empty (HTMX loads content later) */
+  .nutrition-breakdown > div {
+    flex: 0 0 100vw;
+    min-width: 100vw;
+    width: 100vw;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    box-sizing: border-box;
+  }
+
+  /* Dots for nutrition chart swipe (mobile only) */
+  .nutrition-breakdown-indicators {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0;
+    flex-shrink: 0;
+  }
+  .nutrition-breakdown-indicators .scroll-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--pico-muted-border-color);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  .nutrition-breakdown-indicators .scroll-dot.active {
     background-color: var(--pico-primary);
     transform: scale(1.3);
   }
