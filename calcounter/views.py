@@ -39,12 +39,22 @@ NUTRIENT_MAP = {
     "Vitamin C":    401,
     "Vitamin D":    328,
     "Vitamin E":    323,
+    # Branded food alternate vitamin IDs (IU instead of µg)
+    "Vitamin A (IU)": 318,
+    "Vitamin D (IU)": 324,
     # Alcohol: 221
     # Caffiene: 262
 }
 MACRO = [208, 203, 204, 205, 269, 291, 601]
 MINERAL = [301, 303, 304, 306, 307, 309]
 VITAMIN = [320, 415, 418, 401, 328, 323]
+
+# Branded foods report some vitamins in IU with different nutrient IDs.
+# Map branded IDs to their standard IDs and provide conversion to µg.
+BRANDED_VITAMIN_FALLBACKS = {
+    318: {"standard_id": 320, "convert": lambda iu: iu * 0.3},    # Vitamin A: IU -> µg RAE
+    324: {"standard_id": 328, "convert": lambda iu: iu * 0.025},  # Vitamin D: IU -> µg
+}
 
 IngredientFormSet = inlineformset_factory(
     parent_model=Food,
@@ -392,17 +402,17 @@ def query_ingredient(request):
     # Map these to USDA data types
     data_types = []
     if include_branded:
-        data_types.append("Branded&")
+        data_types.append("Branded")
     if include_foundational:
-        data_types.append("Foundation,SR%20Legacy&")
+        data_types.append("Foundation,SR%20Legacy")
     if data_types == []:
         data_types = ["Foundation,SR%20Legacy"]
     url = (
         f"https://api.nal.usda.gov/fdc/v1/foods/search?"
         f"api_key={USDA_KEY}&"
         f"query='{query}'&"
-        f"dataType={','.join(data_types)}"  # API filters for you
-        f"pageSize=50" 
+        f"dataType={','.join(data_types)}&"
+        f"pageSize=50"
     )
     print(f"{url=}")
     r = requests.get(url)
@@ -411,8 +421,10 @@ def query_ingredient(request):
     for food in foods:
         print(f"food description={food['description']}")
         print(f"food fdcId={food['fdcId']}\n")
+        brand = food.get("brandName") or food.get("brandOwner") or ""
+        name = f"{brand} - {food['description']}" if brand else food["description"]
         results.append({
-            "name": food["description"],
+            "name": name,
             "fdcId": food["fdcId"]
         })
     return render(request, 'calcounter/ingred_search.html', {"foods": results})
@@ -443,12 +455,26 @@ def get_specific_usda_item(request, fdcId):
             n_info = n.get("nutrient", n)
             nutrient_id = int(float(n_info.get("number", 0)))
             if nutrient_id in NUTRIENT_MAP.values():
-                all_nutrients[nutrient_id] = {
-                    "name":  n_info.get("name"),
-                    "value": n.get("amount", 0.00),
-                    "unit":  n_info.get("unitName", "N/A")
-                }
-                print(f"{all_nutrients[nutrient_id]=}")
+                # Branded vitamin fallback: convert IU -> µg and store under standard ID
+                if nutrient_id in BRANDED_VITAMIN_FALLBACKS:
+                    fallback = BRANDED_VITAMIN_FALLBACKS[nutrient_id]
+                    std_id = fallback["standard_id"]
+                    # Only use fallback if we don't already have the standard value
+                    if std_id not in all_nutrients:
+                        converted = fallback["convert"](n.get("amount", 0.0))
+                        all_nutrients[std_id] = {
+                            "name":  n_info.get("name"),
+                            "value": round(converted, 2),
+                            "unit":  "µg"
+                        }
+                        print(f"Branded fallback: {nutrient_id} -> {std_id}, {all_nutrients[std_id]=}")
+                else:
+                    all_nutrients[nutrient_id] = {
+                        "name":  n_info.get("name"),
+                        "value": n.get("amount", 0.00),
+                        "unit":  n_info.get("unitName", "N/A")
+                    }
+                    print(f"{all_nutrients[nutrient_id]=}")
         # --- Some foods don't have energy values, calculate instead ---
         cals = all_nutrients.get(208, {}).get("value", 0.0)
         if (cals == {} or cals == 0.0):
