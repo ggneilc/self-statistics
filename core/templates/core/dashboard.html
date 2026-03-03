@@ -1,11 +1,11 @@
 <div class="horizontal-group dashboard-columns">
   <div id="day-area">
   	<article id="calendar-container">
-	  <header><nav>
-	    <ul><li style="padding:0;"><button id="prev" class="outline" style="font-size:small;">« Prev Week</button></li></ul>
-	    <ul><li style="padding:0;"><strong id="current-range">Range</strong></li></ul>
-	    <ul><li style="padding:0;"><button id="next" class="outline" style="font-size:small;">Next Week »</button></li></ul>
-	  </nav></header>
+		<header class="calendar-header" >
+			<div class="calendar-prev"><button id="prev" class="outline">«</button></div>
+			<div class="calendar-range"><strong id="current-range">Range</strong></div>
+			<div class="calendar-next"><button id="next" class="outline">»</button></div>
+		</header>
   	  <div hx-get="{% url 'graphs:calendar' %}" hx-trigger="load"></div>
   	</article>
 

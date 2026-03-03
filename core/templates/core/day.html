@@ -7,7 +7,10 @@
       hx-swap="innerHTML swap:0.5s"></div>
   </div>
   <div class="day-header-date">
-    <i class="fa-solid fa-calendar-day"></i> {{ day.date }}
+    <i class="fa-solid fa-utensils" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Meal Plan
+  </div>
+  <div class="day-header-date">
+    <i class="fa-solid fa-bullseye" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Tasks
   </div>
   <div class="day-header-actions">
     <button type="button" style="padding: 0 0.3rem; margin-bottom: 0">
@@ -16,7 +19,7 @@
   </div>
 </header>
 
-<div class="horizontal-group nutrition-breakdown">
+<div class="horizontal-group nutrition-breakdown" style="flex: 4;">
   <div id="macro-breakdown"
   hx-get="{% url 'graphs:macros' %}"
   hx-trigger="load, dayUpdated from:body"></div>
@@ -27,6 +30,13 @@
   hx-get="{% url 'graphs:vitamins' %}"
   hx-trigger="load, dayUpdated from:body"></div>
 </div>
+<div id="nutrition-breakdown-indicators" class="nutrition-breakdown-indicators" aria-hidden="true"></div>
+
+<div class="horizontal-group day-bottom-section">
+  <div class="day-meal-plan-item"> Stats : x </div>
+</div>
+
+
 
 <!-- Hidden targets for sleep/water form responses (modal submits update these, then macro refreshes) -->
 <div id="sleep-input" style="display: none;"
@@ -48,6 +58,8 @@
     <div class="macro-track-modal-body"></div>
   </div>
 </div>
+
+
 
 <script>
 (function() {
@@ -84,16 +96,36 @@
       document.body.dispatchEvent(new CustomEvent('dayUpdated'));
     }
   });
+
+  function initNutritionBreakdownIndicators() {
+    const container = document.querySelector('.nutrition-breakdown');
+    const bar = document.getElementById('nutrition-breakdown-indicators');
+    if (!container || !bar || container.children.length === 0) return;
+    container.style.direction = 'ltr';
+    container.scrollLeft = 0;
+    const count = container.children.length;
+    bar.innerHTML = Array.from({ length: count }, (_, i) =>
+      '<span class="scroll-dot" data-index="' + i + '" aria-label="Chart ' + (i + 1) + ' of ' + count + '"></span>'
+    ).join('');
+    bar.setAttribute('aria-hidden', 'false');
+    bar.querySelector('.scroll-dot').classList.add('active');
+    function setActiveDot() {
+      const w = container.clientWidth;
+      if (!w) return;
+      const index = Math.round(container.scrollLeft / w);
+      bar.querySelectorAll('.scroll-dot').forEach(function(dot, i) {
+        dot.classList.toggle('active', i === index);
+      });
+    }
+    container.addEventListener('scroll', setActiveDot);
+    function ensureScrollStart() {
+      container.scrollLeft = 0;
+      setActiveDot();
+    }
+    requestAnimationFrame(function() { requestAnimationFrame(ensureScrollStart); });
+    /* After HTMX loads chart content, layout may change; reset scroll so macro stays first */
+    setTimeout(ensureScrollStart, 300);
+  }
+  initNutritionBreakdownIndicators();
 })();
 </script>
-
-<article class="day-bottom-section" style="margin-bottom: 0;">
-  <span class="day-bottom-section-header">Meal Plan</span>
-  <span id="today-grocery-header" class="day-bottom-section-header">Grocery List</span>
-  <span id="today-tasks-header" class="day-bottom-section-header">To Do</span>
-  <div id="track-target" class="horizontal-group">
-    <div class="day-meal-plan-item"> item 1</div>
-    <div class="day-meal-plan-item"> item 2</div>
-    <div class="day-meal-plan-item"> item 3</div>
-  </div>
-</article>
