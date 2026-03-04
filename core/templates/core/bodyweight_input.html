@@ -1,6 +1,7 @@
 <form class="day_value_form" 
 	hx-post="{% url 'core:set_bw' %}"
 	hx-target="#day-weight"
+	hx-on:click="this.closest('div').style.padding = '0.2rem';"
 	data-tooltip="Bodyweight (lbs)"
 	data-placement="top">
   <fieldset role="group">

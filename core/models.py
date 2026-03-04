@@ -102,6 +102,14 @@ class Profile(models.Model):
         return f"{self.user.username} Profile"
 
 
+def get_goal_type(user):
+    gender = user.profile.gender  # 'M' or 'F'
+    age = user.profile.age  # integer
+    if age < 19:
+        return 'Young Male' if gender == 'M' else 'Young Female'
+    else:
+        return 'Adult Male' if gender == 'M' else 'Adult Female'
+
 class Day(models.Model):
     '''
         stored computations of day's stats
@@ -199,14 +207,35 @@ class Day(models.Model):
 
     @property
     def calorie_ratio(self):
-        """
-            produces 0.0 - 1.0 for heat map
-        """
-        return self.calories_consumed / self.calorie_goal if self.calorie_goal else 0
+        return (self.calories_consumed / self.calorie_goal)
 
     @property
-    def protein_ratio(self):
-        return self.protein_consumed / self.bodyweight if self.bodyweight else 0
+    def mineral_completion(self):
+        '''
+            returns percentage of mineral goals achieved
+        '''
+        minerals = self.mineral_breakdown
+        goal_type = get_goal_type(self.user)
+        return (minerals['sodium'] / RDA_LOOKUP['Minerals']['sodium'][goal_type] * 0.1 +
+                minerals['potassium'] / RDA_LOOKUP['Minerals']['potassium'][goal_type] * 0.1 +
+                minerals['calcium'] / RDA_LOOKUP['Minerals']['calcium'][goal_type] * 0.1 +
+                minerals['magnesium'] / RDA_LOOKUP['Minerals']['magnesium'][goal_type] * 0.1 +
+                minerals['iron'] / RDA_LOOKUP['Minerals']['iron'][goal_type] * 0.1 +
+                minerals['zinc'] / RDA_LOOKUP['Minerals']['zinc'][goal_type] * 0.1) * 100
+
+    @property
+    def vitamin_completion(self):
+        '''
+            returns percentage of vitamin goals achieved
+        '''
+        vitamins = self.vitamin_breakdown
+        goal_type = get_goal_type(self.user)
+        return (vitamins['A'] / RDA_LOOKUP['Vitamins']['A'][goal_type] * 0.1 +
+                vitamins['B6'] / RDA_LOOKUP['Vitamins']['B6'][goal_type] * 0.1 +
+                vitamins['B12'] / RDA_LOOKUP['Vitamins']['B12'][goal_type] * 0.1 +
+                vitamins['C'] / RDA_LOOKUP['Vitamins']['C'][goal_type] * 0.1 +
+                vitamins['D'] / RDA_LOOKUP['Vitamins']['D'][goal_type] * 0.1 +
+                vitamins['E'] / RDA_LOOKUP['Vitamins']['E'][goal_type] * 0.1) * 100
 
     def __str__(self):
         return f"{self.user.username} | {self.date}"

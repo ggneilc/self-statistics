@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from django.shortcuts import render
 from django.template.loader import render_to_string
-from core.models import Day, RDA_LOOKUP
+from core.models import Day, RDA_LOOKUP, get_goal_type
 from calcounter.models import Food
 from workouts.models import Lift, Workout
 import json
@@ -277,6 +277,48 @@ def get_type_stats(request, type_id):
 
 # === Macro breakdown Pie Charts ===
 
+def get_macro_completion(request):
+    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    carbs, protein, fat = day.macro_breakdown
+    total = day.calories_consumed
+    goals = {}
+    data = {
+        'Sleep': day.sleep,
+        'Water': day.water_consumed,
+        'Fat': fat,
+        'Carbs': carbs,
+        'Protein': protein,
+        'Calories': total,
+    }   
+    goals = {
+        'Sleep': day.sleep_goal,
+        'Water': day.water_goal,
+        'Fat': round((day.calorie_goal - (day.protein_goal * 4)) * 0.3 / 9),
+        'Carbs': round((day.calorie_goal - (day.protein_goal * 4)) * 0.7 / 4),
+        'Protein': day.protein_goal,
+        'Calories': day.calorie_goal,
+    }
+    # return percentage of goals achieved: weighted average of goals and data
+    completion = (data['Sleep'] / goals['Sleep'] * 0.1 +
+                  data['Water'] / goals['Water'] * 0.1 +
+                  data['Fat'] / goals['Fat'] * 0.3 +
+                  data['Carbs'] / goals['Carbs'] * 0.4 +
+                  data['Protein'] / goals['Protein'] * 0.1 +
+                  data['Calories'] / goals['Calories'] * 0.1) * 100
+    context = {"completion": round(completion)}
+    return render(request, 'core/completion.html', context)
+
+def get_mineral_completion(request):
+    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    completion = day.mineral_completion
+    context = {"completion": round(completion)}
+    return render(request, 'core/completion.html', context)
+
+def get_vitamin_completion(request):
+    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    completion = day.vitamin_completion
+    context = {"completion": round(completion)}
+    return render(request, 'core/completion.html', context)
 
 def get_macro_breakdown(request):
     ''' return macro breakdown for a specific date '''
@@ -307,17 +349,11 @@ def get_macro_breakdown(request):
     return render(request, 'graphs/macro-pie.html', context)
 
 def get_mineral_breakdown(request):
-    gender = request.user.profile.gender  # 'M' or 'F'
-    age = request.user.profile.age  # integer
     day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
-    if age < 19:
-        goal_type = 'Young ' + 'Male' if gender == 'M' else 'Female'
-    else:
-        goal_type = 'Adult ' +  'Male' if gender == 'M' else 'Female'
+    goal_type = get_goal_type(request.user)
     goals = {}
     for mineral, values in RDA_LOOKUP['Minerals'].items():
         goals[mineral] = values[goal_type]
-    
     data = day.mineral_breakdown
     context = {
         "day_data": json.dumps(data),
@@ -326,17 +362,11 @@ def get_mineral_breakdown(request):
     return render(request, 'graphs/mineral-pie.html', context)
 
 def get_vitamin_breakdown(request):
-    gender = request.user.profile.gender  # 'M' or 'F'
-    age = request.user.profile.age  # integer
     day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
-    if age < 19:
-        goal_type = 'Young ' + 'Male' if gender == 'M' else 'Female'
-    else:
-        goal_type = 'Adult ' +  'Male' if gender == 'M' else 'Female'
+    goal_type = get_goal_type(request.user)
     goals = {}
     for vitamin, values in RDA_LOOKUP['Vitamins'].items():
         goals[vitamin] = values[goal_type]
-    
     data = day.vitamin_breakdown
     context = {
         "day_data": json.dumps(data),

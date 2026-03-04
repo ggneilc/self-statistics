@@ -20,5 +20,7 @@ urlpatterns = [
     path("graph/volume", views.get_volume_graph, name="vol"),
     path("graph/volume/<int:type_id>", views.get_type_stats, name="w_type_graph"),
     path("graph/lift/<str:lift_name>/orm", views.get_lift_graph_orm, name="lift_orm"),
-
+    path("graph/macro/completion", views.get_macro_completion, name="macro-completion"),
+    path("graph/mineral/completion", views.get_mineral_completion, name="mineral-completion"),
+    path("graph/vitamin/completion", views.get_vitamin_completion, name="vitamin-completion"),
 ]
