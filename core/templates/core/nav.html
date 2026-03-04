@@ -20,7 +20,7 @@
        hx-swap="innerHTML"><div class="profile-pic profile-pic-mobile"></div></a>
   </div>
   <ul class="nav-dashboard-links">
-    <li><a class="{% if request.resolver_match.url_name == 'dashboard_page' %}nav-link-active{% endif %}" data-page="dashboard" hx-get="{% url 'core:dashboard_page' %}"  hx-target="#content" hx-on:click="document.querySelectorAll('.nav-dashboard-links a').forEach(a => a.classList.remove('nav-link-active')); this.classList.add('nav-link-active')">
+    <li><a class="nav-link-active{% if request.resolver_match.url_name == 'dashboard_page' %}nav-link-active{% endif %}" data-page="dashboard" hx-get="{% url 'core:dashboard_page' %}"  hx-target="#content" hx-on:click="document.querySelectorAll('.nav-dashboard-links a').forEach(a => a.classList.remove('nav-link-active')); this.classList.add('nav-link-active')">
       <i class="fa-solid fa-chart-area icon-secondary"></i>
     </a></li>
     <li><a class="{% if request.resolver_match.url_name == 'nutrition_page' %}nav-link-active{% endif %}" data-page="nutrition" hx-get="{% url 'core:nutrition_page' %}"  hx-target="#content" hx-on:click="document.querySelectorAll('.nav-dashboard-links a').forEach(a => a.classList.remove('nav-link-active')); this.classList.add('nav-link-active')"><i class="fa-solid fa-utensils icon-secondary"></i></a></li>

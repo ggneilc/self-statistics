@@ -81,6 +81,11 @@ RDA_LOOKUP = {
 
 class Profile(models.Model):
     GENDERS = [('M', 'Male'), ('F', 'Female')]
+    CALENDAR_VIEWS = [
+        ('1w', '1 week'),
+        ('2w', '2 weeks'),
+    ]
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     timezone = models.CharField(
@@ -97,6 +102,11 @@ class Profile(models.Model):
     )
     age = models.IntegerField(default=18)
     weekly_set_goal = models.IntegerField(default=15)
+    calendar_view = models.CharField(
+        max_length=8,
+        choices=CALENDAR_VIEWS,
+        default='2w',
+    )
 
     def __str__(self):
         return f"{self.user.username} Profile"

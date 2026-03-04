@@ -37,17 +37,20 @@ def get_days_of_month(user, selected_date=None):
     end = today.replace(day=monthrange(today.year, today.month)[1])
     return user.days.filter(date__range=(start, end))
 
-# 1 month
 def calendar_heatmap(request):
-    ''' displays AMDAP calendar : 25x21 grid of rects '''
-#    data = get_days_of_month(request.user)
+    """Display calendar heatmap. Template (1-week vs 2-week window)
+    is chosen based on the user's profile setting.
+    """
     data = request.user.days.all().exclude(date=date(1, 1, 1))
-    print(f"{data=}")
     days = [
         {"id": d.id, "date": d.date.isoformat(), "ratio": round(d.calorie_ratio, 2)}
         for d in data
     ]
-    return render(request, "graphs/calendar.html", {"day_data": json.dumps(days)})
+    template_name = "graphs/calendar.html"
+    profile = getattr(request.user, "profile", None)
+    if profile and getattr(profile, "calendar_view", "2w") == "1w":
+        template_name = "graphs/one-week-calendar.html"
+    return render(request, template_name, {"day_data": json.dumps(days)})
 
 
 def weekly_calendar(request):
