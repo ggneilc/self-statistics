@@ -1,23 +1,24 @@
-<form class="day_value_form" 
-	hx-post="{% url 'core:set_bw' %}"
-	hx-target="#day-weight"
-	hx-on:click="this.closest('div').style.padding = '0.2rem';"
-	data-tooltip="Bodyweight (lbs)"
-	data-placement="top">
-  <fieldset role="group">
-	{% if edit %}
-    <input
-	name="weight"
-	type="number"
-	step="0.1"
-	value="{{bw}}">
-	{% else %}
-    <input 
-	name="weight"
-	type="number"
-	step="0.1"
-	placeholder="">
-	{% endif %}
-    <input type="submit" value=">">
-  </fieldset>
-</form>
+<div id="day-weight" class="day-header-bw">
+	<form class="day_value_form" 
+		hx-post="{% url 'core:set_bw' %}"
+		hx-target="#day-weight"
+		data-tooltip="Bodyweight (lbs)"
+		data-placement="top">
+	<fieldset role="group">
+		{% if edit %}
+		<input
+		name="weight"
+		type="number"
+		step="0.1"
+		value="{{bw}}">
+		{% else %}
+		<input 
+		name="weight"
+		type="number"
+		step="0.1"
+		placeholder="">
+		{% endif %}
+		<input type="submit" value=">">
+	</fieldset>
+	</form>
+</div>

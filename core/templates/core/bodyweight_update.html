@@ -1,7 +1,9 @@
-<span style="width: 100%; display: flex; align-items: center; justify-content: center;"
-  hx-get="{% url 'core:edit_bw' %}"
-  hx-trigger="click"
-  hx-target="#day-weight"
-  hx-on:click="this.closest('div').style.padding = '0';">
- <i class="fa-solid fa-weight-scale"></i>{{bodyweight}}lb
-</span>
+<div id="day-weight" class="day-header-item">
+  <span style="width: 100%; display: flex; align-items: center; justify-content: center;"
+    hx-get="{% url 'core:edit_bw' %}"
+    hx-trigger="click"
+    hx-target="#day-weight"
+    hx-swap="outerHTML">
+  <i class="fa-solid fa-weight-scale"></i>{{bodyweight}}lb
+  </span>
+</div>

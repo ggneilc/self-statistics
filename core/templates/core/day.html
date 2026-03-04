@@ -1,9 +1,10 @@
 <header class="day-header">
-  <div id="day-weight" class="day-header-bw"
+  <div id="day-weight" class="day-header-item"
     hx-get="{% url 'core:get_bw' %}"
-    hx-trigger="load"></div>
-  <div><i class="fa-solid fa-utensils" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Meals</div>
-  <div><i class="fa-solid fa-bullseye" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Tasks</div>
+    hx-trigger="load"
+    hx-swap="outerHTML"></div>
+  <div class="day-header-item"><i class="fa-solid fa-utensils" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Meals</div>
+  <div class="day-header-item"><i class="fa-solid fa-bullseye" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Tasks</div>
   <span>
     <button type="button" style="padding: 0 0.3rem; margin-bottom: 0">
       <i class="fa-solid fa-rotate"></i>
