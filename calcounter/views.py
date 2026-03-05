@@ -2,6 +2,7 @@
     Calcounter manages Food
 """
 from django.shortcuts import get_object_or_404, render, HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from .models import Food, Meal, Ingredient, MealConsumption, PantryItem, FoodUnit, Recipe
 from .forms import FoodForm, FoodUnitForm, MealForm, IngredientForm, MealConsumptionForm, RecipeForm
@@ -74,6 +75,7 @@ MealConsumptionFormSet = inlineformset_factory(
 )
 
 # --- Listing foods ---
+@login_required
 def list_meals(request, just_added=False):
     ''' Returns `meal_list.html` with the `selected_date` '''
     if just_added:
@@ -96,10 +98,11 @@ def list_meals(request, just_added=False):
 def food_fingerprint(user, pantry_item):
     gender = user.profile.gender  # 'M' or 'F'
     age = user.profile.age  # integer
+    gender_str = 'Male' if gender == 'M' else 'Female'
     if age < 19:
-        goal_type = 'Young ' + 'Male' if gender == 'M' else 'Female'
+        goal_type = 'Young ' + gender_str
     else:
-        goal_type = 'Adult ' +  'Male' if gender == 'M' else 'Female'
+        goal_type = 'Adult ' + gender_str
     goals = {}
     for mineral, values in RDA_LOOKUP['Minerals'].items():
         goals[mineral] = values[goal_type]
@@ -142,6 +145,7 @@ def food_fingerprint(user, pantry_item):
     ]
     return macros, minerals, vitamins
 
+@login_required
 def list_foods(request, action, just_added=False):
     ''' Returns `food_list.html` with the `selected_date` '''
     if action == 'all':
@@ -170,6 +174,9 @@ def list_foods(request, action, just_added=False):
         pantry_item.macros = macros
         pantry_item.minerals = minerals
         pantry_item.vitamins = vitamins
+        pantry_item.macro_script_id = f"macros-{pantry_item.id}"
+        pantry_item.mineral_script_id = f"minerals-{pantry_item.id}"
+        pantry_item.vitamin_script_id = f"vitamins-{pantry_item.id}"
 
     context = {
         "foods": foods,
@@ -177,6 +184,7 @@ def list_foods(request, action, just_added=False):
     }
     return render(request, "calcounter/food_list.html", context)
 
+@login_required
 def list_recipes(request):
     ''' return list of recipes '''
     recipes = Recipe.objects.filter(
@@ -189,6 +197,7 @@ def list_recipes(request):
 
 # --- Meals
 
+@login_required
 def new_recipe(request):
     ''' return recipe entry form '''
     form = RecipeForm(request.POST or None, user=request.user)
@@ -197,6 +206,7 @@ def new_recipe(request):
         return render(request, 'calcounter/recipe_area.html')
     return render(request, 'calcounter/recipe_entry.html', {'form': form, 'editing': False})
 
+@login_required
 def add_meal(request):
     '''
         View for food form
@@ -221,21 +231,20 @@ def add_meal(request):
             formset.save_m2m() # Required if there are ManyToMany relationships
             return list_meals(request, True)
         else:
-            print("form invalid")
-            print(form.errors)
-            print(formset.errors)
-
+            return render(request, 'calcounter/meal_entry.html', {'form': form, 'formset': formset})
     else:
         form = MealForm()
         formset = MealConsumptionFormSet()
     return render(request, 'calcounter/meal_entry.html', {'form': form, 'formset': formset})
 
+@login_required
 def add_meal_row(request):
     ''' append a food to the current meal '''
     formset = MealConsumptionFormSet()
     # Return the 'empty_form' which uses __prefix__ as the ID placeholder
     return render(request, 'calcounter/meal_row.html', {'form': formset.empty_form})
 
+@login_required
 def add_manual_meal_row(request):
     ''' append a food to the current meal '''
     formset = MealConsumptionFormSet()
@@ -244,10 +253,12 @@ def add_manual_meal_row(request):
 
 # ----- Food
 
+@login_required
 def new_search_food(request):
     ''' return `search_ingred` and oob swap `cancel` '''
     return render(request, 'calcounter/ingred_search_area.html')
 
+@login_required
 def new_complex_food(request):
     if request.POST:
         form = FoodForm(request.POST)
@@ -309,11 +320,13 @@ def new_complex_food(request):
         formset = IngredientFormSet()
     return render(request, 'calcounter/complex_food_entry.html', {'form': form, 'formset': formset})
 
+@login_required
 def add_ingredient_row(request):
     formset = IngredientFormSet()
     # Return the 'empty_form' which uses __prefix__ as the ID placeholder
     return render(request, 'calcounter/ingredient_row.html', {'form': formset.empty_form})
 
+@login_required
 def get_units_for_ingredient(request):
     food_id = request.GET.get('food_id')
     if not food_id:
@@ -322,6 +335,7 @@ def get_units_for_ingredient(request):
     print(f"{units=}")
     return render(request, 'calcounter/unit_options.html', {'units': units})
 
+@login_required
 def add_pantry_food(request, food_id):
     '''Add a new food to pantry (templates)'''
     food = get_object_or_404(Food, pk=food_id)
@@ -359,6 +373,7 @@ def add_pantry_food(request, food_id):
         )
     return list_foods(request, 'all')
 
+@login_required
 def food_unit_modal(request, food_id):
     ''' return modal for editing food units '''
     food = get_object_or_404(Food, pk=food_id)
@@ -384,6 +399,7 @@ def food_unit_modal(request, food_id):
     }
     return render(request, 'calcounter/food_unit_modal.html', context)
 
+@login_required
 def select_food_unit(request, food_id, unit_id):
     ''' set selected food unit for food '''
     food = get_object_or_404(Food, pk=food_id)
@@ -392,6 +408,7 @@ def select_food_unit(request, food_id, unit_id):
     food.save()
     return render(request, 'calcounter/checkmark.html')
 
+@login_required
 def query_ingredient(request):
     query = request.GET.get('query')
     print(f"{query=}")
@@ -429,6 +446,7 @@ def query_ingredient(request):
         })
     return render(request, 'calcounter/ingred_search.html', {"foods": results})
 
+@login_required
 def get_specific_usda_item(request, fdcId):
     single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}"
     foodItem = Food.objects.filter(fdc_id=fdcId).first()
@@ -533,6 +551,7 @@ def get_specific_usda_item(request, fdcId):
     return render(request, 'calcounter/ingred.html', context)
 
 
+@login_required
 def meal_into_complexfood(request, meal_id):
     ''''''
     pass
@@ -540,6 +559,7 @@ def meal_into_complexfood(request, meal_id):
 
 # --- CRUD : Update a food ---
 
+@login_required
 def update_pantry_item(request, item_id, action):
     pantry_item = get_object_or_404(PantryItem, id=item_id, user=request.user)
     
@@ -568,14 +588,18 @@ def update_pantry_item(request, item_id, action):
     pantry_item.macros = macros
     pantry_item.minerals = minerals
     pantry_item.vitamins = vitamins
+    pantry_item.macro_script_id = f"macros-{pantry_item.id}"
+    pantry_item.mineral_script_id = f"minerals-{pantry_item.id}"
+    pantry_item.vitamin_script_id = f"vitamins-{pantry_item.id}"
 
-    # need to recalculate bades, nutrients
+    # need to recalculate badges, nutrients
     # 3. Return the updated snippet
     # We re-render the individual LI so the detail state and status update correctly
     return render(request, 'calcounter/food.html', {'pantry': pantry_item, 'open': True})
 
+@login_required
 def edit_unit(request, unit_id):
-    unit = get_object_or_404(FoodUnit, id=unit_id)
+    unit = get_object_or_404(FoodUnit, id=unit_id, food__owner=request.user)
     
     if request.method == 'POST':
         unit.name = request.POST.get('name')
@@ -587,14 +611,16 @@ def edit_unit(request, unit_id):
     # Return the EDIT FORM snippet (Step 2)
     return render(request, 'calcounter/unit_edit_form.html', {'unit': unit})
 
+@login_required
 def get_unit(request, unit_id):
     # This handles the "Cancel" button
     unit = get_object_or_404(FoodUnit, id=unit_id)
     return render(request, 'calcounter/unit_display_row.html', {'unit': unit})
 
+@login_required
 def update_recipe(request, recipe_id):
     if request.POST:
-        recipe = get_object_or_404(Recipe, id=recipe_id)
+        recipe = get_object_or_404(Recipe, id=recipe_id, food__owner=request.user)
         form = RecipeForm(request.POST, instance=recipe, user=request.user)
         if form.is_valid():
             form.save()
@@ -606,28 +632,35 @@ def update_recipe(request, recipe_id):
 
 # --- Display ---
 
+@login_required
 def get_type_of_input(request):
     return render(request, 'calcounter/food_type_input.html')
 
+@login_required
 def get_meal_type_of_input(request):
     return render(request, 'calcounter/meal_type_input.html')
 
+@login_required
 def get_food_input(request):
     return render(request, 'calcounter/food_entry_button.html')
 
+@login_required
 def get_search_area(request):
     return render(request, 'calcounter/ingred_search_area.html')
 
 
+@login_required
 def cancel_form_m(request):
     ''' Returns `entry_buttons` template '''
     return render(request, "calcounter/meal_entry_button.html")
 
 
+@login_required
 def cancel_form_f(request):
     ''' Returns `entry_buttons` template '''
     return render(request, "calcounter/food_type_input.html")
 
+@login_required
 def clear(request):
     ''' returns empty response to clear target '''
     return HttpResponse("")
@@ -635,12 +668,14 @@ def clear(request):
 
 # CRUD : Deleteing food
 
+@login_required
 def delete_meal(request, meal_id):
     ''' delete meal '''
-    meal = get_object_or_404(Meal, id=meal_id)
+    meal = get_object_or_404(Meal, id=meal_id, day__user=request.user)
     meal.delete()
     return clear(request)
 
+@login_required
 def delete_food(request, pantry_id):
     ''' delete pantry food entry
     1. if pantryitem is complex food:
@@ -670,14 +705,16 @@ def delete_food(request, pantry_id):
     return clear(request)
     
 
+@login_required
 def delete_unit(request, unit_id):
-    unit = get_object_or_404(FoodUnit, id=unit_id)
+    unit = get_object_or_404(FoodUnit, id=unit_id, food__owner=request.user)
     unit.delete()
     return clear(request)
 
 
+@login_required
 def delete_recipe(request, recipe_id):
     ''' Delete a saved recipe '''
-    recipe = get_object_or_404(Recipe, id=recipe_id)
+    recipe = get_object_or_404(Recipe, id=recipe_id, food__owner=request.user)
     recipe.delete()
     return clear(request)

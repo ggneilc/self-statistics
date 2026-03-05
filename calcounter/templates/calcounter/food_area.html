@@ -1,5 +1,5 @@
   <div id="meal_list__container" class="cardstyle"
-          hx-get="{% url 'calcounter:list_f' %}" 
+          hx-get="{% url 'calcounter:list_f' 'all' %}"
           hx-trigger="load, change from:#hidden-date"
           hx-swap="innerHTML swap:0.5s">
           <!-- this will be filled upon page load-->

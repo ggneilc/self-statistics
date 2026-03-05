@@ -121,27 +121,29 @@ class Food(models.Model):
 
     def get_nutrition_consumed(self, serving_size):
         # Calculation: (Food's nutrient per 100g / 100) * serving_g
-        calories = (self.calories / 100) * serving_size
-        protein = (self.protein / 100) * serving_size
-        fat = (self.fat / 100) * serving_size
-        carb = (self.carb / 100) * serving_size
-        sugar = (self.sugar / 100) * serving_size
-        fiber = (self.fiber / 100) * serving_size
-        cholesterol = (self.cholesterol / 100) * serving_size
+        # 'or 0' guards against None fields (nullable in DB)
+        def scale(val): return ((val or 0) / 100) * serving_size
+        calories = scale(self.calories)
+        protein = scale(self.protein)
+        fat = scale(self.fat)
+        carb = scale(self.carb)
+        sugar = scale(self.sugar)
+        fiber = scale(self.fiber)
+        cholesterol = scale(self.cholesterol)
         # Minerals
-        calcium = (self.calcium / 100) * serving_size
-        iron = (self.iron / 100) * serving_size
-        magnesium = (self.magnesium / 100) * serving_size
-        potassium = (self.potassium / 100) * serving_size
-        sodium = (self.sodium / 100) * serving_size
-        zinc = (self.zinc / 100) * serving_size
+        calcium = scale(self.calcium)
+        iron = scale(self.iron)
+        magnesium = scale(self.magnesium)
+        potassium = scale(self.potassium)
+        sodium = scale(self.sodium)
+        zinc = scale(self.zinc)
         # Vitamins
-        vitamin_a = (self.vitamin_a / 100) * serving_size
-        vitamin_b6 = (self.vitamin_b6 / 100) * serving_size
-        vitamin_b12 = (self.vitamin_b12 / 100) * serving_size
-        vitamin_c = (self.vitamin_c / 100) * serving_size
-        vitamin_d = (self.vitamin_d / 100) * serving_size
-        vitamin_e = (self.vitamin_e / 100) * serving_size
+        vitamin_a = scale(self.vitamin_a)
+        vitamin_b6 = scale(self.vitamin_b6)
+        vitamin_b12 = scale(self.vitamin_b12)
+        vitamin_c = scale(self.vitamin_c)
+        vitamin_d = scale(self.vitamin_d)
+        vitamin_e = scale(self.vitamin_e)
         return {
             'calories': calories,
             'protein': protein,
@@ -343,27 +345,30 @@ class MealConsumption(models.Model):
         return ret
     def get_nutrition_consumed(self):
         # Calculation: (Food's nutrient per 100g / 100) * serving_g
-        calories = (self.food.calories / 100) * self.amount
-        protein = (self.food.protein / 100) * self.amount
-        fat = (self.food.fat / 100) * self.amount
-        carb = (self.food.carb / 100) * self.amount
-        sugar = (self.food.sugar / 100) * self.amount
-        fiber = (self.food.fiber / 100) * self.amount
-        cholesterol = (self.food.cholesterol / 100) * self.amount
+        # serving_g = amount (in units) * gram_weight (grams per unit)
+        serving_size = self.amount * float(self.unit.gram_weight)
+        def scale(val): return ((val or 0) / 100) * serving_size
+        calories = scale(self.food.calories)
+        protein = scale(self.food.protein)
+        fat = scale(self.food.fat)
+        carb = scale(self.food.carb)
+        sugar = scale(self.food.sugar)
+        fiber = scale(self.food.fiber)
+        cholesterol = scale(self.food.cholesterol)
         # Minerals
-        calcium = (self.food.calcium / 100) * self.amount
-        iron = (self.food.iron / 100) * self.amount
-        magnesium = (self.food.magnesium / 100) * self.amount
-        potassium = (self.food.potassium / 100) * self.amount
-        sodium = (self.food.sodium / 100) * self.amount
-        zinc = (self.food.zinc / 100) * self.amount
+        calcium = scale(self.food.calcium)
+        iron = scale(self.food.iron)
+        magnesium = scale(self.food.magnesium)
+        potassium = scale(self.food.potassium)
+        sodium = scale(self.food.sodium)
+        zinc = scale(self.food.zinc)
         # Vitamins
-        vitamin_a = (self.food.vitamin_a / 100) * self.amount
-        vitamin_b6 = (self.food.vitamin_b6 / 100) * self.amount
-        vitamin_b12 = (self.food.vitamin_b12 / 100) * self.amount
-        vitamin_c = (self.food.vitamin_c / 100) * self.amount
-        vitamin_d = (self.food.vitamin_d / 100) * self.amount
-        vitamin_e = (self.food.vitamin_e / 100) * self.amount
+        vitamin_a = scale(self.food.vitamin_a)
+        vitamin_b6 = scale(self.food.vitamin_b6)
+        vitamin_b12 = scale(self.food.vitamin_b12)
+        vitamin_c = scale(self.food.vitamin_c)
+        vitamin_d = scale(self.food.vitamin_d)
+        vitamin_e = scale(self.food.vitamin_e)
         return {
             'calories': calories,
             'protein': protein,
@@ -385,7 +390,7 @@ class MealConsumption(models.Model):
             'vitamin_b12': vitamin_b12,
             'vitamin_c': vitamin_c,
             'vitamin_d': vitamin_d,
-            'vitamin_e ': vitamin_e,
+            'vitamin_e': vitamin_e,
         }
 
 
