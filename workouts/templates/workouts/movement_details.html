@@ -15,9 +15,7 @@
         </button>
       </span>
     </div>
-    <div id="lift-graph"
-      hx-get="{% url 'graphs:lift_orm' movement.name %}"
-      hx-trigger="load">
+    <div id="lift-graph" hx-get="{% url 'graphs:lift_orm' movement.name %}" hx-trigger="load">
     </div>
   </div>
 
@@ -31,22 +29,22 @@
         </header>
         <div id="lift-sets" class="vertical-group movement-history-list">
           {% for lift in movement.instances.all %}
-            <div class="lift-set-entry">
-              <div class="lift-set-date">{{ lift.workout.day.date|date:"m/d/Y" }}</div>
-              {% for set in lift.sets.all %}
-                <div class="horizontal-group lift-set-row">
-                  <div class="set-reps">{{ set.reps }}</div>
-                  <div class="lift-set-sep">×</div>
-                  <div class="set-weight">{{ set.weight }}</div>
-                </div>
-              {% endfor %}
+          <div class="lift-set-entry">
+            <div class="lift-set-date">{{ lift.workout.day.date|date:"m/d/Y" }}</div>
+            {% for set in lift.sets.all %}
+            <div class="horizontal-group lift-set-row">
+              <div class="set-reps">{{ set.reps }}</div>
+              <div class="lift-set-sep">×</div>
+              <div class="set-weight">{{ set.weight }}</div>
             </div>
+            {% endfor %}
+          </div>
           {% endfor %}
         </div>
       </article>
     </div>
 
-    <article class="vertical-group movement-section" id="lift-accolades">
+    <article class="vertical-group movement-section" id="lift-accolades" style="height: revert;">
       <header class="movement-section-header">
         <i class="fa-solid fa-trophy"></i>
         Accolades
@@ -55,9 +53,9 @@
         <div class="lift-accolade-header">Current (est.) 1RM</div>
         <div class="lift-accolade-value">
           {% if movement.instances.all.0.estimated_1rm %}
-            {{ movement.instances.all.0.estimated_1rm|floatformat:0 }} <span class="accolade-unit">lbs</span>
+          {{ movement.instances.all.0.estimated_1rm|floatformat:0 }} <span class="accolade-unit">lbs</span>
           {% else %}
-            <span class="movement-empty-value">—</span>
+          <span class="movement-empty-value">—</span>
           {% endif %}
         </div>
       </div>
@@ -65,17 +63,17 @@
         <div class="lift-accolade-header">Top Set</div>
         <div class="lift-accolade-value">
           {% if movement.instances.all.0.get_best_set %}
-            {{ movement.instances.all.0.get_best_set.weight }} <span class="accolade-unit">lbs</span>
+          {{ movement.instances.all.0.get_best_set.weight }} <span class="accolade-unit">lbs</span>
           {% else %}
-            <span class="movement-empty-value">—</span>
+          <span class="movement-empty-value">—</span>
           {% endif %}
         </div>
       </div>
       {% if not movement.instances.all %}
-        <div class="movement-empty-state">
-          <i class="fa-solid fa-lock"></i>
-          <span>Log a session to unlock accolades</span>
-        </div>
+      <div class="movement-empty-state">
+        <i class="fa-solid fa-lock"></i>
+        <span>Log a session to unlock accolades</span>
+      </div>
       {% endif %}
     </article>
 
