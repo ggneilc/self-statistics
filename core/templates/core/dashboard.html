@@ -1,27 +1,28 @@
 <div class="horizontal-group dashboard-columns">
-  <div id="day-area">
-  	<article id="calendar-container">
-		<header class="calendar-header" >
-			<div class="calendar-prev"><button id="prev" class="outline">«</button></div>
-			<div class="calendar-range"><strong id="current-range">Range</strong></div>
-			<div class="calendar-next"><button id="next" class="outline">»</button></div>
-		</header>
-  	  <div hx-get="{% url 'graphs:calendar' %}" hx-trigger="load"></div>
-  	</article>
+	<div id="day-area">
+		<article id="calendar-container">
+			<header class="calendar-header">
+				<div class="streak" hx-get="{% url 'core:curr_streak' %}" hx-trigger="load"></div>
+				<div class="calendar-prev"><button id="prev" class="outline">«</button></div>
+				<div class="calendar-range"><strong id="current-range">Range</strong></div>
+				<div class="calendar-next"><button id="next" class="outline">»</button></div>
+			</header>
+			<div hx-get="{% url 'graphs:calendar' %}" hx-trigger="load"></div>
+		</article>
 
-  	<article id="day-container" class="vertical-group">
-  	</article>
-	<script>
-	(function() {
-		const date_container = document.getElementById('hidden-date');
-		const date = date_container.value;
-		console.log(date);
-        htmx.ajax('GET', `/day/${date}`, { target: '#day-container' });
-	})();
-	</script>
-  </div>
+		<article id="day-container" class="vertical-group">
+		</article>
+		<script>
+			(function () {
+				const date_container = document.getElementById('hidden-date');
+				const date = date_container.value;
+				console.log(date);
+				htmx.ajax('GET', `/day/${date}`, { target: '#day-container' });
+			})();
+		</script>
+	</div>
 	{% if day_count >= 7 %}
-	<article id="graph-area">
+	<article id="graph-area" style="padding-bottom: 1rem;">
 		<header style="position:relative;">
 			<i class="fa-solid fa-chart-line"></i>
 			Analytics
@@ -31,29 +32,125 @@
 				</button>
 			</span>
 		</header>
-		<div class="bw-graph-container" style="flex:1;"
-			hx-get="{% url 'graphs:bw' %}"
-			hx-trigger="load"
-			hx-swap="innerHTML swap:0.5s">
+
+		<div class="vertical-group" style="flex: 1;">
+
+			<div id="graph" hx-get="{% url 'graphs:main-graph' %}" hx-trigger="load"></div>
+
+			<div class="horizontal-group" style="flex:2;">
+
+				<article id="bw-summary" class="vertical-group" style="height: revert;margin-bottom: 0;">
+					<header style="font-weight: bold;"><i class="fa-solid fa-weight-scale"></i>Bodyweight Statistics
+					</header>
+					<div class="vertical-group" style="flex:1;">
+						<div class="horizontal-group" style="flex: 2;">
+							<div class="split-stat">
+								<div class="vertical-group" style="gap:0;">
+									<div class="stat-header"> Average Weight </div>
+									<div class="horizontal-group"
+										style="border-bottom: 1px solid var(--pico-muted-color);">
+										<div class="stat-value"> 153.5 </div>
+										<div class="stat-unit"> lbs </div>
+									</div>
+								</div>
+								<div class="vertical-group" style="gap:0;">
+									<div class="horizontal-group">
+										<div class="stat-value"> 154.2 </div>
+										<div class="stat-unit"> lbs </div>
+									</div>
+									<div class="stat-header"> 7d Average </div>
+								</div>
+							</div>
+							<div class="split-stat">
+								<div class="vertical-group" style="gap:0;">
+									<div class="stat-header"> All Time Diff </div>
+									<div class="horizontal-group"
+										style="border-bottom: 1px solid var(--pico-muted-color);">
+										<div class="stat-value"> -0.5 </div>
+										<div class="stat-unit"> lbs </div>
+									</div>
+								</div>
+								<div class="vertical-group" style="gap:0;">
+									<div class="horizontal-group">
+										<div class="stat-value"> +1.6 </div>
+										<div class="stat-unit"> lbs </div>
+									</div>
+									<div class="stat-header"> Goal Diff </div>
+								</div>
+							</div>
+						</div>
+						<div class="stat"> fluctations </div>
+						<div class="stat"> biggest drop / largest gain</div>
+						<div class="stat"> lbs +/- per week </div>
+					</div>
+				</article>
+
+				<article id="cal-summary" class="vertical-group" style="height: revert;margin-bottom: 0;">
+					<header style="font-weight: bold;">
+						<i class="fa-solid fa-person-breastfeeding" style="margin-right: 0.5rem;"></i>Nutrition
+						Statistics
+					</header>
+					<div class="vertical-group" style="flex:1;">
+						<div class="horizontal-group" style="flex: 2;">
+							<div class="split-stat">
+								<div class="vertical-group" style="gap:0;">
+									<div class="stat-header"> Average Calories </div>
+									<div class="horizontal-group"
+										style="border-bottom: 1px solid var(--pico-muted-color);">
+										<div class="stat-value"> 2535 </div>
+										<div class="stat-unit"> kcal </div>
+									</div>
+								</div>
+								<div class="vertical-group" style="gap:0;">
+									<div class="horizontal-group">
+										<div class="stat-value"> 2342 </div>
+										<div class="stat-unit"> kcal </div>
+									</div>
+									<div class="stat-header"> 7d Average </div>
+								</div>
+							</div>
+							<div class="split-stat">
+								<div class="vertical-group" style="gap:0;">
+									<div class="stat-header"> Average Protein </div>
+									<div class="horizontal-group"
+										style="border-bottom: 1px solid var(--pico-muted-color);">
+										<div class="stat-value"> 154 </div>
+										<div class="stat-unit"> g </div>
+									</div>
+								</div>
+								<div class="vertical-group" style="gap:0;">
+									<div class="horizontal-group">
+										<div class="stat-value"> 165 </div>
+										<div class="stat-unit"> g </div>
+									</div>
+									<div class="stat-header"> 7d Average </div>
+								</div>
+							</div>
+						</div>
+						<div class="stat"> avg fats / protein / carbs </div>
+						<div class="stat"> protein per 100 cals</div>
+						<div class="stat"> avg % deviation from cal goal</div>
+
+					</div>
+				</article>
+
+			</div>
+
 		</div>
-		<div class="cals-graph-container" style="flex:1;"
-			hx-get="{% url 'graphs:cals' %}"
-			hx-trigger="load"
-			hx-swap="innerHTML swap:0.5s">
-		</div>
+
 	</article>
 
 	{% else %}
-		<article id="graph-area" class="locked">
-			<i class="fa-solid fa-lock locked-analytics-icon"></i>
-			<h2 class="locked-analytics-title">Analytics Locked</h2>
-			<p class="locked-analytics-description">
-				Track <strong>7 days</strong> of data to unlock personalized analytics and insights.
-			</p>
-			<div class="locked-analytics-progress-track">
-				<div class="locked-analytics-progress-bar" style="width: {% widthratio day_count 7 100 %}%;"></div>
-			</div>
-			<p class="locked-analytics-count">{{ day_count }} / 7 days tracked</p>
-		</article>
+	<article id="graph-area" class="locked">
+		<i class="fa-solid fa-lock locked-analytics-icon"></i>
+		<h2 class="locked-analytics-title">Analytics Locked</h2>
+		<p class="locked-analytics-description">
+			Track <strong>7 days</strong> of data to unlock personalized analytics and insights.
+		</p>
+		<div class="locked-analytics-progress-track">
+			<div class="locked-analytics-progress-bar" style="width: {% widthratio day_count 7 100 %}%;"></div>
+		</div>
+		<p class="locked-analytics-count">{{ day_count }} / 7 days tracked</p>
+	</article>
 	{% endif %}
 </div>

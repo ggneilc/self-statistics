@@ -8,7 +8,7 @@ from django.http import JsonResponse, FileResponse
 from django.conf import settings
 import os
 from django.contrib.auth.forms import UserCreationForm
-from .models import Day
+from .models import Day, Profile
 from workouts.forms import WTypeForm
 from workouts.models import WorkoutType
 from .utils import get_or_create_day, get_or_create_today
@@ -140,7 +140,13 @@ def food_setting(request):
 
 
 def graph_setting(request):
-    return render(request, 'core/graph_settings.html')
+    profile = request.user.profile
+    if request.method == "POST":
+        choice = request.POST.get("calendar_view")
+        if choice in dict(Profile.CALENDAR_VIEWS):
+            profile.calendar_view = choice
+            profile.save()
+    return render(request, 'core/graph_settings.html', {"profile": profile})
 
 
 def workout_setting(request):
@@ -268,20 +274,19 @@ def get_current_streak(request):
     today = date.today()
     streak = 0
     curr = today
-
     while request.user.days.filter(date=curr).exists():
+        # check to see if the day has no data
         day = request.user.days.filter(
             date=curr,
-            bodyweight__isnull=False,
+            bodyweight__isnull=True,
             water_consumed=0,
             sleep=0,
             calories_consumed=0,
         ).first()
-        if day is None:
+        if day is not None:
             break
         streak += 1
         curr -= timedelta(days=1)
-
     return render(request, "core/streak_highlight.html", {"streak": streak})
 
 
