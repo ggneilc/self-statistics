@@ -1,9 +1,8 @@
 <div id="lift-chart-container" data-lifts='{{ data|safe }}'
-style="width:100%;"></div>
+style="width:100%; height:100%; display:flex;"></div>
 
 <script>
 (function() {
-    // 1. Fetch data from our Django view
     const container = document.getElementById("lift-chart-container");
     if (!container) return;
 
@@ -11,83 +10,104 @@ style="width:100%;"></div>
     try {
         data = JSON.parse(container.dataset.lifts);
     } catch (err) {
-        console.error("Invalid day data:", err);
+        console.error("Invalid lift data:", err);
         return;
     }
 
-    // Parse dates
     const parseDate = d3.isoParse;
     data.forEach(d => { d.date = parseDate(d.date); });
 
-    // 2. Fixed internal dimensions (viewBox) — SVG scales to container
-    const margin = {top: 20, right: 30, bottom: 40, left: 50};
-    const baseWidth = 800;
-    const baseHeight = 250;
-    const width = baseWidth - margin.left - margin.right;
-    const height = baseHeight - margin.top - margin.bottom;
+    const margin = { top: 20, right: 30, bottom: 40, left: 50 };
 
+    // Create the SVG once, let ResizeObserver update it
     const svgEl = d3.select(container)
         .append("svg")
-        .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
-        .attr("preserveAspectRatio", "xMidYMid meet")
         .style("width", "100%")
-        .style("height", "100%");
+        .style("height", "100%")
+        .style("display", "block");
 
-    const svg = svgEl.append("g")
+    const g = svgEl.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // --- NEW: EMPTY STATE CHECK ---
-    if (data.length < 2) {
-        svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", height / 2)
-            .attr("text-anchor", "middle")
-            .style("font-size", "14px")
-            .style("fill", "var(--pico-muted-color)") // Using Pico.css variables
-            .text("Perform 2 lifts to see trends");
-        return; // Stop execution here
-    }
-    // ------------------------------
-
-    // 3. Set Scales
-    const x = d3.scaleTime()
-        .domain(d3.extent(data, d => d.date))
-        .range([0, width]);
-
-    const y = d3.scaleLinear()
-        .domain([d3.min(data, d => d.one_rm) * 0.9, d3.max(data, d => d.one_rm) * 1.1])
-        .range([height, 0]);
-
-    // 4. Add Axes
-    svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x).ticks(5));
-
-    svg.append("g")
-        .call(d3.axisLeft(y));
-
-    // 5. Add the Line
-    const line = d3.line()
-        .x(d => x(d.date))
-        .y(d => y(d.one_rm))
-        .curve(d3.curveMonotoneX);
-
-    svg.append("path")
-        .datum(data)
-        .attr("fill", "none")
+    // Persistent axis/line/dot groups so we update rather than redraw
+    const xAxisG = g.append("g").attr("class", "x-axis");
+    const yAxisG = g.append("g").attr("class", "y-axis");
+    const linePath = g.append("path").attr("fill", "none")
         .attr("stroke", "var(--pico-primary)")
-        .attr("stroke-width", 3)
-        .attr("d", line);
+        .attr("stroke-width", 2);
+    const dotsG = g.append("g").attr("class", "dots");
+    const emptyText = g.append("text")
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("fill", "var(--pico-muted-color)")
+        .text("Perform 2 lifts to see trends")
+        .style("display", "none");
 
-    // 6. Add Tooltip Dots
-    svg.selectAll("dot")
-        .data(data)
-        .enter().append("circle")
-        .attr("r", 5)
-        .attr("cx", d => x(d.date))
-        .attr("cy", d => y(d.one_rm))
-        .attr("fill", "var(--pico-primary)")
-        .append("title")
-        .text(d => `${d.one_rm}kg on ${d.date.toLocaleDateString()}`);
+    function render(width, height) {
+        const innerW = width - margin.left - margin.right;
+        const innerH = height - margin.top - margin.bottom;
+
+        if (data.length < 2) {
+            linePath.style("display", "none");
+            dotsG.style("display", "none");
+            xAxisG.style("display", "none");
+            yAxisG.style("display", "none");
+            emptyText
+                .style("display", null)
+                .attr("x", innerW / 2)
+                .attr("y", innerH / 2);
+            return;
+        }
+
+        emptyText.style("display", "none");
+        linePath.style("display", null);
+        dotsG.style("display", null);
+        xAxisG.style("display", null);
+        yAxisG.style("display", null);
+
+        const x = d3.scaleTime()
+            .domain(d3.extent(data, d => d.date))
+            .range([0, innerW]);
+
+        const y = d3.scaleLinear()
+            .domain([d3.min(data, d => d.one_rm) * 0.9, d3.max(data, d => d.one_rm) * 1.1])
+            .range([innerH, 0]);
+
+        xAxisG
+            .attr("transform", `translate(0,${innerH})`)
+            .call(d3.axisBottom(x).ticks(5));
+
+        yAxisG.call(d3.axisLeft(y));
+
+        const line = d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.one_rm))
+            .curve(d3.curveMonotoneX);
+
+        linePath.datum(data).attr("d", line);
+
+        const dots = dotsG.selectAll("circle").data(data);
+        dots.enter().append("circle")
+            .append("title")
+          .merge(dots)
+            .attr("r", 5)
+            .attr("cx", d => x(d.date))
+            .attr("cy", d => y(d.one_rm))
+            .attr("fill", "var(--pico-primary)");
+
+        dotsG.selectAll("circle").select("title")
+            .text(d => `${d.one_rm} lbs on ${d.date.toLocaleDateString()}`);
+
+        dots.exit().remove();
+    }
+
+    // Observe container size and re-render on change
+    const ro = new ResizeObserver(entries => {
+        for (const entry of entries) {
+            const { width, height } = entry.contentRect;
+            if (width > 0 && height > 0) render(width, height);
+        }
+    });
+    ro.observe(container);
 })();
 </script>

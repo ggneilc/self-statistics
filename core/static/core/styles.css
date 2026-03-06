@@ -1402,9 +1402,8 @@ text {
 
 #lift-graph {
   flex: 3;
-  border: 1px solid #0d0f0f;
-  border-radius: var(--pico-border-radius);
-  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  border-bottom-right-radius: var(--pico-border-radius);
+  border-bottom-left-radius: var(--pico-border-radius);
 }
 
 #lift-name {
@@ -1426,7 +1425,6 @@ text {
 #lift-details {
   flex:1;
   border-radius: var(--pico-border-radius);
-  box-shadow: -3px 3px 0px 0px #0d0f0f;
 }
 
 #lift-sets {
@@ -1462,6 +1460,200 @@ text {
 }
 .lift-accolade-value {
   font-size: x-large;
+}
+
+/* === Movement Details Page === */
+.movement-details {
+  flex: 1;
+  padding: 0.75rem;
+  gap: 0.75rem;
+  min-height: 0;
+  /* overflow: hidden; */
+}
+
+/* Header: lift name + level badge */
+.movement-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+  flex-shrink: 0;
+}
+.movement-details-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+.movement-details-level {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--pico-primary);
+  background-color: var(--pico-card-sectioning-background-color);
+  border: 1px solid var(--pico-primary);
+  border-radius: var(--pico-border-radius);
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* Graph container */
+.movement-graph-container {
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  /* overflow: hidden; */
+}
+.movement-graph-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+  background-color: var(--pico-card-sectioning-background-color);
+  border-bottom: 1px solid #0d0f0f;
+  flex-shrink: 0;
+}
+.movement-graph-actions {
+  margin-left: auto;
+}
+.movement-graph-btn {
+  padding: 0 0.35rem;
+  font-size: 0.75rem;
+}
+#lift-graph {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Bottom split: history + accolades */
+.movement-details-bottom {
+  flex: 10;
+  min-height: 0;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+/* Shared section card */
+.movement-section {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  padding: 0;
+  gap: 0;
+}
+.movement-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 0.35rem 0.6rem;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-bottom: 1px solid #0d0f0f;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* Lift history list */
+.movement-history-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 0.5rem;
+  gap: 0.4rem;
+}
+.lift-set-entry {
+  background-color: var(--pico-background-color);
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -2px 2px 0px 0px #0d0d0f;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: .4rem;
+}
+.lift-set-date {
+  font-size: 0.75rem;
+  color: var(--pico-primary);
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+  padding-bottom: 0.2rem;
+  margin-bottom: 0.1rem;
+}
+.lift-set-row {
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+.lift-set-sep {
+  color: var(--pico-muted-color);
+  font-size: 0.75rem;
+}
+
+/* Accolade cards */
+.movement-accolade-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  flex: 1;
+  padding: 0.5rem;
+  border-bottom: 1px solid #0d0f0f;
+}
+.movement-accolade-card:last-of-type {
+  border-bottom: none;
+}
+.lift-accolade-header {
+  font-size: 0.75rem;
+  color: var(--pico-muted-color);
+  background-color: transparent;
+  margin-top: 0;
+}
+.lift-accolade-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--pico-color);
+}
+.accolade-unit {
+  font-size: 0.9rem;
+  color: var(--pico-muted-color);
+  font-weight: normal;
+}
+
+/* Empty states */
+.movement-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1;
+  color: var(--pico-muted-color);
+  font-size: 0.85rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+.movement-empty-state i {
+  font-size: 1.5rem;
+  opacity: 0.4;
+}
+.movement-empty-value {
+  color: var(--pico-muted-color);
+  font-size: 1.5rem;
 }
 
 #lift-carosel {
