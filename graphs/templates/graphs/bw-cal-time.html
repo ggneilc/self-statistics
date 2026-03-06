@@ -1,0 +1,204 @@
+<style>
+    .d3-tooltip {
+        position: absolute;
+        text-align: left;
+        padding: 8px;
+        font: 14px var(--font-family, sans-serif);
+        background: var(--card-background-color, #1e1e1e);
+        color: var(--text, #f5f5f5);
+        border: 1px solid var(--pico-secondary, #707a8a);
+        border-radius: 4px;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 1000;
+    }
+</style>
+
+<div id="d3-combo-line-bar" data-days='{{ day_data|safe }}'></div>
+
+<script>
+    (function () {
+        const container = document.getElementById("d3-combo-line-bar");
+        if (!container) return;
+
+        let data;
+        try {
+            data = JSON.parse(container.dataset.days);
+        } catch (err) {
+            console.error("Invalid day data:", err);
+            return;
+        }
+
+        // Filter out rows without date
+        data = data.filter(d => d.day);
+
+        data = data.map(d => ({
+            date: new Date(d.day),
+            bodyweight: d.bodyweight !== null ? +d.bodyweight : null,
+            ma7: d.ma7 !== null ? +d.ma7 : null,
+            calories: d.calories !== null ? +d.calories : null
+        })).sort((a, b) => a.date - b.date);
+
+        container.innerHTML = "";
+
+        const margin = { top: 20, right: 50, bottom: 40, left: 50 };
+        const baseWidth = 1000;
+        const baseHeight = 350;
+
+        const x = d3.scaleTime()
+            .domain(d3.extent(data, d => d.date))
+            .range([margin.left, baseWidth - margin.right]);
+
+        // calculate y domains
+        const bwData = data.filter(d => d.bodyweight !== null);
+        const bwMin = d3.min(bwData, d => d.bodyweight) || 0;
+        const bwMax = d3.max(bwData, d => d.bodyweight) || 0;
+
+        // Fallback if no bodyweight entries
+        const yBodyweight = d3.scaleLinear()
+            .domain([bwMin > 0 ? bwMin - 1 : 0, bwMax > 0 ? bwMax + 1 : 100])
+            .nice()
+            .range([baseHeight - margin.bottom, margin.top]);
+
+        const maxCalories = d3.max(data, d => d.calories) || 0;
+        const yCalories = d3.scaleLinear()
+            .domain([0, maxCalories > 0 ? maxCalories : 3000])
+            .nice()
+            .range([baseHeight - margin.bottom, margin.top]);
+
+        const svg = d3.select(container)
+            .append("svg")
+            .attr("viewBox", `0 0 ${baseWidth} ${baseHeight}`)
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .style("width", "100%")
+            .style("height", "100%");
+
+        const g = svg.append("g");
+
+        // X axis
+        g.append("g")
+            .attr("transform", `translate(0,${baseHeight - margin.bottom})`)
+            .call(d3.axisBottom(x).ticks(baseWidth / 100).tickFormat(d3.timeFormat("%b %d")))
+            .selectAll("text")
+            .style("font-size", "14px")
+            .style("fill", "var(--text, #f5f5f5)");
+
+        // Y Axis Bodyweight (Left)
+        g.append("g")
+            .attr("transform", `translate(${margin.left},0)`)
+            .call(d3.axisLeft(yBodyweight).ticks(5))
+            .selectAll("text")
+            .style("font-size", "14px")
+            .style("fill", "var(--accent, #ffc83d)");
+
+        // Y Axis Calories (Right)
+        g.append("g")
+            .attr("transform", `translate(${baseWidth - margin.right},0)`)
+            .call(d3.axisRight(yCalories).ticks(5))
+            .selectAll("text")
+            .style("font-size", "14px")
+            .style("fill", "var(--pico-secondary, #707a8a)");
+
+        // Tooltip
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "d3-tooltip");
+
+        // Calculate generic barWidth
+        const minD = d3.min(data, d => d.date);
+        const maxD = d3.max(data, d => d.date);
+        const daysDiff = (maxD && minD) ? Math.max(1, (maxD - minD) / (1000 * 60 * 60 * 24)) : 1;
+        const xRange = baseWidth - margin.left - margin.right;
+        const barWidth = Math.max(2, Math.min(xRange / daysDiff * 0.8, 40));
+
+        // Draw Calories Bars
+        svg.append("g")
+            .selectAll("rect")
+            .data(data.filter(d => d.calories !== null))
+            .enter()
+            .append("rect")
+            .attr("fill", "var(--pico-secondary, #707a8a)")
+            .attr("opacity", 0.3) // Transparent to stay visually back
+            .attr("x", d => x(d.date) - barWidth / 2)
+            .attr("y", d => yCalories(d.calories))
+            .attr("width", barWidth)
+            .attr("height", d => baseHeight - margin.bottom - yCalories(d.calories))
+            .on("mouseover", function (event, d) {
+                d3.select(this).attr("opacity", 0.6);
+                tooltip.transition().duration(200).style("opacity", .9);
+                tooltip.html(`<strong>${d3.timeFormat("%b %d")(d.date)}</strong><br/>Calories: ${d.calories}`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (event, d) {
+                d3.select(this).attr("opacity", 0.3);
+                tooltip.transition().duration(500).style("opacity", 0);
+            });
+
+        // Line Generators
+        const line = d3.line()
+            .defined(d => d.bodyweight !== null)
+            .x(d => x(d.date))
+            .y(d => yBodyweight(d.bodyweight))
+            .curve(d3.curveMonotoneX);
+
+        const maline = d3.line()
+            .defined(d => d.ma7 !== null)
+            .x(d => x(d.date))
+            .y(d => yBodyweight(d.ma7))
+            .curve(d3.curveBasis);
+
+        // Moving Average Line
+        const maPath = svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "var(--pico-secondary, #707a8a)")
+            .attr("stroke-width", 3)
+            .attr("d", maline);
+
+        const totalLength = maPath.node() ? maPath.node().getTotalLength() : 0;
+
+        if (totalLength > 0) {
+            maPath
+                .attr("stroke-dasharray", totalLength + " " + totalLength)
+                .attr("stroke-dashoffset", totalLength)
+                .transition()
+                .duration(2000)
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0);
+        }
+
+        // Raw Weight Line
+        svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", "var(--accent, #ffc83d)")
+            .attr("stroke-width", 3)
+            .attr("d", line);
+
+        // Points
+        svg.selectAll(".dot")
+            .data(data.filter(d => d.bodyweight !== null))
+            .enter()
+            .append("circle")
+            .attr("class", "dot")
+            .attr("cx", d => x(d.date))
+            .attr("cy", d => yBodyweight(d.bodyweight))
+            .attr("fill", "var(--accent, #ffc83d)")
+            .on("mouseover", function (event, d) {
+                d3.select(this).attr("r", 8);
+                tooltip.transition().duration(200).style("opacity", .9);
+                tooltip.html(`<strong>${d3.timeFormat("%b %d")(d.date)}</strong><br/>Bodyweight: ${d.bodyweight} lbs`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (event, d) {
+                d3.select(this).attr("r", 5);
+                tooltip.transition().duration(500).style("opacity", 0);
+            })
+            .transition()
+            .delay((d, i) => i * 30)
+            .duration(500)
+            .attr("r", 5);
+
+    })();
+</script>

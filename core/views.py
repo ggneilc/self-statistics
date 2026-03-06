@@ -274,20 +274,19 @@ def get_current_streak(request):
     today = date.today()
     streak = 0
     curr = today
-
     while request.user.days.filter(date=curr).exists():
+        # check to see if the day has no data
         day = request.user.days.filter(
             date=curr,
-            bodyweight__isnull=False,
+            bodyweight__isnull=True,
             water_consumed=0,
             sleep=0,
             calories_consumed=0,
         ).first()
-        if day is None:
+        if day is not None:
             break
         streak += 1
         curr -= timedelta(days=1)
-
     return render(request, "core/streak_highlight.html", {"streak": streak})
 
 

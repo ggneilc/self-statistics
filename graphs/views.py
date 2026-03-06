@@ -17,25 +17,7 @@ from calendar import monthrange
 
 
 
-# === Graph Display Container === #
-
-def calendar_container(request):
-    return render(request, 'graphs/calendar_area.html')
-
-
-def trend_container(request):
-    return render(request, 'graphs/trend_area.html')
-
 # === Calendars ===
-
-def get_days_of_month(user, selected_date=None):
-    if selected_date:
-        today = datetime.strptime(selected_date, "%Y-%m-%d").date()
-    else:
-        today = date.today()
-    start = today.replace(day=1)
-    end = today.replace(day=monthrange(today.year, today.month)[1])
-    return user.days.filter(date__range=(start, end))
 
 def calendar_heatmap(request):
     """Display calendar heatmap. Template (1-week vs 2-week window)
@@ -52,31 +34,6 @@ def calendar_heatmap(request):
         template_name = "graphs/one-week-calendar.html"
     return render(request, template_name, {"day_data": json.dumps(days)})
 
-
-def weekly_calendar(request):
-    ''' display 7x1 grid of rects '''
-    days = Day.objects.filter(user=request.user)
-    days = [d for d in days if d.date.isoformat() != "0001-01-01"]
-    days = days[:7]
-    avg_cals = sum([d.calories_consumed for d in days])/7
-    avg_bw = sum(
-        [d.bodyweight if d.bodyweight is not None else 0 for d in days])/7
-    structured = []
-    for d in days:
-        # weekday: 1 (Mon)–7 (Sun)
-        iso_year, iso_week, iso_weekday = d.date.isocalendar()
-        structured.append({
-            "id": d.id,
-            "year": iso_year,
-            "week": iso_week,
-            "day": iso_weekday - 1,  # convert to 0-indexed: 0 (Mon)–6 (Sun)
-            "date": d.date.isoformat(),
-            "ratio": round(d.calorie_ratio, 2)
-        })
-    return render(request, "graphs/weekly_calendar.html",
-                  {"day_data": json.dumps(structured),
-                   "avg_cals": avg_cals,
-                   "avg_bw": avg_bw})
 
 
 # === Line Graphs ===
@@ -107,9 +64,47 @@ def get_lift_graph_orm(request, lift_name):
     return render(request, "graphs/lift_graph_orm.html", {'data': json.dumps(data)})
 
 
+def get_bw_cal_time(request):
+    '''
+    Time series of Bodyweight / Cals / Day 
+        : bodyweight is line chart with 7 day moving average
+        : calories is bar chart
+    '''
+    data = request.user.days.all().exclude(date=date(1, 1, 1)).order_by('date')
+    df = pd.DataFrame([
+        {
+            "date": d.date, 
+            "bodyweight": d.bodyweight,
+            "calories": d.calories_consumed
+        }
+        for d in data
+    ])
+    
+    out_data = []
+    if not df.empty:
+        df['date'] = pd.to_datetime(df['date'])
+        df = df.set_index('date')
+        
+        # moving average for bodyweight
+        df["weight_ma7"] = df["bodyweight"].rolling(7, min_periods=1).mean()
+        
+        # replace NaN with None for json serialization
+        df_clean = df.replace({np.nan: None})
+        
+        for row in df_clean.itertuples():
+            out_data.append({
+                "day": row.Index.isoformat(),
+                "bodyweight": row.bodyweight,
+                "ma7": row.weight_ma7,
+                "calories": row.calories
+            })
+            
+    context = {"day_data": json.dumps(out_data)}
+    return render(request, 'graphs/bw-cal-time.html', context)
+
 def get_bw_graph(request):
     '''Time series of Bodyweight / Day'''
-    df, _, stats = get_bodyweight_summary(request)
+    df, _, _ = get_bodyweight_summary(request)
     df = df.dropna(subset=['bodyweight'])
     data = [
         {
@@ -119,55 +114,13 @@ def get_bw_graph(request):
         }
         for row in df.itertuples()
     ]
-    summary = render_to_string('graphs/bodyweight_summary.html',
-                               context=stats, request=request)
-    context = {
-        "day_data": json.dumps(data),
-        "summary": summary
-    }
+    context = {"day_data": json.dumps(data)}
     return render(request, 'graphs/bw-time.html', context)
 
-
-def get_bw_weekly(request):
-    ''' return weekly bodyweight graph '''
-    _, timed_interval, stats = get_bodyweight_summary(request, time=7)
-    weekly_weights = timed_interval.dropna().round(2).astype(float)
-    data = [
-        {"day": date.isoformat(), "value": bodyweight}
-        for date, bodyweight in weekly_weights.items()
-    ]
-    summary = render_to_string('graphs/bodyweight_summary.html',
-                               context=stats, request=request)
-    context = {
-        "day_data": json.dumps(data),
-        "summary": summary
-    }
-    return render(request, 'graphs/bw-time.html', context)
-
-
-def get_bw_monthly(request):
-    ''' return weekly bodyweight graph '''
-    _, timed_interval, stats = get_bodyweight_summary(request, time=30)
-    monthly_weights = timed_interval.dropna().round(2).astype(float)
-    data = [
-        {"day": date.isoformat(), "value": bodyweight}
-        for date, bodyweight in monthly_weights.items()
-    ]
-    summary = render_to_string('graphs/bodyweight_summary.html',
-                               context=stats, request=request)
-    context = {
-        "day_data": json.dumps(data),
-        "summary": summary
-    }
-    return render(request, 'graphs/bw-time.html', context)
 
 
 def get_cal_graph(request):
     '''Time series of Calories / Day'''
-#    df, _, stats = get_calorie_summary(request)
-#    df = df.dropna(subset=['cals'])
-#    summary = render_to_string('graphs/calorie_summary.html',
-#                               context=stats, request=request)
     days = request.user.days.all().exclude(date=date(1, 1, 1))
     data = [
         {
@@ -179,46 +132,10 @@ def get_cal_graph(request):
         }
         for d in days
     ]
-    context = {
-        "day_data": json.dumps(data),
-    }
+    context = {"day_data": json.dumps(data)}
     return render(request, 'graphs/cal-time.html', context)
 
-
-def get_cals_weekly(request):
-    ''' return weekly calorie graph '''
-    _, timed_interval, stats = get_calorie_summary(request, time=7)
-    weekly_weights = timed_interval.dropna().round(2).astype(float)
-    data = [
-        {"day": date.isoformat(), "value": bodyweight}
-        for date, bodyweight in weekly_weights.items()
-    ]
-    summary = render_to_string('graphs/calorie_summary.html',
-                               context=stats, request=request)
-    context = {
-        "day_data": json.dumps(data),
-        "summary": summary
-    }
-    return render(request, 'graphs/cal-time.html', context)
-
-
-def get_cals_monthly(request):
-    ''' return weekly calorie graph '''
-    _, timed_interval, stats = get_calorie_summary(request, time=30)
-    monthly_weights = timed_interval.dropna().round(2).astype(float)
-    data = [
-        {"day": date.isoformat(), "value": bodyweight}
-        for date, bodyweight in monthly_weights.items()
-    ]
-    summary = render_to_string('graphs/calorie_summary.html',
-                               context=stats, request=request)
-    context = {
-        "day_data": json.dumps(data),
-        "summary": summary
-    }
-    return render(request, 'graphs/cal-time.html', context)
-
-
+# Unused
 def get_volume_graph(request):
     '''Time series of Volume / Day'''
     days = Day.objects.filter(user=request.user).exclude(date=date(1, 1, 1))
@@ -242,40 +159,6 @@ def get_volume_graph(request):
     }
     return render(request, 'graphs/volume-time.html', context)
 
-
-def get_type_stats(request, type_id):
-    workouts = (
-        Workout.objects.filter(day__user=request.user, workout_type=type_id)
-        .exclude(day__date=date(1, 1, 1))
-        .select_related("day", "workout_type")
-        .prefetch_related("lifts__sets")
-        .order_by("-day__date", "-id")
-    )
-    df = pd.DataFrame([
-        {"date": d.day.date, "workout_type": d.workout_type,
-            "total_volume": d.total_volume()}
-        for d in workouts
-    ])
-    df['date'] = pd.to_datetime(df['date'])
-    df = df.set_index('date')
-
-    data = [
-        {
-            "day": row.Index.isoformat(),
-            "value": row.total_volume,
-        }
-        for row in df.itertuples()
-    ]
-    workout_types = request.user.workout_types.all()
-    stats = get_workout_type_summary(df)
-    summary = render_to_string('graphs/volume_summary.html',
-                               context=stats, request=request)
-    context = {
-        "day_data": json.dumps(data),
-        "summary": summary,
-        "workout_types": workout_types
-    }
-    return render(request, 'graphs/volume-time.html', context)
 
 
 # === Macro breakdown Pie Charts ===
