@@ -27,7 +27,7 @@
                 <div class="workout-total">Total Weight: {{workout.total_volume}} lbs</div>
             </div>
             <div id="workout-lifts" class="horizontal-group">
-                {% include 'workouts/lifts.html' with lifts=workout.lifts.all active=False id=workout.id total=workout.total %}
+                {% include 'workouts/lifts.html' with lifts=workout.lifts.all active=False id=workout.id total=workout.total_volume %}
             </div>
         </div>
     </div>

@@ -39,4 +39,4 @@ function stopRestTimerAndPopulate() {
 //    if (start) start.addEventListener("click", startRestTimer);
 //    if (form) form.addEventListener("submit", stopRestTimerAndPopulate);
 //  }
-});
+//});

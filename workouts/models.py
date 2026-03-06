@@ -187,7 +187,10 @@ class Lift(models.Model):
         best = self.get_best_set()
         if best:
             # Brzycki Formula: Weight / (1.0278 - (0.0278 * Reps))
-            return best.weight / (1.0278 - (0.0278 * best.reps))
+            denominator = 1.0278 - (0.0278 * best.reps)
+            if denominator <= 0:
+                return best.weight  # formula breaks down above ~37 reps
+            return best.weight / denominator
         return 0
 
     def __str__(self):
