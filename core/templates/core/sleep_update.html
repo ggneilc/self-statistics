@@ -1,6 +1,4 @@
-<div class="bw-card"
-  hx-get="{% url 'core:edit_sleep' %}"
-  hx-trigger="click"
-  hx-target="#sleep-input">
- <i class="fa-solid fa-bed"></i>{{sleep}} hrs
+<div id="sleep-input" class="day-header-item" hx-get="{% url 'core:edit_sleep' %}" hx-trigger="click"
+  hx-target="#sleep-input" hx-swap="outerHTML swap:0.2s">
+  <i class="fa-solid fa-bed"></i>{{sleep}} hrs
 </div>

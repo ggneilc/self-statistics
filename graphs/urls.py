@@ -10,6 +10,7 @@ urlpatterns = [
     path("nutrient/macros", views.get_macro_breakdown, name="macros"),
     path("nutrient/minerals", views.get_mineral_breakdown, name="minerals"),
     path("nutrient/vitamins", views.get_vitamin_breakdown, name="vitamins"),
+    path("nutrient/overview", views.get_nutrient_overview, name="nutrient-overview"),
     path("graph/macro/completion", views.get_macro_completion, name="macro-completion"),
     path("graph/mineral/completion", views.get_mineral_completion, name="mineral-completion"),
     path("graph/vitamin/completion", views.get_vitamin_completion, name="vitamin-completion"),

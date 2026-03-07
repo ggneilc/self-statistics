@@ -213,20 +213,20 @@ def get_macro_breakdown(request):
     total = day.calories_consumed
     goals = {}
     data = {
-        'Sleep': day.sleep,
-        'Water': day.water_consumed,
-        'Fat': fat,
-        'Carbs': carbs,
-        'Protein': protein,
         'Calories': total,
+        'Protein': protein,
+        'Carbs': carbs,
+        'Fat': fat,
+        'Water': day.water_consumed,
+        'Sleep': day.sleep,
     }
     goals = {
-        'Sleep': day.sleep_goal,
-        'Water': day.water_goal,
-        'Fat': round((day.calorie_goal - (day.protein_goal * 4)) * 0.3 / 9),
-        'Carbs': round((day.calorie_goal - (day.protein_goal * 4)) * 0.7 / 4),
-        'Protein': day.protein_goal,
         'Calories': day.calorie_goal,
+        'Protein': day.protein_goal,
+        'Carbs': round((day.calorie_goal - (day.protein_goal * 4)) * 0.7 / 4),
+        'Fat': round((day.calorie_goal - (day.protein_goal * 4)) * 0.3 / 9),
+        'Water': day.water_goal,
+        'Sleep': day.sleep_goal,
     }
     context = {
         "day_data": json.dumps(data),
@@ -259,6 +259,49 @@ def get_vitamin_breakdown(request):
         "goals": json.dumps(goals)
     }
     return render(request, 'graphs/vitamin-pie.html', context)
+
+def get_nutrient_overview(request):
+    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    carbs, protein, fat = day.macro_breakdown
+    total = day.calories_consumed
+    goal_type = get_goal_type(request.user)
+    
+    macro_data = {
+        'Calories': total,
+        'Protein': protein,
+        'Carbs': carbs,
+        'Fat': fat,
+        'Water': day.water_consumed,
+        'Sleep': day.sleep,
+    }
+    macro_goals = {
+        'Calories': day.calorie_goal,
+        'Protein': day.protein_goal,
+        'Carbs': round((day.calorie_goal - (day.protein_goal * 4)) * 0.7 / 4),
+        'Fat': round((day.calorie_goal - (day.protein_goal * 4)) * 0.3 / 9),
+        'Water': day.water_goal,
+        'Sleep': day.sleep_goal,
+    }
+    
+    mineral_goals = {}
+    for mineral, values in RDA_LOOKUP['Minerals'].items():
+        mineral_goals[mineral] = values[goal_type]
+    mineral_data = day.mineral_breakdown
+    
+    vitamin_goals = {}
+    for vitamin, values in RDA_LOOKUP['Vitamins'].items():
+        vitamin_goals[vitamin] = values[goal_type]
+    vitamin_data = day.vitamin_breakdown
+    
+    context = {
+        "macro_data": json.dumps(macro_data),
+        "macro_goals": json.dumps(macro_goals),
+        "mineral_data": json.dumps(mineral_data),
+        "mineral_goals": json.dumps(mineral_goals),
+        "vitamin_data": json.dumps(vitamin_data),
+        "vitamin_goals": json.dumps(vitamin_goals)
+    }
+    return render(request, 'graphs/all-nutrients.html', context)
 
 # === Statistics Computations ===
 
