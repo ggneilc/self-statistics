@@ -8,6 +8,7 @@
     - Movement          : defines a type of lift 
     - Weekly Volume     : Weekly volume of sets performed 
 """
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,  get_object_or_404
 from django.http import HttpResponse, HttpRequest
 from django.template.loader import render_to_string
