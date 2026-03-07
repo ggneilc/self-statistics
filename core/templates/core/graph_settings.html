@@ -1,4 +1,35 @@
 <div class="settings-content">
   <h1>Graph Settings</h1>
-  <p style="text-align: center; color: var(--pico-muted-color);">Default graph display settings coming soon</p>
+
+  <form method="post"
+        hx-post="{% url 'core:graph_setting' %}"
+        hx-target="#profile-main"
+        hx-swap="innerHTML">
+    {% csrf_token %}
+
+    <section class="form-field">
+      <label><strong>Calendar view</strong></label>
+      <fieldset role="group">
+        <label>
+          <input type="radio"
+                 name="calendar_view"
+                 value="1w"
+                 {% if profile.calendar_view == '1w' %}checked{% endif %}>
+          1 week
+        </label>
+        <label>
+          <input type="radio"
+                 name="calendar_view"
+                 value="2w"
+                 {% if profile.calendar_view != '1w' %}checked{% endif %}>
+          2 weeks
+        </label>
+      </fieldset>
+      <span class="help-text">Controls whether the dashboard calendar shows 1 or 2 weeks at a time.</span>
+    </section>
+
+    <div class="auth-buttons">
+      <button type="submit" class="form_btn">Save graph settings</button>
+    </div>
+  </form>
 </div>

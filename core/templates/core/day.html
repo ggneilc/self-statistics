@@ -1,22 +1,15 @@
 <header class="day-header">
-  <div class="day-header-left">
-    <div class="day-header-streak" hx-get="{% url 'core:curr_streak' %}" hx-trigger="load"></div>
-    <div id="day-weight" class="day-header-bw"
-      hx-get="{% url 'core:get_bw' %}"
-      hx-trigger="load"
-      hx-swap="innerHTML swap:0.5s"></div>
-  </div>
-  <div class="day-header-date">
-    <i class="fa-solid fa-utensils" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Meal Plan
-  </div>
-  <div class="day-header-date">
-    <i class="fa-solid fa-bullseye" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Tasks
-  </div>
-  <div class="day-header-actions">
+  <div id="day-weight" class="day-header-item"
+    hx-get="{% url 'core:get_bw' %}"
+    hx-trigger="load"
+    hx-swap="outerHTML"></div>
+  <div class="day-header-item"><i class="fa-solid fa-utensils" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Meals</div>
+  <div class="day-header-item"><i class="fa-solid fa-bullseye" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Tasks</div>
+  <span class="day-card-flip">
     <button type="button" style="padding: 0 0.3rem; margin-bottom: 0">
       <i class="fa-solid fa-rotate"></i>
     </button>
-  </div>
+  </span>
 </header>
 
 <div class="horizontal-group nutrition-breakdown" style="flex: 4;">
@@ -32,8 +25,14 @@
 </div>
 <div id="nutrition-breakdown-indicators" class="nutrition-breakdown-indicators" aria-hidden="true"></div>
 
-<div class="horizontal-group day-bottom-section">
-  <div class="day-meal-plan-item"> Stats : x </div>
+
+<div id="nutrition-information" class="horizontal-group day-bottom-section">
+  <div id="macro-completion"   class="day-nutrient-completion"
+    hx-get="{% url 'graphs:macro-completion' %}" hx-trigger="load, dayUpdated from:body"></div>
+  <div id="mineral-completion" class="day-nutrient-completion"
+    hx-get="{% url 'graphs:mineral-completion' %}" hx-trigger="load, dayUpdated from:body"></div>
+  <div id="vitamin-completion" class="day-nutrient-completion"
+    hx-get="{% url 'graphs:vitamin-completion' %}" hx-trigger="load, dayUpdated from:body"></div>
 </div>
 
 

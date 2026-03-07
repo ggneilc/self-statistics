@@ -1,43 +1,129 @@
-<div class="vertical-group" style="flex:1;">
-  <div class="horizontal-group" style="flex:3;">
-      <div id="lift-graph"
-        hx-get="{% url 'graphs:lift_orm' movement.name %}"
-        hx-trigger="load">
-      </div>
-      <div id="lift-details" style="flex:1;border:1px solid #0d0f0f;"class="vertical-group">
-        <div id="lift-info" class="horizontal-group" style="flex:1;">
-          <div id="lift-name">{{movement.name}}</div>
-          <div id="lift-level">
-            <span style="margin-top:6px;">Lv </span>
-            <span style="font-size:large;margin-left:3px;"> {{movement.level|stringformat:"d"}} </span>
-          </div>
-        </div>
-        <div id="lift-sets" class="vertical-group" style="flex:2; overflow-y:auto; max-height: 20vh;">
+<article class="vertical-group movement-details">
+
+  <div class="movement-details-header">
+    <span class="movement-details-name">{{ movement.name }}</span>
+    <span class="movement-details-level">Lv {{ movement.level|stringformat:"d" }}</span>
+  </div>
+
+  <div class="movement-graph-container">
+    <div class="movement-graph-label">
+      <i class="fa-solid fa-chart-line"></i>
+      Estimated 1RM
+      <span class="movement-graph-actions">
+        <button class="movement-graph-btn outline" data-tooltip="More graphs coming soon" data-placement="left">
+          <i class="fa-solid fa-chart-column"></i>
+        </button>
+      </span>
+    </div>
+    <div id="lift-graph" hx-get="{% url 'graphs:lift_orm' movement.name %}" hx-trigger="load">
+    </div>
+  </div>
+
+  <div class="horizontal-group movement-details-bottom">
+
+    <div class="vertical-group" id="lift-details">
+      <article id="lift-info" class="vertical-group movement-section">
+        <header class="movement-section-header">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Lift History
+        </header>
+        <div id="lift-sets" class="vertical-group movement-history-list">
           {% for lift in movement.instances.all %}
-          <div class="lift-set" style="border:1px solid #0d0f0f; border-radius: 5px; padding: 5px; margin-bottom: 5px;">
-            <div class="lift-set-name" style="display: flex; align-items: center; justify-content: center;">{{lift.workout.day.date|date:"m/d/Y"}}</div>
+          <div class="lift-set-entry">
+            <div class="lift-set-date">{{ lift.workout.day.date|date:"m/d/Y" }}</div>
             {% for set in lift.sets.all %}
-            <div class="horizontal-group" style="align-items: center; justify-content: center;">
-              <div class="set-reps">{{set.reps}}</div>
-              <div>×</div>
-              <div class="set-weight">{{set.weight}}</div>
+            <div class="horizontal-group lift-set-row">
+              <div class="set-reps">{{ set.reps }}</div>
+              <div class="lift-set-sep">×</div>
+              <div class="set-weight">{{ set.weight }}</div>
             </div>
             {% endfor %}
           </div>
           {% endfor %}
         </div>
+      </article>
+    </div>
+
+    <article class="vertical-group movement-section" id="lift-accolades" style="height: revert;">
+      <header class="movement-section-header">
+        <i class="fa-solid fa-trophy"></i>
+        Accolades
+      </header>
+      <div class="movement-accolade-card">
+        <div class="lift-accolade-header">Current (est.) 1RM</div>
+        <div class="lift-accolade-value">
+          {% if movement.instances.all.0.estimated_1rm %}
+          {{ movement.instances.all.0.estimated_1rm|floatformat:0 }} <span class="accolade-unit">lbs</span>
+          {% else %}
+          <span class="movement-empty-value">—</span>
+          {% endif %}
+        </div>
       </div>
+      <div class="movement-accolade-card">
+        <div class="lift-accolade-header">Top Set</div>
+        <div class="lift-accolade-value">
+          {% if movement.instances.all.0.get_best_set %}
+          {{ movement.instances.all.0.get_best_set.weight }} <span class="accolade-unit">lbs</span>
+          {% else %}
+          <span class="movement-empty-value">—</span>
+          {% endif %}
+        </div>
+      </div>
+      {% if not movement.instances.all %}
+      <div class="movement-empty-state">
+        <i class="fa-solid fa-lock"></i>
+        <span>Log a session to unlock accolades</span>
+      </div>
+      {% endif %}
+    </article>
+
   </div>
-  <div id="bottom-track" class="horizontal-group" style="flex:1;">
-    <div class="vertical-group">
-      <header class="lift-accolade-header">Current (estimated) 1RM</header>
-      <div class="lift-accolade-value">{{movement.instances.all.0.estimated_1rm|floatformat:0}} lbs</div>
-    </div>
-    <div class="vertical-group">
-      <header class="lift-accolade-header">Top Set</header>
-      <div class="lift-accolade-value">{{movement.instances.all.0.get_best_set.weight}}</div>
-    </div>
-    <div>
-    </div>
+</article>
+
+
+
+<!-- <article class="vertical-group" style="flex: 1;">
+  <header style="flex: 1;">
+    <div id="lift-name">{{movement.name}} Lv{{movement.level|stringformat:"d"}}</div>
+  </header>
+  <div id="lift-graph" style="flex: 4;"
+    hx-get="{% url 'graphs:lift_orm' movement.name %}"
+    hx-trigger="load">
   </div>
-</div>
+  <div class="horizontal-group" style="flex: 10;">
+    <div class="vertical-group" id="lift-details" style="flex: 1;">
+      <article id="lift-info" style="flex: 1;">
+        <header style="flex: 1;">
+          Lift History
+        </header>
+        <div id="lift-sets" class="vertical-group" style="flex:3; overflow-y:auto; max-height: 20vh;">
+          {% for lift in movement.instances.all %}
+            <div class="lift-set" style="border:1px solid #0d0f0f; border-radius: 5px; padding: 5px; margin-bottom: 5px;">
+              <div class="lift-set-name" style="display: flex; align-items: center; justify-content: center;">{{lift.workout.day.date|date:"m/d/Y"}}</div>
+              {% for set in lift.sets.all %}
+              <div class="horizontal-group" style="align-items: center; justify-content: center;">
+                <div class="set-reps">{{set.reps}}</div>
+                <div>×</div>
+                <div class="set-weight">{{set.weight}}</div>
+              </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </article>
+    </div>
+    <article class="vertical-group" id="lift-accolades" style="flex: 1;">
+      <header style="flex: 1;">
+        Lift Accolades
+      </header>
+      <div class="vertical-group" style="border:1px solid #0d0f0f; border-radius: 5px; padding: 5px;">
+        <header class="lift-accolade-header">Current (estimated) 1RM</header>
+        <div class="lift-accolade-value">{{movement.instances.all.0.estimated_1rm|floatformat:0}} lbs</div>
+      </div>
+      <div class="vertical-group" style="border:1px solid #0d0f0f; border-radius: 5px; padding: 5px;">
+        <header class="lift-accolade-header">Top Set</header>
+        <div class="lift-accolade-value">{{movement.instances.all.0.get_best_set.weight}}</div>
+      </div>
+    </article>
+  </div>
+</article> -->

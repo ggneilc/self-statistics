@@ -1,0 +1,166 @@
+<figure id="heatmap-window" data-days='{{ day_data|safe }}'></figure>
+
+<script>
+  (function() {
+  // Fixed internal coordinate system — SVG scales to container via viewBox
+  const cellSize = 64;
+  const gap = 4;
+  const headerHeight = 18;
+  const innerWidth = (cellSize + gap) * 7;
+  const innerHeight = (cellSize + gap) * 1 + headerHeight; // single row
+
+  const container = d3.select("#heatmap-window");
+  // Mark the surrounding article so CSS can shrink-wrap it for 1-week view
+  const article = document.getElementById("calendar-container");
+  if (article) {
+    article.classList.add("calendar-one-week");
+  }
+  const hiddenInput = document.getElementById("hidden-date");
+  const selectedDateStr = hiddenInput?.value || new Date().toLocaleDateString("en-CA");
+  const selectedDate = new Date(selectedDateStr + "T12:00:00");
+  let viewStart = d3.timeWeek.floor(selectedDate);
+
+  const rawData = JSON.parse(container.attr("data-days"));
+  const dataMap = new Map(rawData.map(d => [d.date, d]));
+
+  const colorScale = d3.scaleThreshold()
+    .domain([0, 0.3, 0.5, 0.8, 1.0, 1.2])
+    .range(["#f0f0f0", "#bc1010", "#ef5350", "#fc9d3f", "#66bb6a", "#2e7d32"]);
+
+  function renderWindow(startDate) {
+    const endDate = d3.timeDay.offset(startDate, 7);
+    const days = d3.timeDays(startDate, endDate);
+    
+    container.selectAll("svg").remove();
+
+    const svg = container.append("svg")
+      .attr("viewBox", `0 0 ${innerWidth} ${innerHeight}`)
+      .attr("preserveAspectRatio", "xMidYMid meet")
+      .style("width", "100%")
+      .style("height", "100%")
+      .style("min-height", "140px")
+      .attr("overflow", "visible");
+
+    // 1. ADD STATIC HEADERS (Sun / Sat)
+    const headerGroup = svg.append("g")
+        .attr("class", "calendar-headers")
+        .style("fill", "var(--pico-muted-color)")
+        .style("font-size", "12px")
+        .style("font-weight", "bold");
+
+    headerGroup.append("text")
+        .attr("x", cellSize / 2)
+        .attr("y", headerHeight - 4)
+        .attr("text-anchor", "middle")
+        .text("SUN");
+
+    headerGroup.append("text")
+        .attr("x", (cellSize + gap) * 6 + cellSize / 2)
+        .attr("y", headerHeight - 4)
+        .attr("text-anchor", "middle")
+        .text("SAT");
+
+    // 2. DRAW DAYS (single row)
+    const chartArea = svg.append("g")
+        .attr("transform", `translate(0, ${headerHeight})`);
+
+    const cells = chartArea.selectAll(".day-cell")
+      .data(days, d => d.getTime())
+      .enter()
+      .append("g")
+      .attr("class", "day-cell")
+      .attr("transform", (d, i) => {
+        const x = (i % 7) * (cellSize + gap);
+        const y = 0;
+        return `translate(${x}, ${y})`;
+      })
+      .style("cursor", "pointer");
+
+    // Background Rect
+    const today = d3.timeDay.floor(new Date());
+    const selected = d3.timeDay.floor(selectedDate);
+    cells.append("rect")
+      .attr("width", cellSize)
+      .attr("height", cellSize)
+      .attr("rx", 6)
+      .attr("fill", d => {
+        const isToday = today.getTime() === d.getTime();
+        if (isToday) { return "var(--pico-primary)";}
+        const dateStr = d3.timeFormat("%Y-%m-%d")(d);
+        const dayData = dataMap.get(dateStr);
+        return dayData ? colorScale(dayData.ratio) : "#0F1114";
+      })
+      .attr("stroke", d => {
+        const isToday = today.getTime() === d.getTime();
+        const isSelected = selected.getTime() === d.getTime();
+        return (isToday || isSelected) ? "var(--pico-primary)" : "rgba(255,255,255,0.1)";
+      })
+      .attr("stroke-width", d => {
+        const isToday = today.getTime() === d.getTime();
+        const isSelected = selected.getTime() === d.getTime();
+        return (isToday || isSelected) ? 3 : 1;
+      });
+
+    // Day Label (with Month Logic)
+    cells.append("text")
+      .attr("class", "day-label")
+      .attr("x", cellSize / 2)
+      .attr("y", cellSize / 2 + 5)
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .style("font-weight", "bold")
+      .style("fill", "#fff")
+      .text(d => {
+        // If it's the 1st of the month, or the very first cell in the view
+        if (d.getDate() === 1 || d.getTime() === days[0].getTime()) {
+            return d3.timeFormat("%b %-d")(d); // e.g. "Jan 1"
+        }
+        return d.getDate();
+      });
+
+    // Ratio Helper
+    cells.append("text")
+      .attr("class", "ratio-helper")
+      .attr("x", cellSize / 2)
+      .attr("y", cellSize - 8)
+      .attr("text-anchor", "middle")
+      .style("font-size", "10px")
+      .style("fill", "rgba(255,255,255,0.8)")
+      .text(d => {
+        const dateStr = d3.timeFormat("%Y-%m-%d")(d);
+        const dayData = dataMap.get(dateStr);
+        return dayData ? `${Math.round(dayData.ratio * 100)}%` : "";
+      });
+
+    // Click logic remains the same
+    cells.on("click", (event, d) => {
+      const today = d3.timeDay.floor(new Date());
+      const dateStr = d3.timeFormat("%Y-%m-%d")(d);
+      if (d <= today) {
+        setSelectedDate(dateStr);
+        htmx.ajax('GET', `/day/${dateStr}`, { target: '#day-container' });
+      };
+    });
+
+    d3.select("#current-range").text(() => {
+      const endDate = d3.timeDay.offset(viewStart, 6);
+      const format = d3.timeFormat("%b %-d");
+      return `${format(viewStart)} - ${format(endDate)}`;
+    });
+  }
+
+  // Navigation logic...
+  d3.select("#prev").on("click", () => { viewStart = d3.timeDay.offset(viewStart, -7); renderWindow(viewStart); });
+  d3.select("#next").on("click", () => { viewStart = d3.timeDay.offset(viewStart, 7); renderWindow(viewStart); });
+
+  // Re-render when selected date changes (e.g. user clicks a cell) so selection border updates
+  hiddenInput?.addEventListener("change", () => {
+    const val = hiddenInput.value;
+    if (val) selectedDate.setTime(new Date(val + "T12:00:00").getTime());
+    renderWindow(viewStart);
+  });
+
+  renderWindow(viewStart);
+})();
+</script>
+

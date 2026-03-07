@@ -1,13 +1,15 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
-    font-family: 'Oswald';
-    height: 100vh;
-    width: 100vw;
-    margin: 0;
-    overflow: hidden;
+  font-family: 'Oswald';
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  overflow: hidden;
 }
 
 aside li {
@@ -15,7 +17,9 @@ aside li {
   justify-self: center;
 }
 
-main { flex: 1; }
+main {
+  flex: 1;
+}
 
 .main-wrapper {
   display: flex;
@@ -36,17 +40,20 @@ main { flex: 1; }
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
+
 .macro-track-modal.is-open {
   pointer-events: auto;
   opacity: 1;
   visibility: visible;
 }
+
 .macro-track-modal-overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
+
 .macro-track-modal-content {
   position: relative;
   background: var(--pico-card-background-color, #1a1a1a);
@@ -57,6 +64,7 @@ main { flex: 1; }
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   border: 1px solid var(--pico-muted-border-color);
 }
+
 .macro-track-modal .close-macro-track-modal {
   padding: 0 0.4rem;
   font-size: 1.5rem;
@@ -66,6 +74,7 @@ main { flex: 1; }
   cursor: pointer;
   color: var(--pico-muted-color);
 }
+
 .macro-track-modal .close-macro-track-modal:hover {
   color: var(--pico-color);
 }
@@ -83,6 +92,7 @@ main { flex: 1; }
   bottom: 10px;
   left: 11px;
 }
+
 .pfp-group {
   padding-left: 10px;
 }
@@ -93,6 +103,7 @@ main { flex: 1; }
   border-radius: 50%;
   border: 1px solid var(--pico-secondary);
 }
+
 .username {
   width: 70px;
   font-size: 0.7rem;
@@ -116,19 +127,78 @@ main { flex: 1; }
   cursor: not-allowed;
 }
 
-#content { padding: 1rem; }
+#content {
+  padding: 1rem;
+}
+
 .horizontal-group {
   display: flex;
   flex-direction: row;
   gap: 1rem;
 }
-.horizontal-group > article {
+
+.horizontal-group>article {
   flex: 1;
   height: 20vh;
 }
 
+.split-stat,
+.stat {
+  background-color: var(--pico-background-color);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border-radius: var(--pico-border-radius);
+  flex: 1;
+  border: 1px solid #0d0d0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0.25rem;
+}
 
-#graph-container {flex: 1;}
+.split-stat>div {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-header {
+  font-size: 0.75rem;
+  color: var(--pico-muted-color);
+  background-color: transparent;
+  margin-top: 0;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--pico-color);
+}
+
+.stat-unit {
+  font-size: 0.9rem;
+  color: var(--pico-muted-color);
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#bw-summary,
+#cal-summary,
+#graph {
+  flex: 1;
+  border: 1px solid black;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+}
+
+#graph-container {
+  flex: 1;
+}
+
 #graph-area,
 #day-area {
   flex: 1;
@@ -145,7 +215,10 @@ main { flex: 1; }
   flex-direction: column;
   gap: 1rem;
 }
-#day-area > article {margin-bottom: revert;}
+
+#day-area>article {
+  margin-bottom: revert;
+}
 
 /* === Locked Analytics State === */
 #graph-area.locked {
@@ -204,12 +277,21 @@ main { flex: 1; }
   overflow: hidden;
 }
 
-#calendar-container > div {
+#calendar-container>div {
   min-height: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: auto;
+}
+
+/* When 1-week calendar is active, let the article shrink-wrap its contents */
+.calendar-one-week {
+  min-height: auto;
+}
+
+.calendar-one-week>div {
+  flex: 0 0 auto;
 }
 
 #day-container {
@@ -228,32 +310,64 @@ main { flex: 1; }
   flex-shrink: 0;
   padding: 3px;
 }
+
 @media (max-width: 768px) {
   #heatmap-window {
     margin: -1rem 0;
   }
+
+  /* Let the calendar shrink-wrap to the SVG height on mobile to avoid large empty space */
+  #calendar-container {
+    min-height: auto;
+  }
+
+  #calendar-container>div {
+    flex: 0 0 auto;
+  }
 }
 
 .calendar-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0;
   padding: 0.3rem;
 }
+
 .calendar-range {
   padding: 0 0.5rem;
 }
-.calendar-prev { margin-right: 0.5rem; }
-.calendar-prev button { border: none; padding: 0.2rem; }
-.calendar-next { margin-left: 0.5rem; }
-.calendar-next button { border: none; padding: 0.2rem; }
+
+.calendar-prev {
+  margin-right: 0.5rem;
+}
+
+.calendar-prev button {
+  border: none;
+  padding: 0.2rem;
+}
+
+.calendar-next {
+  margin-left: 0.5rem;
+}
+
+.calendar-next button {
+  border: none;
+  padding: 0.2rem;
+}
+
+.streak {
+  position: absolute;
+  left: 1rem;
+}
 
 #calendar-selector {
   text-align: end;
   padding: 0.3rem;
 }
-#calendar-selector > button {
+
+#calendar-selector>button {
   padding: 0.2rem 0.7rem;
   font-size: 0.7rem;
   margin-right: 0.3rem;
@@ -301,7 +415,7 @@ main { flex: 1; }
   }
 }
 
-#day-container .nutrition-breakdown > div {
+#day-container .nutrition-breakdown>div {
   display: flex;
   align-items: center;
   min-height: 0;
@@ -318,6 +432,7 @@ main { flex: 1; }
   margin-top: -0.7rem;
   align-items: center;
 }
+
 .nutrition-breakdown-indicators {
   display: none;
 }
@@ -337,48 +452,61 @@ main { flex: 1; }
 }
 
 /* Base styles - keep your existing positioning */
-.day-bottom-section-header { 
-    position: absolute;
-    top: -19px;
-    height: 20px;
-    width: 80px;
-    text-align: center;
-    border: 1px solid #0d0d0f;
-    border-radius: var(--pico-border-radius) var(--pico-border-radius) 0 0;
-    background-color: var(--pico-background-color);
-    font-size: 0.7rem;
-    transition: transform 0.3s ease, background-color 0.2s ease, left 0.3s ease;
-    cursor: pointer;
+.day-bottom-section-header {
+  position: absolute;
+  top: -19px;
+  height: 20px;
+  width: 80px;
+  text-align: center;
+  border: 1px solid #0d0d0f;
+  border-radius: var(--pico-border-radius) var(--pico-border-radius) 0 0;
+  background-color: var(--pico-background-color);
+  font-size: 0.7rem;
+  transition: transform 0.3s ease, background-color 0.2s ease, left 0.3s ease;
+  cursor: pointer;
 }
 
 /* Initial Stack (Left offsets) */
-.day-bottom-section-header:nth-child(1) { left: 0; z-index: 3; }
-.day-bottom-section-header:nth-child(2) { left: 15px; z-index: 2; }
-.day-bottom-section-header:nth-child(3) { left: 30px; z-index: 1; }
+.day-bottom-section-header:nth-child(1) {
+  left: 0;
+  z-index: 3;
+}
+
+.day-bottom-section-header:nth-child(2) {
+  left: 15px;
+  z-index: 2;
+}
+
+.day-bottom-section-header:nth-child(3) {
+  left: 30px;
+  z-index: 1;
+}
 
 /* 1. Only move the second and third tabs when they are hovered themselves */
 .day-bottom-section-header:nth-child(n+2):hover {
-    transform: translateX(65px);
-    background-color: var(--pico-secondary-background);
+  transform: translateX(65px);
+  background-color: var(--pico-secondary-background);
 }
 
 /* 2. The Domino: If the 2nd tab is hovered, also push the 3rd tab 
    so they don't overlap while expanding */
-.day-bottom-section-header:nth-child(2):hover ~ .day-bottom-section-header {
-    transform: translateX(65px);
+.day-bottom-section-header:nth-child(2):hover~.day-bottom-section-header {
+  transform: translateX(65px);
 }
 
 /* Optional: If you want the first tab to still change color but stay still */
 .day-bottom-section-header:nth-child(1):hover {
-    background-color: var(--pico-secondary-background);
-    transform: none; /* Forced anchor */
+  background-color: var(--pico-secondary-background);
+  transform: none;
+  /* Forced anchor */
 }
+
 #day-container .vertical-group {
   min-height: 0;
   flex: 1 1 0%;
 }
 
-.day-meal-plan-item {
+.day-nutrient-completion {
   flex: 1;
   background-color: var(--pico-card-sectioning-background-color);
   border: 1px solid #0d0d0f;
@@ -393,12 +521,14 @@ main { flex: 1; }
 
 .food-stat {
   margin-top: 1rem;
-  text-align:center;
-  margin-bottom:1rem;
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
-.day-label, .ratio-helper {
-  pointer-events: none; /* Mouse clicks go through the text to the rect */
+.day-label,
+.ratio-helper {
+  pointer-events: none;
+  /* Mouse clicks go through the text to the rect */
   user-select: none;
 }
 
@@ -421,11 +551,27 @@ main { flex: 1; }
 
 #workout-info,
 #macro-info,
-#bw-info, #streak-info {text-align: center;}
-.big-font { font-size: 2.5rem; }
-.med-font { font-size: 1.7rem; }
-.fa-fire-flame-curved { color: orange; margin-right: 0.3rem;}
-.fa-caret-up { color: #00A66E; }
+#bw-info,
+#streak-info {
+  text-align: center;
+}
+
+.big-font {
+  font-size: 2.5rem;
+}
+
+.med-font {
+  font-size: 1.7rem;
+}
+
+.fa-fire-flame-curved {
+  color: orange;
+  margin-right: 0.3rem;
+}
+
+.fa-caret-up {
+  color: #00A66E;
+}
 
 
 .fa-bed,
@@ -465,6 +611,7 @@ main { flex: 1; }
 #time-buttons {
   padding: 0px 1rem;
 }
+
 .vertical-group {
   display: flex;
   flex-direction: column;
@@ -476,10 +623,11 @@ main { flex: 1; }
   background-color: var(--pico-background-color);
   border-radius: var(--pico-border-radius);
   border: 1px solid #FCEFD9;
-  flex:1;
-  text-align:center;
+  flex: 1;
+  text-align: center;
 }
-.macro-label{
+
+.macro-label {
   position: absolute;
   top: -23px;
   left: 8px;
@@ -488,20 +636,28 @@ main { flex: 1; }
 
 #day-macros,
 #day-tasks {
- height: 100%;
+  height: 100%;
 }
-.main-chip { 
+
+.main-chip {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .log-area,
-.input-area { flex: 1; display: flex; }
+.input-area {
+  flex: 1;
+  display: flex;
+}
 
-#recipe-area { height: 96vh; }
+#recipe-area {
+  height: 96vh;
+}
 
-.big { flex: 6; }
+.big {
+  flex: 6;
+}
 
 #workout-history {
   flex: 1;
@@ -512,6 +668,7 @@ main { flex: 1; }
   overflow: visible;
   margin-top: 2rem;
 }
+
 .summary-area {
   position: relative;
   background-color: var(--pico-card-sectioning-background-color);
@@ -525,7 +682,9 @@ main { flex: 1; }
 }
 
 /* Target the labels inside your SVG */
-#vitamin-chart text, #mineral-chart text, #macro-chart text {
+#vitamin-chart text,
+#mineral-chart text,
+#macro-chart text {
   transition: text-shadow 0.3s ease, fill 0.3s ease;
 }
 
@@ -540,7 +699,10 @@ main { flex: 1; }
 #progress_track {
   background-color: var(--pico-card-sectioning-background-color);
 }
-#progress_track { height: 10vh; }
+
+#progress_track {
+  height: 10vh;
+}
 
 #day-macros {
   display: grid;
@@ -548,8 +710,9 @@ main { flex: 1; }
   gap: 1rem;
 }
 
-.bw-card, .day-header-streak {
+.bw-card {
   box-shadow: -3px 3px 0px 0px #0d0d0f;
+  width: 100%;
   border: 1px solid #0d0f0f;
   padding: 0.5rem;
   border-radius: var(--pico-border-radius);
@@ -559,100 +722,98 @@ main { flex: 1; }
 }
 
 .day_value_form {
-  height: 5vh;
   margin: 0;
 }
+
 .day_value_form input {
-  height: 5vh;
   line-height: 0;
 }
 
 /* Day header: streak | bodyweight | date (centered) | actions */
 .day-header {
+  position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
   padding: 0.5rem 1rem;
   gap: 0.75rem;
 }
-.day-header-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-shrink: 0;
+
+.day-header-bw {
+  padding: 0;
 }
-.day-header-streak {
-  flex-shrink: 0;
+
+.day-header-item {
+  padding: 0.2rem;
 }
-.day-header-date {
+
+.day-header-item,
+.day-header-bw {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
-    border: 1px solid #0d0d0f;
-    box-shadow: -3px 3px 0px 0px #0d0d0f;
-    border-radius: var(--pico-border-radius);
-    padding: 0.2rem;
-}
-.day-header-actions {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 1px solid #0d0d0f;
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  border-radius: var(--pico-border-radius);
 }
 
-/* Compact bodyweight in header: override Pico form/button, short input, small button */
-.day-header-bw {
+.day-card-flip {
+  position: absolute;
+  right: 1rem;
+  bottom: -2rem;
+  display: none;
+}
+
+
+/* Compact bodyweight in header: override Pico form/button so it fills tile height */
+
+.day_value_form {
   display: flex;
-  flex: 1;
-  align-items: center;
-    box-shadow: -3px 3px 0px 0px #0d0d0f;
-    border-radius: var(--pico-border-radius);
-}
-.day-header-bw .bw-card, .day-header-streak {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.9rem;
-}
-.day-header-bw .day_value_form {
-  height: auto;
   width: 100%;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  height: 100%;
 }
-.day-header-bw .day_value_form fieldset {
+
+.day_value_form fieldset {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 0.25rem;
   margin: 0;
   padding: 0;
   border: none;
   background: none;
+  width: 100%;
+  height: 100%;
 }
-.day-header-bw .day_value_form input[type="number"] {
+
+.day_value_form input[type="number"] {
+  flex: 1 1 auto;
   min-width: 4rem;
-  height: 1.875rem;
   padding: 0.2rem 0.4rem;
   font-size: 0.875rem;
   line-height: 1.2;
+  height: 100%;
+  min-height: 0;
 }
-.day-header-bw .day_value_form input[type="submit"] {
+
+.day_value_form input[type="submit"] {
   min-width: 1.75rem;
-  height: 1.875rem;
   padding: 0;
   font-size: 0.875rem;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  min-height: 0;
 }
-.day-header-bw .day_value_form input[type="submit"]:not(:disabled):hover {
+
+.day_value_form input[type="submit"]:not(:disabled):hover {
   opacity: 0.9;
 }
-.day-header-bw .day_value_form input[type="submit"]:not(:disabled):active {
+
+.day_value_form input[type="submit"]:not(:disabled):active {
   opacity: 0.8;
 }
 
@@ -661,23 +822,32 @@ main { flex: 1; }
   overflow: hidden;
 }
 
-.full { max-height:96vh; }
-.partial { max-height:80vh; }
+.full {
+  max-height: 96vh;
+}
+
+.partial {
+  max-height: 80vh;
+}
 
 #recipe-area,
 #meal-log,
 #pantry-log {
   padding: var(--pico-spacing);
 }
-#search-results { flex:1; min-height: 0; }
+
+#search-results {
+  flex: 1;
+  min-height: 0;
+}
 
 #recipe-list,
 #meal-list,
 #food-list {
   padding: 0.3rem;
-  min-height:0;
-  overflow-y:auto; 
-  overflow-x:hidden;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .ingredient {
@@ -689,8 +859,13 @@ main { flex: 1; }
   border: 1px solid #0d0f0f;
 }
 
-.ingredient-name { color: var(--pico-color)}
-.ingredient-unit { color: var(--pico-primary)}
+.ingredient-name {
+  color: var(--pico-color)
+}
+
+.ingredient-unit {
+  color: var(--pico-primary)
+}
 
 .workout,
 .recipe,
@@ -703,6 +878,7 @@ main { flex: 1; }
   background-color: var(--pico-background-color);
   box-shadow: -3px 3px 0px 0px #0d0d0f;
 }
+
 .workout:hover,
 .meal:hover,
 .food:hover {
@@ -710,25 +886,28 @@ main { flex: 1; }
   box-shadow: -5px 5px 0px 0px #0d0d0f;
   transition: all 0.3s ease;
 }
+
 .active {
   transform: translateY(-2px);
   box-shadow: -4px 4px 0px 0px #0d0d0f;
   transition: all 0.3s ease;
 }
 
-.hidden { display: none; }
+.hidden {
+  display: none;
+}
 
 .nutrient {
   position: relative;
   background-color: var(--pico-card-sectioning-background-color);
   border-radius: var(--pico-border-radius);
   padding: 0.3rem;
-  gap:0.2rem;
+  gap: 0.2rem;
 }
 
 .nutrition {
-  gap:0.8rem;
-  margin-top:0.8rem;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
 }
 
 .meal-macro-label {
@@ -738,19 +917,19 @@ main { flex: 1; }
   color: var(--pico-primary);
 }
 
-.nutrient > div {
+.nutrient>div {
   border-radius: var(--pico-border-radius);
-  flex:1;
-  text-align:center;
+  flex: 1;
+  text-align: center;
   color: ghostwhite;
 }
 
-[data-tooltip]:not(a,button,input,[role=button]) {
-  border-bottom:none;
+[data-tooltip]:not(a, button, input, [role=button]) {
+  border-bottom: none;
 }
 
 text {
-    transition: fill 0.2s ease, font-size 0.2s ease;
+  transition: fill 0.2s ease, font-size 0.2s ease;
 }
 
 :root {
@@ -780,60 +959,79 @@ text {
   --vitamin-d-color: #ed2b36;
   --vitamin-e-color: #24ac24;
 }
+
 .calorie {
   background-color: var(--calorie-color);
 }
+
 .protein {
   background-color: var(--protein-color);
 }
+
 .carb {
   background-color: var(--carb-color);
 }
+
 .fat {
   background-color: var(--fat-color);
 }
+
 .sugar {
   background-color: var(--sugar-color);
 }
+
 .fiber {
   background-color: var(--fiber-color);
 }
+
 .cholesterol {
   background-color: var(--cholesterol-color);
 }
+
 .sodium {
   background-color: var(--sodium-color);
 }
+
 .potassium {
   background-color: var(--potassium-color);
 }
+
 .calcium {
   background-color: var(--calcium-color);
 }
+
 .iron {
   background-color: var(--iron-color);
 }
+
 .magnesium {
   background-color: var(--magnesium-color);
 }
+
 .zinc {
   background-color: var(--zinc-color);
 }
+
 .vitamin-a {
   background-color: var(--vitamin-a-color);
 }
+
 .vitamin-b6 {
   background-color: var(--vitamin-b6-color);
 }
+
 .vitamin-b12 {
   background-color: var(--vitamin-b12-color);
 }
+
 .vitamin-c {
   background-color: var(--vitamin-c-color);
 }
+
 .vitamin-d {
   background-color: var(--vitamin-d-color);
 }
+
 .vitamin-e {
   background-color: var(--vitamin-e-color);
 }
@@ -842,12 +1040,25 @@ text {
   cursor: pointer;
 }
 
+
+.nav-dashboard-links a.nav-link-active {
+  color: var(--pico-primary);
+}
+
+.nav-dashboard-links a.nav-link-active i {
+  color: var(--pico-primary);
+}
+
+
+
 /* Mobile: bottom nav, full-width swipeable dashboard columns */
 @media (max-width: 768px) {
+
   /* Ensure body doesn't overflow and accounts for navbar */
   body {
     height: 100vh;
-    height: 100dvh; /* Use dynamic viewport height if supported */
+    height: 100dvh;
+    /* Use dynamic viewport height if supported */
     overflow: hidden;
     padding-bottom: 0;
   }
@@ -979,14 +1190,6 @@ text {
     font-size: 1.5rem;
   }
 
-  .nav-dashboard-links a.nav-link-active {
-    color: var(--pico-primary);
-  }
-
-  .nav-dashboard-links a.nav-link-active i {
-    color: var(--pico-primary);
-  }
-
   .mobile-nav-right {
     flex: 1;
     min-width: 0;
@@ -1022,9 +1225,21 @@ text {
   }
 
   /* Reorder so: Food | Dashboard | Workouts */
-  .nav-dashboard-links li:nth-child(1) { order: 2; } /* dashboard -> center */
-  .nav-dashboard-links li:nth-child(2) { order: 1; } /* nutrition/food -> left */
-  .nav-dashboard-links li:nth-child(3) { order: 3; } /* workouts -> right */
+  .nav-dashboard-links li:nth-child(1) {
+    order: 2;
+  }
+
+  /* dashboard -> center */
+  .nav-dashboard-links li:nth-child(2) {
+    order: 1;
+  }
+
+  /* nutrition/food -> left */
+  .nav-dashboard-links li:nth-child(3) {
+    order: 3;
+  }
+
+  /* workouts -> right */
 
   .nav-dashboard-links a {
     display: flex;
@@ -1049,7 +1264,7 @@ text {
     gap: 0;
   }
 
-  .dashboard-columns > * {
+  .dashboard-columns>* {
     flex: 0 0 100%;
     min-width: 100%;
     scroll-snap-align: start;
@@ -1067,7 +1282,8 @@ text {
     gap: 0.4rem;
     padding: 0.35rem 0;
     flex-shrink: 0;
-    order: 1; /* sits above navbar */
+    order: 1;
+    /* sits above navbar */
     background-color: transparent;
   }
 
@@ -1084,6 +1300,7 @@ text {
     padding: 0;
     margin: 0;
   }
+
   .scroll-dot.active {
     background-color: var(--pico-primary);
     transform: scale(1.3);
@@ -1102,8 +1319,9 @@ text {
     min-height: 0;
     width: 100%;
   }
+
   /* Use 100vw per panel so the first panel (macro) never collapses when empty (HTMX loads content later) */
-  .nutrition-breakdown > div {
+  .nutrition-breakdown>div {
     flex: 0 0 100vw;
     min-width: 100vw;
     width: 100vw;
@@ -1121,6 +1339,7 @@ text {
     padding: 0.35rem 0;
     flex-shrink: 0;
   }
+
   .nutrition-breakdown-indicators .scroll-dot {
     width: 7px;
     height: 7px;
@@ -1128,6 +1347,7 @@ text {
     background-color: var(--pico-muted-border-color);
     transition: background-color 0.2s ease, transform 0.2s ease;
   }
+
   .nutrition-breakdown-indicators .scroll-dot.active {
     background-color: var(--pico-primary);
     transform: scale(1.3);
@@ -1158,10 +1378,11 @@ text {
 }
 
 @media (max-width: 1350px) {
-  html{
+  html {
     font-size: 16px;
   }
-  .macro-label{
+
+  .macro-label {
     top: -15px;
     left: 5px;
     font-size: 0.6rem;
@@ -1173,10 +1394,12 @@ text {
   height: 100%;
   border-radius: var(--pico-border-radius);
 }
+
 #active-info {
   align-items: center;
   justify-content: space-between;
 }
+
 #lift-selection {
   flex: 1;
   border-radius: var(--pico-border-radius);
@@ -1185,6 +1408,7 @@ text {
   padding: 0.5rem;
   background-color: var(--pico-card-sectioning-background-color);
 }
+
 .lift-small {
   display: flex;
   flex-direction: column;
@@ -1198,59 +1422,64 @@ text {
 }
 
 
-.hidden-radio { display: none; }
-.hidden-radio:checked + .bodypart-chip,
-.hidden-radio:checked + .category-chip {
-    background-color: var(--pico-primary);
-    color: white;
+.hidden-radio {
+  display: none;
+}
+
+.hidden-radio:checked+.bodypart-chip,
+.hidden-radio:checked+.category-chip {
+  background-color: var(--pico-primary);
+  color: white;
 }
 
 .chip-grid {
-    display: grid;
-    /* Create 3 columns of equal width */
-    grid-template-columns: repeat(5, 1fr); 
-    /* Create 5 rows */
-    grid-template-rows: repeat(3, auto);
-    /* Space between the chips */
-    gap: 10px; 
-    width: 100%;
-    margin: 0 auto;
+  display: grid;
+  /* Create 3 columns of equal width */
+  grid-template-columns: repeat(5, 1fr);
+  /* Create 5 rows */
+  grid-template-rows: repeat(3, auto);
+  /* Space between the chips */
+  gap: 10px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .category-chip,
 .bodypart-chip {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1px;
-    border-radius: var(--pico-border-radius);
-    background-color: var(--pico-background-color);
-    box-shadow: -1px 1px 0px 0px #0d0f0f;
-    cursor: pointer;
-    text-align: center;
-    font-weight: bold;
-    transition: background-color 0.2s, transform 0.1s;
-    border: 1px solid #0d0d0f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px;
+  border-radius: var(--pico-border-radius);
+  background-color: var(--pico-background-color);
+  box-shadow: -1px 1px 0px 0px #0d0f0f;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.1s;
+  border: 1px solid #0d0d0f;
 }
 
 .category-chip:hover,
 .bodypart-chip:hover {
-    background-color: var(--pico-secondary-background);
+  background-color: var(--pico-secondary-background);
 }
+
 .bodypart-chip:hover {
-    transform: translateY(-4px);
-    margin-bottom: -12px;
+  transform: translateY(-4px);
+  margin-bottom: -12px;
 }
+
 /* HTMX "Active" state if you want to highlight the selected chip */
 
 .category-chip.htmx-request,
 .bodypart-chip.htmx-request {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 [type=checkbox]~label:not(:last-of-type),
 [type=radio]~label:not(:last-of-type) {
-    margin-inline-end: 0;
+  margin-inline-end: 0;
 }
 
 [type=radio]~label {
@@ -1263,42 +1492,45 @@ text {
 
 /* For WebKit browsers (Chrome, Safari) */
 *::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 /* For Firefox */
 * {
-    scrollbar-width: none;
+  scrollbar-width: none;
 }
 
 /* For Internet Explorer and Edge */
 * {
-    -ms-overflow-style: none;
+  -ms-overflow-style: none;
 }
 
 .unit-select {
-    appearance: none;       /* Standard */
-    -webkit-appearance: none; /* Safari/Chrome */
-    -moz-appearance: none;    /* Firefox */
-    
-    background: transparent;
-    border: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    text-align: center;
-    color: inherit;
-    font-size: inherit;
-    width: auto;
+  appearance: none;
+  /* Standard */
+  -webkit-appearance: none;
+  /* Safari/Chrome */
+  -moz-appearance: none;
+  /* Firefox */
+
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-align: center;
+  color: inherit;
+  font-size: inherit;
+  width: auto;
 }
 
 /* Optional: Add a subtle visual cue on hover so users know it's a menu */
 .unit-select:hover {
-    text-decoration: underline dotted;
+  text-decoration: underline dotted;
 }
 
 .unit-container {
-  max-width:90px;
+  max-width: 90px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -1307,54 +1539,66 @@ text {
 
 
 
-.workout { position: relative; }
+.workout {
+  position: relative;
+}
+
 #workout_list {
   padding: 0.2rem;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
+
 .inline-workout {
   justify-content: space-evenly;
   width: 80%;
   align-items: center;
 }
+
 .workout-name {
   font-size: 1.2rem;
 }
+
 .workout-date {
   background-color: var(--pico-secondary-background);
   border-radius: var(--pico-border-radius);
   padding: 0.2rem 0.5rem;
 }
-.workout-total { 
+
+.workout-total {
   background-color: var(--pico-card-sectioning-background-color);
   color: var(--pico-primary);
   border-radius: var(--pico-border-radius);
   padding: 0.2rem 0.5rem;
 }
+
 #inspected-workout {
   flex: 1;
   display: flex;
   flex-direction: column;
   max-height: 30vh;
 }
+
 .blank-inspect {
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 0 0.25rem inset black;
   color: var(--pico-muted-color);
 }
+
 #workout-info {
   justify-content: space-evenly;
 }
+
 #workout-lifts {
   overflow-x: auto;
   max-width: 38vw;
   padding: 0.2rem;
 }
+
 .lift {
   padding: 0.5rem;
   border-radius: var(--pico-border-radius);
@@ -1366,14 +1610,17 @@ text {
   flex-direction: column;
   min-width: 150px;
 }
+
 .lift_set {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
 }
+
 .lift_main {
-  text-align:center;
+  text-align: center;
 }
+
 #weekly-sets {
   flex: 1;
   background-color: var(--pico-card-sectioning-background-color);
@@ -1395,6 +1642,7 @@ text {
   flex-direction: column;
   max-height: 96vh;
 }
+
 #overview-target {
   flex: 1;
   display: flex;
@@ -1402,37 +1650,39 @@ text {
 
 #lift-graph {
   flex: 3;
-  border: 1px solid #0d0f0f;
-  border-radius: var(--pico-border-radius);
-  box-shadow: -3px 3px 0px 0px #0d0f0f;
+  border-bottom-right-radius: var(--pico-border-radius);
+  border-bottom-left-radius: var(--pico-border-radius);
 }
 
 #lift-name {
-  flex:3;
-  font-size:large;
-  text-align:center;
+  flex: 3;
+  font-size: large;
+  text-align: center;
 }
+
 #lift-level {
-  flex:1;
-  font-size:small;
+  flex: 1;
+  font-size: small;
 }
+
 #lift-name,
 #lift-level {
-  display:flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.3rem;
 }
+
 #lift-details {
-  flex:1;
+  flex: 1;
   border-radius: var(--pico-border-radius);
-  box-shadow: -3px 3px 0px 0px #0d0f0f;
 }
 
 #lift-sets {
   flex: 3;
   padding: 0 0.5rem;
 }
+
 .lift_set_detail {
   display: flex;
   justify-content: space-evenly;
@@ -1442,7 +1692,8 @@ text {
   box-shadow: -3px 3px 0px 0px #0d0f0f;
   padding: 0.2rem 0.5rem;
 }
-#bottom-track > div {
+
+#bottom-track>div {
   flex: 1;
   border: 1px solid #0d0f0f;
   border-radius: var(--pico-border-radius);
@@ -1456,21 +1707,236 @@ text {
   align-items: center;
   justify-content: center;
 }
+
 .lift-accolade-header {
   margin-top: 2px;
   background-color: var(--pico-card-sectioning-background-color);
 }
+
 .lift-accolade-value {
   font-size: x-large;
 }
 
+/* === Movement Details Page === */
+.movement-details {
+  flex: 1;
+  padding: 0.75rem;
+  gap: 0.75rem;
+  min-height: 0;
+  /* overflow: hidden; */
+}
+
+/* Header: lift name + level badge */
+.movement-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--pico-primary);
+  flex-shrink: 0;
+}
+
+.movement-details-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+.movement-details-level {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--pico-primary);
+  background-color: var(--pico-card-sectioning-background-color);
+  border: 1px solid var(--pico-primary);
+  border-radius: var(--pico-border-radius);
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+}
+
+/* Graph container */
+.movement-graph-container {
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  /* overflow: hidden; */
+}
+
+.movement-graph-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+  background-color: var(--pico-card-sectioning-background-color);
+  border-bottom: 1px solid #0d0f0f;
+  flex-shrink: 0;
+}
+
+.movement-graph-actions {
+  margin-left: auto;
+}
+
+.movement-graph-btn {
+  padding: 0 0.35rem;
+  font-size: 0.75rem;
+}
+
+#lift-graph {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Bottom split: history + accolades */
+.movement-details-bottom {
+  flex: 10;
+  min-height: 0;
+  max-height: 45vh;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+/* Shared section card */
+.movement-section {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -3px 3px 0px 0px #0d0d0f;
+  padding: 0;
+  gap: 0;
+}
+
+.movement-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  padding: 0.35rem 0.6rem;
+  background-color: var(--pico-card-sectioning-background-color);
+  border-bottom: 1px solid #0d0f0f;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* Lift history list */
+.movement-history-list {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 0.5rem;
+  gap: 0.4rem;
+}
+
+.lift-set-entry {
+  background-color: var(--pico-background-color);
+  border: 1px solid #0d0f0f;
+  border-radius: var(--pico-border-radius);
+  box-shadow: -2px 2px 0px 0px #0d0d0f;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: .4rem;
+}
+
+.lift-set-date {
+  font-size: 0.75rem;
+  color: var(--pico-primary);
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+  padding-bottom: 0.2rem;
+  margin-bottom: 0.1rem;
+}
+
+.lift-set-row {
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+
+.lift-set-sep {
+  color: var(--pico-muted-color);
+  font-size: 0.75rem;
+}
+
+/* Accolade cards */
+.movement-accolade-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  flex: 1;
+  padding: 0.5rem;
+  border-bottom: 1px solid #0d0f0f;
+}
+
+.movement-accolade-card:last-of-type {
+  border-bottom: none;
+}
+
+.lift-accolade-header {
+  font-size: 0.75rem;
+  color: var(--pico-muted-color);
+  background-color: transparent;
+  margin-top: 0;
+}
+
+.lift-accolade-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--pico-color);
+}
+
+.accolade-unit {
+  font-size: 0.9rem;
+  color: var(--pico-muted-color);
+  font-weight: normal;
+}
+
+/* Empty states */
+.movement-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1;
+  color: var(--pico-muted-color);
+  font-size: 0.85rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.movement-empty-state i {
+  font-size: 1.5rem;
+  opacity: 0.4;
+}
+
+.movement-empty-value {
+  color: var(--pico-muted-color);
+  font-size: 1.5rem;
+}
+
 #lift-carosel {
   flex: 1;
-  padding: 1rem 2rem 3px;  
+  padding: 1rem 2rem 3px;
   max-height: 80vh;
   overflow-y: auto;
   margin-top: 0.5rem;
 }
+
 /* Lift overview: 4 movements per row, 0.5rem gap; last row does not stretch to fill */
 #lift-carosel.list-container {
   display: grid;
@@ -1478,15 +1944,18 @@ text {
   gap: 0.5rem;
   justify-items: center;
 }
+
 #lift-carosel {
-    padding: 0.5rem 1rem 3px;
+  padding: 0.5rem 1rem 3px;
 }
+
 .list-container {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   gap: 1rem;
 }
+
 .movement {
   min-width: 150px;
   max-width: 150px;
@@ -1504,136 +1973,150 @@ text {
   max-width: 100%;
   box-sizing: border-box;
 }
+
 #lift-carosel.list-container .movement {
   width: auto;
   max-width: 150px;
-} .movement:hover {
+}
+
+.movement:hover {
   transform: translateY(-2px);
   box-shadow: -5px 5px 0px 0px #0d0f0f;
   transition: all 0.2s ease-in-out;
 }
+
 .movement-name {
   flex: 1;
   padding-top: 0.5rem;
 }
+
 .movement-level {
   flex: 3;
   font-size: large;
   display: flex;
   align-items: center;
 }
-.movement-exp { flex: 1}
+
+.movement-exp {
+  flex: 1
+}
 
 
-.day-meal-plan-item { list-style-type: none;}
 
 
 
 .ts-wrapper {
   flex: 3;
 }
+
 .ingred-input {
   flex: 1;
 }
 
 /* 1. Prevent Pico from forcing height/padding on the TomSelect wrapper */
-.ts-wrapper.form-control, 
+.ts-wrapper.form-control,
 .ts-wrapper.single .ts-control {
-    height: auto !important;
-    padding: 0 !important;
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+  height: auto !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 /* 2. Style the actual clickable control to look like a Pico input */
 .ts-control {
-    background-color: var(--pico-form-element-background-color) !important;
-    border: 1px solid var(--pico-form-element-border-color) !important;
-    border-radius: var(--pico-border-radius) !important;
-    padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal) !important;
-    color: var(--pico-color) !important;
-    min-height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2);
+  background-color: var(--pico-form-element-background-color) !important;
+  border: 1px solid var(--pico-form-element-border-color) !important;
+  border-radius: var(--pico-border-radius) !important;
+  padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal) !important;
+  color: var(--pico-color) !important;
+  min-height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2);
 }
 
 /* 3. Highlight the focus state to match Pico's primary color */
 .ts-wrapper.focus .ts-control {
-    border-color: var(--pico-primary-focus) !important;
-    box-shadow: 0 0 0 var(--outline-width) var(--primary-focus) !important;
+  border-color: var(--pico-primary-focus) !important;
+  box-shadow: 0 0 0 var(--outline-width) var(--primary-focus) !important;
 }
 
 /* 4. Fix dropdown z-index so it doesn't hide behind other Pico elements */
 .ts-dropdown {
-    z-index: 1000;
-    background: var(--pico-card-sectioning-background-color) !important;
-    color: var(--pico-color) !important;
-    border: 1px solid var(--pico-form-element-border-color) !important;
+  z-index: 1000;
+  background: var(--pico-card-sectioning-background-color) !important;
+  color: var(--pico-color) !important;
+  border: 1px solid var(--pico-form-element-border-color) !important;
 }
 
-.ts-control > input {
+.ts-control>input {
   background: var(--pico-form-element-background-color) !important;
   border: 1px solid var(--pico-form-element-border-color) !important;
   padding: 1rem !important;
 }
 
-svg:not(:host), svg:not(:root) {
-    overflow: visible;
+svg:not(:host),
+svg:not(:root) {
+  overflow: visible;
 }
 
 .editable {
-    cursor: pointer;
-    padding: 0 2px;
+  cursor: pointer;
+  padding: 0 2px;
 }
+
 .editable:hover {
-    background: var(--pico-card-background-color);
-    border-bottom: 1px dashed var(--pico-muted-color);
-    color: var(--pico-primary);
+  background: var(--pico-card-background-color);
+  border-bottom: 1px dashed var(--pico-muted-color);
+  color: var(--pico-primary);
 }
 
 
 @keyframes globalFallIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 article {
-    /* Set the starting state so they are invisible before animation starts */
-    opacity: 0; 
-    transform: translateY(-20px);
-    
-    /* Apply the animation */
-    animation: globalFallIn 0.5s ease-out forwards;
-    box-shadow: none;
+  /* Set the starting state so they are invisible before animation starts */
+  opacity: 0;
+  transform: translateY(-20px);
+
+  /* Apply the animation */
+  animation: globalFallIn 0.5s ease-out forwards;
+  box-shadow: none;
 }
 
 /* Ensure HTMX content doesn't double-animate if it's inside an article */
-.htmx-added article, 
+.htmx-added article,
 article.htmx-added {
-    animation: none; /* Let the htmx-settling classes handle it instead */
+  animation: none;
+  /* Let the htmx-settling classes handle it instead */
 }
+
 /* Only animate articles that exist on initial page load */
 article:not(.htmx-added) {
-    opacity: 0;
-    animation: globalFallIn 0.5s ease-out forwards;
+  opacity: 0;
+  animation: globalFallIn 0.5s ease-out forwards;
 }
 
 /* Handle HTMX swaps separately and gracefully */
 .htmx-swapping article {
-    opacity: 0;
-    transform: translateY(20px); /* Slide out downwards */
-    transition: all 0.2s ease-in;
+  opacity: 0;
+  transform: translateY(20px);
+  /* Slide out downwards */
+  transition: all 0.2s ease-in;
 }
 
 .htmx-settling article {
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 
@@ -1650,18 +2133,18 @@ article:not(.htmx-added) {
 }
 
 .c-icon {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    color: black;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: black;
 }
 
 .color-patch i {
-    display: none;
+  display: none;
 }
 
 .color-patch:hover i {
-    display: inline-block;
+  display: inline-block;
 }
 
 /* === Auth Forms === */
@@ -1702,10 +2185,6 @@ article:not(.htmx-added) {
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--pico-color);
-}
-
-.form-field input {
-  width: 100%;
 }
 
 .form-field.has-error input {
@@ -1887,12 +2366,13 @@ dialog[open] article {
   border-color: var(--pico-primary);
   color: var(--pico-primary);
 }
+
 /* === Profile Settings OVERRIDES === */
 dialog[open] {
   padding: 0 !important;
 }
 
-dialog[open] > #profile-article {
+dialog[open]>#profile-article {
   height: 70vh !important;
   max-height: 70vh !important;
   min-height: 70vh !important;
@@ -1946,6 +2426,7 @@ dialog[open] > #profile-article {
     max-height: calc(20vh - 0.5rem);
     border: 1px solid #0d0f0f;
   }
+
   .movement:hover {
     transform: translateY(-2px);
     box-shadow: -5px 5px 0px 0px #0d0f0f;
@@ -1960,9 +2441,10 @@ dialog[open] > #profile-article {
     border: 1px solid #0d0f0f;
   }
 }
+
 /* Profile/Settings modal: mobile-friendly layout */
 @media (max-width: 768px) {
-  dialog[open] > #profile-article {
+  dialog[open]>#profile-article {
     width: 100% !important;
     max-width: 100% !important;
     height: 85dvh !important;
