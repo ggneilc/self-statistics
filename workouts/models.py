@@ -106,6 +106,10 @@ class Workout(models.Model):
             or 0
         )
     
+    @property
+    def lift_count(self):
+        return self.lifts.count()
+
     def bodypart_list(self):
         codes = self.workout_type.target_muscles.values_list('bodypart', flat=True)
         return [(code, bodypart_map[code]) for code in codes if code in bodypart_map]

@@ -1,5 +1,5 @@
 <dialog open>
-<article>
+<article style="height: 80vh;">
     <header style="position:relative;">
         <button rel="prev"
             hx-get="{% url 'workouts:clear' %}"
@@ -19,18 +19,59 @@
         </span>
         </p>
     </header>
-    <div class="horizontal-group " >
-        <div class="vertical-group" style="flex:3;">
-            <div id="workout-info" class="horizontal-group">
-                <div class="workout-name">{{workout.workout_type.name}}</div>
-                <div class="workout-date">{{workout.day.date|date:"m/d/Y"}}</div>
-                <div class="workout-total">Total Weight: {{workout.total_volume}} lbs</div>
-            </div>
-            <div id="workout-lifts" class="horizontal-group">
-                {% include 'workouts/lifts.html' with lifts=workout.lifts.all active=False id=workout.id total=workout.total %}
-            </div>
+
+    <div class="horizontal-group" style="flex:1;min-height: 0;">
+        <div class="vertical-group" style="flex:3;min-height: 0;">
+          <div class="movement-details-header">
+            <span class="movement-details-name">{{ workout.workout_type.name }}</span>
+            <span class="movement-details-level">{{ workout.day.date|date:"m/d/Y" }}</span>
+          </div>
+          <div class="horizontal-group" style="flex:1;min-height: 0;">
+          <div class="vertical-group" id="lift-details">
+            <article id="lift-info" class="vertical-group movement-section" style="padding-bottom: 0.25rem; margin-bottom: 0;max-height:revert;height:60.5vh;">
+              <header class="movement-section-header">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Lifts Performed
+              </header>
+              <div id="lift-sets" class="vertical-group movement-history-list" style="padding: 2px 0.5rem;">
+                {% for lift in workout.lifts.all %}
+                <div class="lift-set-entry">
+                  <div class="lift-set-date">{{ lift.movement.name }}</div>
+                  {% for set in lift.sets.all %}
+                  <div class="horizontal-group lift-set-row">
+                    <div class="set-reps">{{ set.reps }}</div>
+                    <div class="lift-set-sep">×</div>
+                    <div class="set-weight">{{ set.weight }}</div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% endfor %}
+              </div>
+            </article>
+          </div>
+          <div class="vertical-group" style="flex:1;">
+            <article class="vertical-group movement-section" id="lift-accolades" style="height: revert;margin-bottom:0;">
+              <header class="movement-section-header">
+                <i class="fa-solid fa-trophy"></i>
+                Accolades
+              </header>
+              <div class="movement-accolade-card">
+                <div class="lift-accolade-header">Total Volume</div>
+                <div class="lift-accolade-value">
+                  {{ workout.total_volume|floatformat:0 }}<span class="accolade-unit">lbs</span>
+                </div>
+              </div>
+              <div class="movement-accolade-card">
+                <div class="lift-accolade-header">Top Set</div>
+                <div class="lift-accolade-value">
+                  <span class="movement-empty-value">—</span>
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
     </div>
+
 </article>
 </dialog>
 

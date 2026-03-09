@@ -61,11 +61,11 @@
         const calBarsG = g.append("g").attr("class", "bars");
         const maLinePath = g.append("path")
             .attr("fill", "none")
-            .attr("stroke", "var(--pico-secondary, #707a8a)")
+            .attr("stroke", "var(--pico-secondary)")
             .attr("stroke-width", 3);
         const rawLinePath = g.append("path")
             .attr("fill", "none")
-            .attr("stroke", "var(--accent, #ffc83d)")
+            .attr("stroke", "var(--pico-primary)")
             .attr("stroke-width", 3);
         const dotsG = g.append("g").attr("class", "dots");
 
@@ -102,21 +102,21 @@
                 .call(d3.axisBottom(x).ticks(width / 100).tickFormat(d3.timeFormat("%b %d")))
                 .selectAll("text")
                 .style("font-size", "14px")
-                .style("fill", "var(--text, #f5f5f5)");
+                .style("fill", "var(--pico-muted-color)");
 
             yAxisLG
                 .attr("transform", `translate(${margin.left},0)`)
                 .call(d3.axisLeft(yBodyweight).ticks(5))
                 .selectAll("text")
                 .style("font-size", "14px")
-                .style("fill", "var(--accent, #ffc83d)");
+                .style("fill", "var(--pico-primary)");
 
             yAxisRG
                 .attr("transform", `translate(${width - margin.right},0)`)
                 .call(d3.axisRight(yCalories).ticks(5))
                 .selectAll("text")
                 .style("font-size", "14px")
-                .style("fill", "var(--pico-secondary, #707a8a)");
+                .style("fill", "var(--pico-secondary)");
 
             // Bars Update
             const minD = d3.min(data, d => d.date);
@@ -130,7 +130,7 @@
 
             bars.enter()
                 .append("rect")
-                .attr("fill", "var(--pico-secondary, #707a8a)")
+                .attr("fill", "var(--pico-secondary)")
                 .attr("opacity", 0.3)
                 .on("mouseover", function (event, d) {
                     d3.select(this).attr("opacity", 0.6);
@@ -190,7 +190,7 @@
             dots.enter()
                 .append("circle")
                 .attr("class", "dot")
-                .attr("fill", "var(--accent, #ffc83d)")
+                .attr("fill", "var(--pico-primary)")
                 .on("mouseover", function (event, d) {
                     d3.select(this).attr("r", 8);
                     tooltip.transition().duration(200).style("opacity", .9);

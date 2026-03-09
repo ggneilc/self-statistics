@@ -1,17 +1,26 @@
+{% load static %}
 <div id="workout-{{workout.id}}" class="workout" 
-    style="background: linear-gradient(135deg,
-          var(--pico-background-color) 85%,
-          var(--pico-background-color) 85%,
-          {{workout.workout_type.color}} 15%);"
       hx-trigger="click"
       hx-get="{% url 'workouts:get_workout' workout.id %}"
       hx-target="#modal-workout">
      
 
   <div class="horizontal-group inline-workout">
+    {% if workout.workout_type.name|lower == 'push' %}
+      <div class="workout-icon" style="color: {{workout.workout_type.color}}; -webkit-mask-image: url('{% static "workouts/icons/push.svg" %}'); mask-image: url('{% static "workouts/icons/push.svg" %}');" title="Push"></div>
+    {% elif workout.workout_type.name|lower == 'pull' %}
+      <div class="workout-icon" style="color: {{workout.workout_type.color}}; -webkit-mask-image: url('{% static "workouts/icons/pull.svg" %}'); mask-image: url('{% static "workouts/icons/pull.svg" %}');" title="Pull"></div>
+    {% elif workout.workout_type.name|lower == 'legs' %}
+      <div class="workout-icon" style="color: {{workout.workout_type.color}}; -webkit-mask-image: url('{% static "workouts/icons/legs.svg" %}'); mask-image: url('{% static "workouts/icons/legs.svg" %}');" title="Legs"></div>
+    {% else %}
+      <div class="workout-icon" style="color: {{workout.workout_type.color}}; -webkit-mask-image: url('{% static "workouts/icons/custom_workout.svg" %}'); mask-image: url('{% static "workouts/icons/custom_workout.svg" %}');" title="Other"></div>
+    {% endif %}
     <div class="workout-name">{{workout.workout_type.name.upper}} </div>
-    <div class="workout-total">{{workout.total_volume}} lbs</div>
-    <div class="workout-date">{{workout.day.date|date:"m/d"}}</div>
+    <div class="horizontal-group workout-info">
+      <div style="border-right: 1px solid var(--pico-muted-border-color);">{{workout.lift_count|stringformat:"d"}} Lifts</div>
+      <div style="flex:2;border-right: 1px solid var(--pico-muted-border-color);">{{workout.total_volume|stringformat:"d"}} lbs</div>
+      <div>{{workout.day.date|date:"m/d"}}</div>
+    </div>
   </div>
 
   <!-- Color patch -->
@@ -32,3 +41,36 @@
     hx-swap="innerHTML"
   >
 </div>
+
+<style>
+#workout-{{workout.id}}::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: {{workout.workout_type.color}};
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
+}
+#workout-{{workout.id}} {
+  background: linear-gradient(
+      90deg,
+      transparent 65%,
+      color-mix(in srgb, {{workout.workout_type.color}} 30%, transparent)
+    ),
+    var(--pico-card-background-color);
+
+}
+#workout-{{workout.id}}:hover {
+  background:
+    linear-gradient(
+      90deg,
+      transparent 55%,
+      color-mix(in srgb, {{workout.workout_type.color}} 40%, transparent)
+    ),
+    var(--pico-card-background-color);
+  box-shadow: 0px 0px 3px 0px {{workout.workout_type.color}};
+}
+</style>
