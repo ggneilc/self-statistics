@@ -43,12 +43,12 @@
 			</li>
 		</ul>
 
-		<div class="profile-nav-footer">
-			<button class="profile-logout-btn"
+		<div class="profile-nav-footer" style="min-height:0;">
+			<button class="profile-logout-btn" style="min-height: 0; display: flex; align-items: center; justify-content: center;"
 				hx-post="{% url 'core:logout' %}">
 				<i class="fa fa-right-from-bracket"></i> Logout
 			</button>
-			<button class="profile-close-btn"
+			<button class="profile-close-btn" style="min-height: 0; display: flex; align-items: center; justify-content: center;"
 				hx-get="{% url 'core:close_profile' %}"
 				hx-swap="innerHTML"
 				hx-target="#dummy"

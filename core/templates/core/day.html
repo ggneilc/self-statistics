@@ -1,10 +1,11 @@
 <header class="day-header">
-  <div id="day-weight" class="day-header-item"
-    hx-get="{% url 'core:get_bw' %}"
-    hx-trigger="load"
-    hx-swap="outerHTML"></div>
-  <div class="day-header-item"><i class="fa-solid fa-utensils" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Meals</div>
-  <div class="day-header-item"><i class="fa-solid fa-bullseye" style="margin-right: 0.5rem; color: var(--pico-primary);"></i> Tasks</div>
+  <div id="day-weight" class="day-header-item" hx-get="{% url 'core:get_bw' %}" hx-trigger="load" hx-swap="outerHTML">
+  </div>
+
+  <div id="water-input" hx-get="{% url 'core:get_water' %}?selected_date={{ day.date|date:'Y-m-d' }}" hx-trigger="load"
+    class="day-header-item" hx-swap="outerHTML"></div>
+  <div id="sleep-input" hx-get="{% url 'core:get_sleep' %}?selected_date={{ day.date|date:'Y-m-d' }}" hx-trigger="load"
+    class="day-header-item" hx-swap="outerHTML"></div>
   <span class="day-card-flip">
     <button type="button" style="padding: 0 0.3rem; margin-bottom: 0">
       <i class="fa-solid fa-rotate"></i>
@@ -12,119 +13,34 @@
   </span>
 </header>
 
-<div class="horizontal-group nutrition-breakdown" style="flex: 4;">
-  <div id="macro-breakdown"
-  hx-get="{% url 'graphs:macros' %}"
-  hx-trigger="load, dayUpdated from:body"></div>
-  <div id="mineral-breakdown"
-  hx-get="{% url 'graphs:minerals' %}"
-  hx-trigger="load, dayUpdated from:body"></div>
-  <div id="vitamin-breakdown"
-  hx-get="{% url 'graphs:vitamins' %}"
-  hx-trigger="load, dayUpdated from:body"></div>
-</div>
-<div id="nutrition-breakdown-indicators" class="nutrition-breakdown-indicators" aria-hidden="true"></div>
+<div class="nutrient-overview" style="flex: 4; align-items: stretch;  min-width: 0;min-height:0;">
+  <!-- Unified D3 Radial Chart -->
+  <div id="all-nutrients-chart" style="flex: 2.5; display: flex; position: relative; min-width: 0; min-height: 0; "
+    hx-get="{% url 'graphs:nutrient-overview' %}" hx-trigger="load, dayUpdated from:body">
+  </div>
 
+  <!-- Numerical Goals Placeholder & Inputs -->
+  <div id="goals-placeholder" class="vertical-group">
 
-<div id="nutrition-information" class="horizontal-group day-bottom-section">
-  <div id="macro-completion"   class="day-nutrient-completion"
-    hx-get="{% url 'graphs:macro-completion' %}" hx-trigger="load, dayUpdated from:body"></div>
-  <div id="mineral-completion" class="day-nutrient-completion"
-    hx-get="{% url 'graphs:mineral-completion' %}" hx-trigger="load, dayUpdated from:body"></div>
-  <div id="vitamin-completion" class="day-nutrient-completion"
-    hx-get="{% url 'graphs:vitamin-completion' %}" hx-trigger="load, dayUpdated from:body"></div>
-</div>
+    <h3 style="color: var(--pico-muted-color); text-align: center; margin-top: 0;margin-bottom: 0;">Daily Goals</h3>
 
+    <div class="goal-section" style="flex: 1;">
+      <div id="goals-table-container" style="overflow-y: auto; flex: 2;">
+        <!-- Filled dynamically by all-nutrients.html chart render -->
+      </div>
 
-
-<!-- Hidden targets for sleep/water form responses (modal submits update these, then macro refreshes) -->
-<div id="sleep-input" style="display: none;"
-  hx-get="{% url 'core:get_sleep' %}"
-  hx-trigger="load"
-  hx-swap="innerHTML"></div>
-<div id="water-input" style="display: none;"></div>
-
-<!-- Modal for sleep/water input when clicking macro pie tracks -->
-<div id="macro-track-modal" class="macro-track-modal" aria-hidden="true"
-  data-sleep-url="{% url 'core:edit_sleep' %}"
-  data-water-url="{% url 'core:get_water' %}">
-  <div class="macro-track-modal-overlay" data-close-modal></div>
-  <div class="macro-track-modal-content" role="dialog">
-    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-      <strong id="macro-track-modal-title">Log</strong>
-      <button type="button" class="close-macro-track-modal" aria-label="Close">&times;</button>
-    </header>
-    <div class="macro-track-modal-body"></div>
+      <!-- Inputs for Sleep and Water -->
+    </div>
   </div>
 </div>
 
-
-
 <script>
-(function() {
-  const modal = document.getElementById('macro-track-modal');
-  const body = modal && modal.querySelector('.macro-track-modal-body');
-  const titleEl = document.getElementById('macro-track-modal-title');
-  if (!modal || !body) return;
-
-  window.openMacroTrackModal = function(type) {
-    const date = (document.getElementById('hidden-date') || {}).value || new Date().toLocaleDateString('en-CA');
-    const url = type === 'sleep' ? modal.dataset.sleepUrl : modal.dataset.waterUrl;
-    titleEl.textContent = type === 'sleep' ? 'Log sleep' : 'Log water';
-    body.innerHTML = '<span>Loading…</span>';
-    modal.setAttribute('aria-hidden', 'false');
-    modal.classList.add('is-open');
-    htmx.ajax('GET', url + '?selected_date=' + encodeURIComponent(date), {
-      target: body,
-      swap: 'innerHTML'
+  (function () {
+    // Dispatch dayUpdated when sleep or water is updated so charts refresh
+    document.body.addEventListener('htmx:afterSwap', function (ev) {
+      if (ev.detail.target.id === 'sleep-input' || ev.detail.target.id === 'water-input') {
+        document.body.dispatchEvent(new CustomEvent('dayUpdated'));
+      }
     });
-  };
-
-  function closeModal() {
-    modal.setAttribute('aria-hidden', 'true');
-    modal.classList.remove('is-open');
-    body.innerHTML = '';
-  }
-
-  modal.querySelector('.close-macro-track-modal').addEventListener('click', closeModal);
-  modal.querySelector('[data-close-modal]').addEventListener('click', closeModal);
-
-  document.body.addEventListener('htmx:afterSwap', function(ev) {
-    if (ev.detail.target.id === 'sleep-input' || ev.detail.target.id === 'water-input') {
-      closeModal();
-      document.body.dispatchEvent(new CustomEvent('dayUpdated'));
-    }
-  });
-
-  function initNutritionBreakdownIndicators() {
-    const container = document.querySelector('.nutrition-breakdown');
-    const bar = document.getElementById('nutrition-breakdown-indicators');
-    if (!container || !bar || container.children.length === 0) return;
-    container.style.direction = 'ltr';
-    container.scrollLeft = 0;
-    const count = container.children.length;
-    bar.innerHTML = Array.from({ length: count }, (_, i) =>
-      '<span class="scroll-dot" data-index="' + i + '" aria-label="Chart ' + (i + 1) + ' of ' + count + '"></span>'
-    ).join('');
-    bar.setAttribute('aria-hidden', 'false');
-    bar.querySelector('.scroll-dot').classList.add('active');
-    function setActiveDot() {
-      const w = container.clientWidth;
-      if (!w) return;
-      const index = Math.round(container.scrollLeft / w);
-      bar.querySelectorAll('.scroll-dot').forEach(function(dot, i) {
-        dot.classList.toggle('active', i === index);
-      });
-    }
-    container.addEventListener('scroll', setActiveDot);
-    function ensureScrollStart() {
-      container.scrollLeft = 0;
-      setActiveDot();
-    }
-    requestAnimationFrame(function() { requestAnimationFrame(ensureScrollStart); });
-    /* After HTMX loads chart content, layout may change; reset scroll so macro stays first */
-    setTimeout(ensureScrollStart, 300);
-  }
-  initNutritionBreakdownIndicators();
-})();
+  })();
 </script>

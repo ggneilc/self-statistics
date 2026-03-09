@@ -1,0 +1,293 @@
+<style>
+    .radial-tooltip {
+        position: absolute;
+        text-align: center;
+        padding: 8px;
+        font: 14px var(--font-family, sans-serif);
+        background: var(--card-background-color, #1e1e1e);
+        color: var(--text, #f5f5f5);
+        border: 1px solid var(--pico-secondary, #707a8a);
+        border-radius: 4px;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 1000;
+        white-space: nowrap;
+    }
+</style>
+
+<div id="radial-chart-container" data-macro-raw='{{ macro_data|safe }}' data-macro-goal='{{ macro_goals|safe }}'
+    data-mineral-raw='{{ mineral_data|safe }}' data-mineral-goal='{{ mineral_goals|safe }}'
+    data-vitamin-raw='{{ vitamin_data|safe }}' data-vitamin-goal='{{ vitamin_goals|safe }}'
+    style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; min-width: 0; min-height: 0;">
+</div>
+
+<script>
+    (function () {
+        const container = document.getElementById("radial-chart-container");
+        if (!container) return;
+
+        let macroRaw, macroGoal, mineralRaw, mineralGoal, vitaminRaw, vitaminGoal;
+        try {
+            macroRaw = JSON.parse(container.dataset.macroRaw);
+            macroGoal = JSON.parse(container.dataset.macroGoal);
+            mineralRaw = JSON.parse(container.dataset.mineralRaw);
+            mineralGoal = JSON.parse(container.dataset.mineralGoal);
+            vitaminRaw = JSON.parse(container.dataset.vitaminRaw);
+            vitaminGoal = JSON.parse(container.dataset.vitaminGoal);
+        } catch (e) {
+            console.error("Error parsing nutrient data", e);
+            return;
+        }
+
+        // Build unified data array
+        const data = [];
+
+        function addCategory(raw, goal, groupName) {
+            let hasItems = false;
+            for (const [key, val] of Object.entries(raw)) {
+                let percentage = goal[key] && goal[key] > 0 ? (val / goal[key]) * 100 : 0;
+                // Cap visual at 100% or slightly above (e.g. 120%)
+                let visualPercentage = Math.min(percentage, 100);
+
+                let processedName = key.charAt(0).toUpperCase() + key.slice(1);
+                if (groupName === "Vitamins") {
+                    processedName = "Vitamin " + processedName;
+                }
+
+                data.push({
+                    name: processedName,
+                    group: groupName,
+                    actual: val,
+                    goal: goal[key],
+                    percentage: percentage,
+                    visualPercentage: visualPercentage,
+                    isGap: false
+                });
+                hasItems = true;
+            }
+            if (hasItems) {
+                // Add a dummy gap for visual grouping separation
+                data.push({ name: `__gap_${groupName}__`, isGap: true });
+            }
+        }
+
+        addCategory(macroRaw, macroGoal, "Macros");
+        addCategory(mineralRaw, mineralGoal, "Minerals");
+        addCategory(vitaminRaw, vitaminGoal, "Vitamins");
+
+        container.innerHTML = "";
+
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "radial-tooltip");
+
+        const colorMap = {
+            'Sleep': 'var(--sleep-color)', 'Water': 'var(--water-color)',
+            'Fat': 'var(--fat-color)', 'Carbs': 'var(--carb-color)',
+            'Protein': 'var(--protein-color)', 'Calories': 'var(--calorie-color)',
+            'Zinc': 'var(--zinc-color)', 'Magnesium': 'var(--magnesium-color)',
+            'Iron': 'var(--iron-color)', 'Calcium': 'var(--calcium-color)',
+            'Potassium': 'var(--potassium-color)', 'Sodium': 'var(--sodium-color)',
+            'Vitamin E': 'var(--vitamin-e-color)', 'Vitamin D': 'var(--vitamin-d-color)',
+            'Vitamin C': 'var(--vitamin-c-color)', 'Vitamin B12': 'var(--vitamin-b12-color)',
+            'Vitamin B6': 'var(--vitamin-b6-color)', 'Vitamin A': 'var(--vitamin-a-color)'
+        };
+
+        function getComputedColor(colorVar) {
+            const tempEl = document.createElement('div');
+            tempEl.style.color = colorVar;
+            document.body.appendChild(tempEl);
+            const computed = window.getComputedStyle(tempEl).color;
+            document.body.removeChild(tempEl);
+            return computed !== '' ? computed : '#888';
+        }
+
+        const svgEl = d3.select(container)
+            .append("svg")
+            .style("width", "100%")
+            .style("height", "100%")
+            .style("display", "block");
+
+        const g = svgEl.append("g");
+        const bgGroup = g.append("g").attr("class", "background-bars");
+        const fgGroup = g.append("g").attr("class", "foreground-bars");
+        const labelGroup = g.append("g").attr("class", "labels");
+
+        // Center label
+        g.append("text")
+            .attr("text-anchor", "middle")
+            .attr("alignment-baseline", "middle")
+            .style("font-size", "1.2rem")
+            .style("font-weight", "bold")
+            .style("fill", "var(--pico-muted-color)")
+            .text("Nutrients");
+
+        let initialRender = true;
+
+        function render(width, height) {
+            if (width <= 0 || height <= 0) return;
+
+            const innerRadius = Math.min(width, height) * 0.2;
+            const outerRadius = Math.min(width, height) * 0.40; // leave room for labels
+
+            g.attr("transform", `translate(${width / 2},${height / 2})`);
+
+            const x = d3.scaleBand()
+                .range([0, 2 * Math.PI])
+                .align(0)
+                .domain(data.map(d => d.name));
+
+            const y = d3.scaleRadial()
+                .range([innerRadius, outerRadius])
+                .domain([0, 100]);
+
+            const visibleData = data.filter(d => !d.isGap);
+
+            // Background bars (Target 100%)
+            const bgBars = bgGroup.selectAll("path")
+                .data(visibleData, d => d.name);
+
+            bgBars.enter()
+                .append("path")
+                .attr("fill", d => {
+                    const c = getComputedColor(colorMap[d.name] || '#aaa');
+                    const rgb = d3.rgb(c);
+                    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                })
+                .merge(bgBars)
+                .attr("d", d3.arc()
+                    .innerRadius(innerRadius)
+                    .outerRadius(y(100))
+                    .startAngle(d => x(d.name))
+                    .endAngle(d => x(d.name) + x.bandwidth())
+                    .padAngle(0.05)
+                    .padRadius(innerRadius)
+                    .cornerRadius(4)
+                );
+            bgBars.exit().remove();
+
+            // Foreground bars (Actual)
+            const fgBars = fgGroup.selectAll("path")
+                .data(visibleData, d => d.name);
+
+            const fgEnter = fgBars.enter()
+                .append("path")
+                .attr("fill", d => getComputedColor(colorMap[d.name] || '#aaa'))
+                .on("mouseover", function (event, d) {
+                    d3.select(this).attr("stroke", "#fff").attr("stroke-width", 2);
+                    tooltip.transition().duration(200).style("opacity", .9);
+                    tooltip.html(`<strong>${d.name}</strong><br/>Actual: ${Math.round(d.actual * 10) / 10}<br/>Goal: ${d.goal}<br/>(${Math.round(d.percentage)}%)`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (event, d) {
+                    d3.select(this).attr("stroke", "none");
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
+            const fgMerge = fgEnter.merge(fgBars);
+
+            if (initialRender) {
+                fgMerge.transition().duration(1200)
+                    .attrTween("d", function (d) {
+                        const interpolate = d3.interpolate(0, d.visualPercentage);
+                        return function (t) {
+                            return d3.arc()
+                                .innerRadius(innerRadius)
+                                .outerRadius(y(interpolate(t)))
+                                .startAngle(x(d.name))
+                                .endAngle(x(d.name) + x.bandwidth())
+                                .padAngle(0.05)
+                                .padRadius(innerRadius)
+                                .cornerRadius(4)();
+                        };
+                    });
+            } else {
+                fgMerge.attr("d", d3.arc()
+                    .innerRadius(innerRadius)
+                    .outerRadius(d => y(d.visualPercentage))
+                    .startAngle(d => x(d.name))
+                    .endAngle(d => x(d.name) + x.bandwidth())
+                    .padAngle(0.05)
+                    .padRadius(innerRadius)
+                    .cornerRadius(4)
+                );
+            }
+            fgBars.exit().remove();
+
+            // Labels
+            const labels = labelGroup.selectAll("g")
+                .data(visibleData, d => d.name);
+
+            const labelsEnter = labels.enter()
+                .append("g");
+
+            labelsEnter.append("text")
+                .style("font-size", "11px")
+                .style("font-weight", "600")
+                .style("fill", "var(--text, #f5f5f5)")
+                .text(d => d.name.startsWith("Vitamin ") ? d.name.replace("Vitamin ", "") : d.name)
+                .attr("text-anchor", function (d) {
+                    const angle = x(d.name) + x.bandwidth() / 2;
+                    // If angle is past PI (180 deg), anchor end
+                    return (angle > Math.PI) ? "end" : "start";
+                })
+                .attr("alignment-baseline", "middle");
+
+            labelsEnter.merge(labels)
+                .attr("transform", function (d) {
+                    const angle = x(d.name) + x.bandwidth() / 2;
+                    const r = outerRadius + 12;
+                    return `translate(${r * Math.sin(angle)},${-r * Math.cos(angle)})`;
+                })
+                .selectAll("text")
+                .attr("text-anchor", function (d) {
+                    const angle = x(d.name) + x.bandwidth() / 2;
+                    return (angle > Math.PI) ? "end" : "start";
+                });
+
+            labels.exit().remove();
+
+            initialRender = false;
+        }
+
+        const ro = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                if (width > 0 && height > 0) render(width, height);
+            }
+        });
+        ro.observe(container);
+
+        // Populate Daily Goals Table
+        const goalsTableContainer = document.getElementById("goals-table-container");
+        if (goalsTableContainer) {
+            const tableData = data.filter(d => !d.isGap);
+            let html = '<table class="striped" style="font-size: 0.85rem; margin: 0; width: 100%; text-align: left;">';
+            html += '<thead><tr><th>Nutrient</th><th style="text-align: right;">Target</th></tr></thead><tbody>';
+            let currentGroup = "";
+            for (const d of tableData) {
+                if (d.group !== currentGroup) {
+                    html += `<tr><th colspan="2" style="text-align:center; padding: 0.4rem; background: var(--pico-muted-border-color);">${d.group}</th></tr>`;
+                    currentGroup = d.group;
+                }
+
+                let unit = " mg";
+                if (d.group === "Macros") {
+                    if (d.name === "Calories") unit = " kcal";
+                    else if (d.name === "Water") unit = " L";
+                    else if (d.name === "Sleep") unit = " hrs";
+                    else unit = " g";
+                } else if (d.group === "Vitamins") {
+                    if (d.name === "Vitamin A" || d.name === "Vitamin B12" || d.name === "Vitamin D") unit = " mcg";
+                }
+
+                // strip "Vitamin " for table view
+                let displayName = d.name.startsWith("Vitamin ") ? d.name.replace("Vitamin ", "") : d.name;
+                html += `<tr><td><strong>${displayName}</strong></td><td style="text-align: right;">${d.goal}${unit}</td></tr>`;
+            }
+            html += '</tbody></table>';
+            goalsTableContainer.innerHTML = html;
+        }
+
+    })();
+</script>

@@ -1,206 +1,206 @@
-<div id="mineral-chart" class="chart-container"
-    data-raw='{{ day_data|safe }}'
-    data-goal='{{ goals|safe }}'></div>
+<div id="mineral-chart" class="chart-container" data-raw='{{ day_data|safe }}' data-goal='{{ goals|safe }}'>
+    <div class="pie-header"> Minerals </div>
+</div>
 
 <script>
 
 
-(function() {
+    (function () {
 
-    const datacontainer = document.getElementById("mineral-chart");
-    if (!datacontainer) return;
-    const rawMinerals = JSON.parse(datacontainer.dataset.raw);
-    const rdaGoals = JSON.parse(datacontainer.dataset.goal);
+        const datacontainer = document.getElementById("mineral-chart");
+        if (!datacontainer) return;
+        const rawMinerals = JSON.parse(datacontainer.dataset.raw);
+        const rdaGoals = JSON.parse(datacontainer.dataset.goal);
 
-    const data = Object.keys(rawMinerals).map(key => ({
-        name: key.charAt(0).toUpperCase() + key.slice(1),
-        percentage: Math.min((rawMinerals[key] / rdaGoals[key]) * 100, 100), // Cap at 100% for the visual
-        actual: rawMinerals[key],
-        unit: 'mg'
-    }));
+        const data = Object.keys(rawMinerals).map(key => ({
+            name: key.charAt(0).toUpperCase() + key.slice(1),
+            percentage: Math.min((rawMinerals[key] / rdaGoals[key]) * 100, 100), // Cap at 100% for the visual
+            actual: rawMinerals[key],
+            unit: 'mg'
+        }));
 
-    // 1. Internal Coordinate System (Always stays 400x400 internally)
-    const baseSize = 450; 
-    const chartRadius = baseSize / 2;
-    const ringWidth = 30; // Wider to accommodate icons in sleep/water tracks
-    const ringSpacing = 6;
+        // 1. Internal Coordinate System (Always stays 400x400 internally)
+        const baseSize = 450;
+        const chartRadius = baseSize / 2;
+        const ringWidth = 30; // Wider to accommodate icons in sleep/water tracks
+        const ringSpacing = 6;
 
-    const container = d3.select("#mineral-chart");
-    container.selectAll("svg").remove();
+        const container = d3.select("#mineral-chart");
+        container.selectAll("svg").remove();
 
-    // 2. Responsive SVG: viewBox + fill container (container uses .chart-container for size)
-    const svg = container.append("svg")
-        .attr("viewBox", `0 0 ${baseSize} ${baseSize}`)
-        .attr("preserveAspectRatio", "xMidYMid meet")
-        .style("width", "100%")
-        .style("height", "100%")
-        .append("g")
-        .attr("transform", `translate(${baseSize / 2}, ${baseSize / 2})`);
+        // 2. Responsive SVG: viewBox + fill container (container uses .chart-container for size)
+        const svg = container.append("svg")
+            .attr("viewBox", `0 0 ${baseSize} ${baseSize}`)
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .style("width", "100%")
+            .style("height", "100%")
+            .append("g")
+            .attr("transform", `translate(${baseSize / 2}, ${baseSize / 2})`);
 
-    const colorScheme = [
-        'var(--zinc-color)','var(--magnesium-color)',
-        'var(--iron-color)','var(--calcium-color)',
-        'var(--potassium-color)','var(--sodium-color)'
-    ];
-    const color = d3.scaleOrdinal()
-        .domain(data.map(d => d.name))
-        .range(colorScheme);
-    
-    // Helper function to get muted version of a color (with opacity)
-    function getMutedColor(colorVar, i) {
-        // Get computed color value from CSS variable
-        const tempEl = document.createElement('div');
-        tempEl.style.color = colorVar;
-        document.body.appendChild(tempEl);
-        const computedColor = window.getComputedStyle(tempEl).color;
-        document.body.removeChild(tempEl);
-        
-        // Parse RGB and create muted version with reduced opacity
-        const rgb = d3.rgb(computedColor);
-        // Return rgba with reduced opacity (0.15 = 15% opacity for muted background)
-        return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-    }
-    
-    const angleScale = d3.scaleLinear().domain([0, 100]).range([0, 2 * Math.PI]);
+        const colorScheme = [
+            'var(--zinc-color)', 'var(--magnesium-color)',
+            'var(--iron-color)', 'var(--calcium-color)',
+            'var(--potassium-color)', 'var(--sodium-color)'
+        ];
+        const color = d3.scaleOrdinal()
+            .domain(data.map(d => d.name))
+            .range(colorScheme);
 
-    // 3. Dynamic Radius Calculation
-    // We start the first ring further out to leave room for a center label
-    const startRadius = 30; 
+        // Helper function to get muted version of a color (with opacity)
+        function getMutedColor(colorVar, i) {
+            // Get computed color value from CSS variable
+            const tempEl = document.createElement('div');
+            tempEl.style.color = colorVar;
+            document.body.appendChild(tempEl);
+            const computedColor = window.getComputedStyle(tempEl).color;
+            document.body.removeChild(tempEl);
 
-    const arc = d3.arc()
-        .innerRadius((d, i) => i * (ringWidth + ringSpacing) + startRadius)
-        .outerRadius((d, i) => (i + 1) * ringWidth + (i * ringSpacing) + startRadius)
-        .startAngle(0)
-        .cornerRadius(12);
-    
-    // 4 & 5. Create a Group for each Mineral "Lane"
-    const ringGroups = svg.selectAll(".ring-group")
-        .data(data)
-        .enter()
-        .append("g")
-        .attr("class", "ring-group")
-        .style("cursor", "pointer");
+            // Parse RGB and create muted version with reduced opacity
+            const rgb = d3.rgb(computedColor);
+            // Return rgba with reduced opacity (0.15 = 15% opacity for muted background)
+            return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+        }
 
-    // Add Background Track to the group - use muted version of each ring's color
-    ringGroups.append("path")
-        .attr("class", "background-arc")
-        .attr("d", (d, i) => d3.arc()
-            .innerRadius(i * (ringWidth + ringSpacing) + startRadius)
-            .outerRadius((i + 1) * ringWidth + (i * ringSpacing) + startRadius)
+        const angleScale = d3.scaleLinear().domain([0, 100]).range([0, 2 * Math.PI]);
+
+        // 3. Dynamic Radius Calculation
+        // We start the first ring further out to leave room for a center label
+        const startRadius = 30;
+
+        const arc = d3.arc()
+            .innerRadius((d, i) => i * (ringWidth + ringSpacing) + startRadius)
+            .outerRadius((d, i) => (i + 1) * ringWidth + (i * ringSpacing) + startRadius)
             .startAngle(0)
-            .endAngle(2 * Math.PI)()
-        )
-        .attr("fill", (d, i) => {
-            const colorVar = colorScheme[i];
-            return getMutedColor(colorVar, i);
-        });
+            .cornerRadius(12);
 
-    // Add Foreground Progress to the same group
-    const foregroundPaths = ringGroups.append("path")
-        .attr("class", "foreground-arc")
-        .attr("fill", (d, i) => color(i))
-        .datum((d, i) => ({ ...d, index: i })); // Pass index for the tween
+        // 4 & 5. Create a Group for each Mineral "Lane"
+        const ringGroups = svg.selectAll(".ring-group")
+            .data(data)
+            .enter()
+            .append("g")
+            .attr("class", "ring-group")
+            .style("cursor", "pointer");
 
-    // Track animation state - disable interactions until animations complete
-    let isAnimating = true;
-    const animationDuration = 1200;
-    const delayPerRing = 80;
-    const totalAnimationTime = (data.length - 1) * delayPerRing + animationDuration;
-    let completedAnimations = 0;
+        // Add Background Track to the group - use muted version of each ring's color
+        ringGroups.append("path")
+            .attr("class", "background-arc")
+            .attr("d", (d, i) => d3.arc()
+                .innerRadius(i * (ringWidth + ringSpacing) + startRadius)
+                .outerRadius((i + 1) * ringWidth + (i * ringSpacing) + startRadius)
+                .startAngle(0)
+                .endAngle(2 * Math.PI)()
+            )
+            .attr("fill", (d, i) => {
+                const colorVar = colorScheme[i];
+                return getMutedColor(colorVar, i);
+            });
 
-    // Entrance Animation
-    foregroundPaths.transition()
-        .duration(animationDuration)
-        .delay((d, i) => i * delayPerRing)
-        .attrTween("d", function(d) {
-            const i = d.index;
-            const interpolate = d3.interpolate(0, d.percentage);
-            return function(t) {
-                d.endAngle = angleScale(interpolate(t));
-                return arc(d, i);
-            };
-        })
-        .on("end", function() {
-            completedAnimations++;
-            // Enable interactions when all animations complete
-            if (completedAnimations >= data.length) {
-                isAnimating = false;
-            }
-        });
-    
-    // Fallback: enable interactions after total animation time (in case on("end") doesn't fire)
-    setTimeout(() => {
-        isAnimating = false;
-    }, totalAnimationTime + 100);
+        // Add Foreground Progress to the same group
+        const foregroundPaths = ringGroups.append("path")
+            .attr("class", "foreground-arc")
+            .attr("fill", (d, i) => color(i))
+            .datum((d, i) => ({ ...d, index: i })); // Pass index for the tween
 
-    // 6. Labels - show ghost labels if all tracks are empty
-    const labels = ringGroups.append("text")
-        .attr("class", "ring-label")
-        .attr("x", 12)
-        .attr("y", (d, i) => -(i * (ringWidth + ringSpacing) + startRadius + (ringWidth/2)))
-        .attr("dy", "0.35em")
-        .style("font-size", "25px")
-        .style("fill", "white")
-        .style("font-weight", "bold")
-        .style("pointer-events", "none")
-        .text(d => `${d.name}: ${Math.round(d.percentage)}%`);
-    
-    // Check if all tracks are empty (all percentages < 1%)
-    const allEmpty = data.every(d => d.percentage < 1);
-    
-    if (allEmpty) {
-        // Show ghost labels faintly
-        labels.style("opacity", 0.25);
-    } else {
-        // Hide labels initially (will show on hover)
-        labels.style("opacity", 0);
-    }
+        // Track animation state - disable interactions until animations complete
+        let isAnimating = true;
+        const animationDuration = 1200;
+        const delayPerRing = 80;
+        const totalAnimationTime = (data.length - 1) * delayPerRing + animationDuration;
+        let completedAnimations = 0;
 
-    // 7. HOVER LOGIC (Attached to the Group) - disabled during animation
-    ringGroups.on("mouseenter", function(event, d) {
-        if (isAnimating) return; // Ignore hover during entrance animation
-        
-        const group = d3.select(this);
+        // Entrance Animation
+        foregroundPaths.transition()
+            .duration(animationDuration)
+            .delay((d, i) => i * delayPerRing)
+            .attrTween("d", function (d) {
+                const i = d.index;
+                const interpolate = d3.interpolate(0, d.percentage);
+                return function (t) {
+                    d.endAngle = angleScale(interpolate(t));
+                    return arc(d, i);
+                };
+            })
+            .on("end", function () {
+                completedAnimations++;
+                // Enable interactions when all animations complete
+                if (completedAnimations >= data.length) {
+                    isAnimating = false;
+                }
+            });
 
-        // Show label with shift
-        group.select(".ring-label")
-            .transition().duration(200)
-            .style("opacity", 1)
-            .attr("transform", "translate(8, 0)");
+        // Fallback: enable interactions after total animation time (in case on("end") doesn't fire)
+        setTimeout(() => {
+            isAnimating = false;
+        }, totalAnimationTime + 100);
 
-        // Highlight the progress bar
-        group.select(".foreground-arc")
-            .transition().duration(200)
-            .style("filter", "brightness(1.4)")
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 1);
-            
-        // Optional: darken other rings slightly to emphasize this one
-        ringGroups.filter(g => g !== d)
-            .transition().duration(200)
-            .style("opacity", 0.3);
-        ringGroups.selectAll("text").classed("text-active", true);
-    })
-    .on("mouseleave", function(event, d) {
-        if (isAnimating) return; // Ignore hover during entrance animation
-        
-        const group = d3.select(this);
+        // 6. Labels - show ghost labels if all tracks are empty
+        const labels = ringGroups.append("text")
+            .attr("class", "ring-label")
+            .attr("x", 12)
+            .attr("y", (d, i) => -(i * (ringWidth + ringSpacing) + startRadius + (ringWidth / 2)))
+            .attr("dy", "0.35em")
+            .style("font-size", "25px")
+            .style("fill", "white")
+            .style("font-weight", "bold")
+            .style("pointer-events", "none")
+            .text(d => `${d.name}: ${Math.round(d.percentage)}%`);
 
-        group.select(".foreground-arc")
-            .transition().duration(200)
-            .style("filter", "brightness(1)")
-            .attr("stroke", "none");
-            
-        // Reset all rings
-        ringGroups.transition().duration(200).style("opacity", 1);
-        ringGroups.selectAll("text").classed("text-active", false);
-        
-        // Reset label: show ghost label if all empty, otherwise hide
+        // Check if all tracks are empty (all percentages < 1%)
         const allEmpty = data.every(d => d.percentage < 1);
-        group.select(".ring-label")
-            .transition().duration(200)
-            .style("opacity", allEmpty ? 0.25 : 0)
-            .attr("transform", "translate(0, 0)");
-    });
-})();
+
+        if (allEmpty) {
+            // Show ghost labels faintly
+            labels.style("opacity", 0.25);
+        } else {
+            // Hide labels initially (will show on hover)
+            labels.style("opacity", 0);
+        }
+
+        // 7. HOVER LOGIC (Attached to the Group) - disabled during animation
+        ringGroups.on("mouseenter", function (event, d) {
+            if (isAnimating) return; // Ignore hover during entrance animation
+
+            const group = d3.select(this);
+
+            // Show label with shift
+            group.select(".ring-label")
+                .transition().duration(200)
+                .style("opacity", 1)
+                .attr("transform", "translate(8, 0)");
+
+            // Highlight the progress bar
+            group.select(".foreground-arc")
+                .transition().duration(200)
+                .style("filter", "brightness(1.4)")
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1);
+
+            // Optional: darken other rings slightly to emphasize this one
+            ringGroups.filter(g => g !== d)
+                .transition().duration(200)
+                .style("opacity", 0.3);
+            ringGroups.selectAll("text").classed("text-active", true);
+        })
+            .on("mouseleave", function (event, d) {
+                if (isAnimating) return; // Ignore hover during entrance animation
+
+                const group = d3.select(this);
+
+                group.select(".foreground-arc")
+                    .transition().duration(200)
+                    .style("filter", "brightness(1)")
+                    .attr("stroke", "none");
+
+                // Reset all rings
+                ringGroups.transition().duration(200).style("opacity", 1);
+                ringGroups.selectAll("text").classed("text-active", false);
+
+                // Reset label: show ghost label if all empty, otherwise hide
+                const allEmpty = data.every(d => d.percentage < 1);
+                group.select(".ring-label")
+                    .transition().duration(200)
+                    .style("opacity", allEmpty ? 0.25 : 0)
+                    .attr("transform", "translate(0, 0)");
+            });
+    })();
 </script>

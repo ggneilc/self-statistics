@@ -1,9 +1,6 @@
 <div id="day-weight" class="day-header-item">
   <span style="width: 100%; display: flex; align-items: center; justify-content: center;"
-    hx-get="{% url 'core:edit_bw' %}"
-    hx-trigger="click"
-    hx-target="#day-weight"
-    hx-swap="outerHTML">
-  <i class="fa-solid fa-weight-scale"></i>{{bodyweight}}lb
+    hx-get="{% url 'core:edit_bw' %}" hx-trigger="click" hx-target="#day-weight" hx-swap="outerHTML swap:0.2s">
+    <i class="fa-solid fa-weight-scale"></i>{{bodyweight}}lb
   </span>
 </div>

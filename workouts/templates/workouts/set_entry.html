@@ -7,11 +7,11 @@
     hx-swap="outerHTML">
 
 <!-- if not editing, the set doesn't exist yet; just clear. -->
-  <button class="del outline" 
+  <button class="del outline" type="button"
     {% if not editing %}
-    hx-get="{% url 'workouts:clear'%}" 
+    hx-get="{% url 'workouts:clear'%}"
     {% else %}
-    hx-delete="{% url 'workouts:del_set' set.id %}" 
+    hx-delete="{% url 'workouts:del_set' set.id %}"
     {% endif %}
     hx-target="closest form"
     hx-swap="outerHTML"> x </button>

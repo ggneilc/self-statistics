@@ -7,9 +7,20 @@
       <header style="position:relative;">
         <i class="fa-solid fa-weight-hanging"></i>
         Lift Overview
-        <span style="position:absolute;right:1rem;">
+        <span style="position:absolute;top:0.5rem;right:1rem;display:flex;align-items:center;gap:0.5rem;">
           <div id="lift-modal"></div>
-          <button data-tooltip="Customize Workout Types" data-placement="bottom" style="padding: 0 0.3rem;">
+          <div class="filter-accordion-container">
+            <div id="workout-type-accordion" class="filter-accordion">
+              <!-- Workout types will be loaded here via HTMX -->
+            </div>
+          </div>
+          <button data-tooltip="Filter by Workout Type" data-placement="bottom" style="padding: 0 0.3rem;"
+            hx-get="{% url 'workouts:workout_types' %}"
+            hx-target="#workout-type-accordion"
+            hx-on:click="document.getElementById('workout-type-accordion').classList.toggle('open')">
+            <i class="fa-solid fa-filter"></i>
+          </button>
+          <button data-tooltip="Customize Workout Types" data-placement="bottom" style="padding: 0 0.3rem;display:none">
             <i class="fa-solid fa-pen"></i>
           </button>
           <button data-tooltip="Track New Movement" data-placement="bottom" style="padding: 0 0.3rem;"
@@ -17,7 +28,7 @@
             hx-target="#lift-modal">
             <i class="fa-solid fa-plus"></i>
           </button>
-          <button data-tooltip="Create Workout Plan" data-placement="bottom" style="padding: 0 0.3rem;">
+          <button data-tooltip="Create Workout Plan" data-placement="bottom" style="padding: 0 0.3rem;display:none">
             <i class="fa-solid fa-calendar-days"></i>
           </button>
           <button data-tooltip="All Lifts" data-placement="bottom" style="padding: 0 0.3rem;"

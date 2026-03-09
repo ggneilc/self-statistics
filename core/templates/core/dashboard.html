@@ -40,10 +40,10 @@
 			<div class="horizontal-group" style="flex:2;">
 
 				<article id="bw-summary" class="vertical-group" style="height: revert;margin-bottom: 0;">
-					<header style="font-weight: bold;"><i class="fa-solid fa-weight-scale"></i>Bodyweight Statistics
+					<header style="font-weight: bold;"><i class="fa-solid fa-weight-scale"></i>Bodyweight Stats
 					</header>
 					<div class="vertical-group" style="flex:1;">
-						<div class="horizontal-group" style="flex: 2;">
+						<div class="main-stat" style="flex: 2;">
 							<div class="split-stat">
 								<div class="vertical-group" style="gap:0;">
 									<div class="stat-header"> Average Weight </div>
@@ -79,19 +79,30 @@
 								</div>
 							</div>
 						</div>
-						<div class="stat"> fluctations </div>
-						<div class="stat"> lbs +/- per week </div>
+						<div class="stat">
+							<div class="stat-header">fluctations</div>
+							<div class="horizontal-group">
+								<div class="stat-value"> +/- 0.3 </div>
+								<div class="stat-unit"> lbs </div>
+							</div>
+						</div>
+						<div class="stat">
+							<div class="stat-header"> lbs +/- per week </div>
+							<div class="horizontal-group">
+								<div class="stat-value"> 0.5 </div>
+								<div class="stat-unit"> lbs </div>
+							</div>
+						</div>
 					</div>
 				</article>
 
 				<article id="cal-summary" class="vertical-group" style="height: revert;margin-bottom: 0;">
 					<header style="font-weight: bold;">
 						<i class="fa-solid fa-plate-wheat"
-							style="color: var(--pico-primary);margin-right: 0.5rem;"></i>Nutrition
-						Statistics
+							style="color: var(--pico-primary);margin-right: 0.5rem;"></i>Nutrition Stats
 					</header>
 					<div class="vertical-group" style="flex:1;">
-						<div class="horizontal-group" style="flex: 2;">
+						<div class="main-stat" style="flex: 2;">
 							<div class="split-stat">
 								<div class="vertical-group" style="gap:0;">
 									<div class="stat-header"> Average Calories </div>
@@ -127,8 +138,33 @@
 								</div>
 							</div>
 						</div>
-						<div class="stat"> avg fats / protein / carbs </div>
-						<div class="stat"> avg % deviation from cal goal</div>
+						<div class="split-stat" style="flex-direction: row;">
+							<div class="vertical-group" style="gap:0;border-right: 1px solid var(--pico-muted-color)">
+								<div class="stat-header"> fat </div>
+								<div class="horizontal-group">
+									<div class="stat-value"> 45</div>
+								</div>
+							</div>
+							<div class="vertical-group" style="gap:0;border-right: 1px solid var(--pico-muted-color)">
+								<div class="stat-header"> carbs </div>
+								<div class="horizontal-group">
+									<div class="stat-value"> 115</div>
+								</div>
+							</div>
+							<div class="vertical-group" style="gap:0;">
+								<div class="stat-header"> protein </div>
+								<div class="horizontal-group">
+									<div class="stat-value"> 155</div>
+								</div>
+							</div>
+						</div>
+						<div class="stat">
+							<div class="stat-header">avg deviation from goal</div>
+							<div class="horizontal-group">
+								<div class="stat-value"> +/- 349 </div>
+								<div class="stat-unit"> kcal </div>
+							</div>
+						</div>
 
 					</div>
 				</article>
