@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from .models import (
     Workout,
     WorkoutType,
+    WorkoutTypeBodypart,
     Lift,
     Set,
     WeeklyVolume,
@@ -23,9 +24,10 @@ from .models import (
     LIFT_TYPES
 )
 from core.utils import get_or_create_day
-from .forms import SetForm, MovementForm
+from .forms import SetForm, MovementForm, WTypeForm
 #from copy import copy
 from datetime import datetime, timezone, timedelta
+from random import randint
 from django.db.models import Q, F, Sum
 
 bodypart_map = dict(BODYPARTS)
@@ -57,18 +59,33 @@ def get_movements(request: HttpRequest) -> HttpResponse:
     Returns a list of movements available to a user
     :param bodypart -> filter by specific bodypart
     :param category -> filter by specific category
-    :param global_m -> filter all movement or specific to user
+    :param q -> search by movement name (movements_available only)
+    :param wtype -> filter by workout type (movements_active only)
     '''
     bodypart = request.GET.get('bodypart')
-    category = request.GET.get('category')   
-    wtype_id = request.GET.get('wtype')   
+    category = request.GET.get('category')
+    search_q = request.GET.get('q', '').strip()
+    wtype_id = request.GET.get('wtype')
     url_name = request.resolver_match.url_name
-    print(f"{bodypart=} | {category=} | {url_name=} | {wtype_id=}")
-    queryset = MovementLibrary.objects.filter(
-        is_premium=False) if url_name == 'movements_global' else Movement.objects.filter(
-            user=request.user, is_archived=False)
+
+    if url_name == 'movements_available':
+        # Global library movements the user doesn't have yet
+        user_has_ids = Movement.objects.filter(
+            user=request.user, base_movement__isnull=False
+        ).values_list('base_movement_id', flat=True)
+        queryset = MovementLibrary.objects.filter(
+            is_premium=False
+        ).exclude(id__in=user_has_ids)
+    elif url_name == 'movements_global':
+        queryset = MovementLibrary.objects.filter(is_premium=False)
+    else:
+        queryset = Movement.objects.filter(user=request.user, is_archived=False)
+
     filters = Q()
-    if wtype_id:
+    # Workout type filter applies both in the dashboard "all movements" view
+    # (url_name == 'movements') and in the active workout selector
+    # (url_name == 'movements_active')
+    if wtype_id and url_name in ('movements_active', 'movements'):
         wtype = get_object_or_404(WorkoutType, pk=wtype_id)
         allowed_codes = wtype.target_muscles.values_list('bodypart', flat=True)
         filters &= Q(bodypart__in=allowed_codes)
@@ -76,19 +93,24 @@ def get_movements(request: HttpRequest) -> HttpResponse:
         filters &= Q(bodypart=bodypart)
     if category:
         filters &= Q(category=category)
+    if search_q and url_name == 'movements_available':
+        filters &= Q(name__icontains=search_q)
     mvments = queryset.filter(filters).distinct()
-    if url_name == 'movements_global':  # movement modal
+
+    if url_name == 'movements_global':
         mode = "select"
-    elif url_name == 'movements_active':  # active workout
+    elif url_name == 'movements_active':
         mode = "active"
-    else:  # lift overview
+    elif url_name == 'movements_available':
+        mode = "manager"
+    else:
         mode = "view"
-    context = {
-        "movements": mvments,
-        "mode": mode
-    }
+    context = {"movements": mvments, "mode": mode}
+
     if request.GET.get('partial') == 'list' and url_name == 'movements_active':
         return render(request, 'workouts/active_movements_list.html', context)
+    if request.GET.get('partial') == 'list' and url_name == 'movements_available':
+        return render(request, 'workouts/manager_available_movements_list.html', context)
     return render(request, 'workouts/movements.html', context)
 
 def get_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
@@ -96,10 +118,6 @@ def get_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     mvment = Movement.objects.get(pk=movement_id)
     return render(request, 'workouts/movement_details.html', {"movement": mvment})
 
-# TODO
-def get_lifts(request: HttpRequest, movement_id: int) -> HttpResponse:
-    ''' lifts for selected movement (movement details) '''
-    pass
 
 def get_wtypes(request: HttpRequest) -> HttpResponse:
     ''' workout types for a user '''
@@ -175,19 +193,44 @@ def add_workout(request: HttpRequest, wtype_id: int) -> HttpResponse:
     bodyparts = workout.bodypart_list()
     return render(request, 'workouts/active_workout.html', {"workout": workout, "bodyparts": bodyparts})
 
+def _manager_available_list_response(request: HttpRequest) -> HttpResponse:
+    ''' Build available (library) movements list for movement manager; same filters as get_movements movements_available. '''
+    bodypart = request.GET.get('bodypart')
+    category = request.GET.get('category')
+    search_q = request.GET.get('q', '').strip()
+    user_has_ids = Movement.objects.filter(
+        user=request.user, base_movement__isnull=False
+    ).values_list('base_movement_id', flat=True)
+    queryset = MovementLibrary.objects.filter(
+        is_premium=False
+    ).exclude(id__in=user_has_ids)
+    filters = Q()
+    if bodypart:
+        filters &= Q(bodypart=bodypart)
+    if category:
+        filters &= Q(category=category)
+    if search_q:
+        filters &= Q(name__icontains=search_q)
+    mvments = queryset.filter(filters).distinct()
+    return render(request, 'workouts/manager_available_movements_list.html', {"movements": mvments})
+
+
 def add_movement(request: HttpRequest,
                  mv_id: int | None = None) -> HttpResponse:
     ''' user registers movement '''
     url_name = request.resolver_match.url_name
     print(f"{url_name=}")
     if url_name == 'start':
-        # return movement modal to start the register process
-        return render(request, "workouts/movement_modal.html")
+        # return movement manager with filter options
+        return render(request, "workouts/movement_manager.html", {
+            "bodyparts": BODYPARTS,
+            "categories": LIFT_TYPES,
+        })
     elif url_name == 'add_mv':
-        # add the movement from global library to user 
-        # -> refresh their dashboard
-        # check if user already has this movement
+        # add the movement from global library to user
         if Movement.objects.filter(user=request.user, base_movement__pk=mv_id).exists():
+            if request.GET.get('from') == 'manager':
+                return _manager_available_list_response(request)
             return get_movements(request)
         movement = MovementLibrary.objects.get(pk=mv_id)
         Movement.objects.create(
@@ -197,6 +240,8 @@ def add_movement(request: HttpRequest,
             bodypart=movement.bodypart,
             category=movement.category
         )
+        if request.GET.get('from') == 'manager':
+            return _manager_available_list_response(request)
         return get_movements(request)
     elif url_name == 'add_custom_mv':
         form = MovementForm(request.POST)
@@ -262,11 +307,37 @@ def add_set(request: HttpRequest, lift_id: int) -> HttpResponse:
     return render(request,
                   "workouts/set_entry.html",
                   {"form": form, "lift": lift, "editing": False})
-
-def add_wtype(request: HttpRequest) -> HttpResponse:
-    ''' add a new workout type '''
     pass
 
+def add_workout_type(request):
+    '''
+        POST: adds the type
+        GET: returns entry form
+    '''
+    valid_codes = [code for code, _ in BODYPARTS]
+    if request.POST:
+        f = WTypeForm(request.POST)
+        if f.is_valid():
+            new_type = f.save(commit=False)
+            new_type.user = request.user
+            if new_type.color is None:
+                new_type.color = random_color()
+            new_type.save()
+            submitted = [c for c in request.POST.getlist('bodyparts') if c in valid_codes]
+            for code in submitted:
+                WorkoutTypeBodypart.objects.get_or_create(
+                    workout_type=new_type, bodypart=code
+                )
+            types = request.user.workout_types.all()
+            response = render(request, 'workouts/workout_types.html', {"wtypes": types})
+            response['HX-Trigger'] = 'workoutTypeCreated'
+            return response
+    form = WTypeForm()
+    return render(request, 'workouts/new_type_entry.html', {
+        "form": form,
+        "bodyparts": BODYPARTS,
+        "selected_bodyparts": [],
+    })
 
 # --- CR_U_D : edit_X
 
@@ -295,9 +366,34 @@ def edit_set(request: HttpRequest, set_id: int) -> HttpResponse:
         form = SetForm(instance=set)
         return render(request, 'workouts/set_entry.html', {"form": form, "set": set, "editing": True})
 
-def edit_wtype(request: HttpRequest, type_id: int) -> HttpResponse:
-    ''' edit type name/color/bodyparts '''
-    pass
+def edit_workout_type(request: HttpRequest, type_id: int) -> HttpResponse:
+    ''' return prefilled form '''
+    valid_codes = [code for code, _ in BODYPARTS]
+    w_type = get_object_or_404(WorkoutType, pk=type_id, user=request.user)
+    if request.POST:
+        f = WTypeForm(request.POST, instance=w_type)
+        if f.is_valid():
+            new_type = f.save()
+            submitted = [c for c in request.POST.getlist('bodyparts') if c in valid_codes]
+            current = set(w_type.target_muscles.values_list('bodypart', flat=True))
+            for code in current - set(submitted):
+                w_type.target_muscles.filter(bodypart=code).delete()
+            for code in submitted:
+                WorkoutTypeBodypart.objects.get_or_create(
+                    workout_type=new_type, bodypart=code
+                )
+            types = request.user.workout_types.all()
+            response = render(request, 'workouts/workout_types.html', {"wtypes": types})
+            response['HX-Trigger'] = 'workoutTypeUpdated'
+            return response
+    form = WTypeForm(instance=w_type)
+    selected_bodyparts = list(w_type.target_muscles.values_list('bodypart', flat=True))
+    return render(request, 'workouts/edit_type_entry.html', {
+        "form": form,
+        "type_id": type_id,
+        "bodyparts": BODYPARTS,
+        "selected_bodyparts": selected_bodyparts,
+    })
 
 def change_color(request: HttpRequest) -> HttpResponse:
     '''
@@ -336,9 +432,15 @@ def delete_set(request: HttpRequest, set_id: int) -> HttpResponse:
     set = get_object_or_404(Set, pk=set_id, lift__workout__day__user=request.user)
     set.delete()
     return clear(request)
-
-def delete_wtype(request: HttpRequest, type_id: int) -> HttpResponse:
     pass
+
+def delete_workout_type(request: HttpRequest, w_type: int) -> HttpResponse:
+    workout_t = WorkoutType.objects.get(pk=w_type)
+    workout_t.delete()
+    types = request.user.workout_types.all()
+    response = render(request, 'workouts/workout_types.html', {"wtypes": types})
+    response['HX-Trigger'] = 'workoutTypeDeleted'
+    return response
 
 
 # --- Active Workout Interactions
@@ -370,3 +472,6 @@ def end_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
 
 def clear(request: HttpRequest) -> HttpResponse:
     return HttpResponse('')
+
+def random_color() -> str:
+    return "#{:06x}".format(randint(0, 0xFFFFFF))

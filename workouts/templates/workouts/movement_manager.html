@@ -1,0 +1,69 @@
+<article id="movement-manager" class="vertical-group" style="height:revert;">
+
+  <div class="movement-details-header">
+    <span class="movement-details-name">Movement Manager</span>
+  </div>
+
+  <div id="workout-type-manager" class="vertical-group">
+    <p>Workout Types</p>
+    <div id="wtypes-list-container" class="horizontal-group">
+      <div id="wtypes-list" style="flex: 4;" class="horizontal-group"
+        hx-get="{% url 'workouts:get_wtypes' %}"
+        hx-trigger="load">
+      </div>
+      <div id="add-wtype-button" 
+        hx-on:click="document.getElementById('wtype-editor').classList.remove('hidden')"
+        hx-get="{% url 'workouts:addt' %}"
+        hx-target="#wtype-editor-form"
+        hx-trigger="click">
+        <i class="fa fa-plus"></i>
+      </div>
+    </div>
+    <div id="wtype-editor" class="vertical-group hidden">
+      <div id="wtype-editor-form" class="horizontal-group">
+      </div>
+    </div>
+  </div>
+  <div id="new-movement" class="vertical-group">
+    <p>Create / Find New Movements</p>
+    <div id="movement-filter" class="movement-manager-filters">
+      <div class="movement-manager-field" style="flex: 2;">
+        <label for="movement-search-bar">Search by name</label>
+        <input type="text" id="movement-search-bar" name="q" class="movement-manager-input"
+          placeholder="Search movements…">
+      </div>
+      <div class="movement-manager-field">
+        <label for="movement-filter-by-bp">Muscle group</label>
+        <select id="movement-filter-by-bp" name="bodypart" class="movement-manager-select">
+          <option value="">All</option>
+          {% for code, name in bodyparts %}
+          <option value="{{ code }}">{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="movement-manager-field">
+        <label for="movement-filter-by-category">Equipment</label>
+        <select id="movement-filter-by-category" name="category" class="movement-manager-select">
+          <option value="">All</option>
+          {% for code, name in categories %}
+          <option value="{{ code }}">{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div id="available-movements" class="vertical-group">
+      <p>Available movements (from library — click to add to your account)</p>
+      <div class="movement-manager-list-wrap">
+        <div class="htmx-indicator">Loading…</div>
+        <div id="available-movements-list"
+          hx-get="{% url 'workouts:movements_available' %}?partial=list"
+          hx-include="[name='bodypart'], [name='category'], [name='q']"
+          hx-trigger="load, change from:.movement-manager-select, keyup from:#movement-search-bar delay:200ms"
+          hx-swap="innerHTML">
+        </div>
+      </div>
+    </div>
+  </div>
+
+</article>
+

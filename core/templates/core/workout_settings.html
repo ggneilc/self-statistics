@@ -1,28 +1,3 @@
 <div class="settings-content">
-  <h1>Workout Types</h1>
-  <p style="text-align: center; color: var(--pico-muted-color); margin-bottom: 1.5rem;">
-    Create and manage your workout categories
-  </p>
-
-  <div class="workout-types-grid">
-    {% for workout_type in workout_types %}
-    <button class="workout-type-btn"
-            style="--workout-color: {{workout_type.color}};"
-            hx-trigger="click"
-            hx-target="#type_entry__container"
-            hx-get="{% url 'core:edit_type' workout_type.id %}">
-      <span class="workout-type-indicator"></span>
-      {{workout_type.name}}
-    </button>
-    {% endfor %}
-  </div>
-
-  <button class="add-workout-type-btn"
-          hx-get="{% url 'core:addt' %}"
-          hx-trigger="click"
-          hx-target="#type_entry__container">
-    <i class="fa fa-plus"></i> Add New Workout Type
-  </button>
-
-  <div id="type_entry__container" style="margin-top: 2rem;"></div>
+  <h1>Workout Settings Coming Soon</h1>
 </div>

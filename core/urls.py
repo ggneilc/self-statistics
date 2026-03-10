@@ -42,7 +42,4 @@ urlpatterns = [
     path("profile/", views.get_profile, name="profile"),
     path("back/", views.close_profile, name="close_profile"),
 
-    path("delete/type/<int:w_type>", views.del_workout_type, name="del_type"),
-    path("add/type", views.add_workout_type, name="addt"),
-    path("edit/type/<int:type_id>", views.edit_workout_type, name="edit_type"),
 ]

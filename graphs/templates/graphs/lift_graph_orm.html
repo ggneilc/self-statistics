@@ -86,16 +86,21 @@ style="width:100%; height:100%; display:flex;"></div>
 
         linePath.datum(data).attr("d", line);
 
-        const dots = dotsG.selectAll("circle").data(data);
-        dots.enter().append("circle")
-            .append("title")
-          .merge(dots)
+        // Dots with hover titles (data-join safe across resizes)
+        const dots = dotsG.selectAll("circle").data(data, d => d.date);
+        const dotsEnter = dots.enter()
+            .append("circle")
             .attr("r", 5)
-            .attr("cx", d => x(d.date))
-            .attr("cy", d => y(d.one_rm))
             .attr("fill", "var(--pico-primary)");
 
-        dotsG.selectAll("circle").select("title")
+        // Ensure each circle has a <title> child for tooltip
+        dotsEnter.append("title");
+
+        const allDots = dots.merge(dotsEnter)
+            .attr("cx", d => x(d.date))
+            .attr("cy", d => y(d.one_rm));
+
+        allDots.select("title")
             .text(d => `${d.one_rm} lbs on ${d.date.toLocaleDateString()}`);
 
         dots.exit().remove();
@@ -109,5 +114,11 @@ style="width:100%; height:100%; display:flex;"></div>
         }
     });
     ro.observe(container);
+
+    // Initial render in case ResizeObserver doesn't fire for the first layout
+    const rect = container.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+        render(rect.width, rect.height);
+    }
 })();
 </script>

@@ -9,10 +9,9 @@ urlpatterns = [
      path("workouts/",        views.get_workouts,      name="workouts"),
      path("workouts/type/",   views.wtype_selection,   name="wtype_entry"),
      path("workouts/types/",   views.get_wtypes,   name="workout_types"),
+     path("workouts/types/get/",   views.get_wtypes,   name="get_wtypes"),
      path("workouts/add/<int:wtype_id>/",    views.add_workout,       name="addw"),
      path("workouts/<int:workout_id>/", views.get_workout, name="get_workout"),
-     path("workouts/<int:workout_id>/lifts/",
-          views.get_lifts, name="workout_lifts/"),
      path("workouts/<int:workout_id>/delete/", views.delete_workout, name="delete_workout"),
      # adding movement 
      path("movement/add/",             views.add_movement, name="start"),
@@ -20,9 +19,10 @@ urlpatterns = [
      path("movement/add/<int:mv_id>",  views.add_movement, name="add_mv"),
      path("movement/add/custom",       views.add_movement, name="add_custom_mv"),
      # listing movements & filtering
-     path("movements/",   views.get_movements,     name="movements"),
-     path("movements/global/",      views.get_movements,  name="movements_global"),
-     path("movements/active/",      views.get_movements,     name="movements_active"),
+path("movements/",   views.get_movements,     name="movements"),
+    path("movements/global/",      views.get_movements,  name="movements_global"),
+    path("movements/active/",      views.get_movements,     name="movements_active"),
+    path("movements/available/",  views.get_movements,     name="movements_available"),
      path("movement/<int:movement_id>/", views.get_movement, name="movement"),
      # filter chips
      path("bodyparts/",   views.get_bodyparts,    name="bodyparts"),
@@ -37,6 +37,10 @@ urlpatterns = [
      path("workout/delete/set/<int:set_id>/", views.delete_set, name="del_set"),
      path("workout/<int:workout_id>/end/", views.end_workout, name="end_workout"),
      path("workout/lift/<int:lift_id>/end/", views.end_lift, name="end_lift"),
+     # workout types
+     path("delete/type/<int:w_type>", views.delete_workout_type, name="del_type"),
+     path("add/type", views.add_workout_type, name="addt"),
+     path("edit/type/<int:type_id>", views.edit_workout_type, name="edit_type"),
 
      path("change/color/", views.change_color, name="change_color"),
      path("clear/", views.clear, name="clear"),
