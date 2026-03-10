@@ -6,7 +6,8 @@
 from datetime import timedelta
 import pandas as pd
 import numpy as np
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from core.models import Day, RDA_LOOKUP, get_goal_type
 from calcounter.models import Food
@@ -19,6 +20,7 @@ from calendar import monthrange
 
 # === Calendars ===
 
+@login_required
 def calendar_heatmap(request):
     """Display calendar heatmap. Template (1-week vs 2-week window)
     is chosen based on the user's profile setting.
@@ -51,6 +53,7 @@ def get_lift_history(user, exercise_name):
     )
 
 
+@login_required
 def get_lift_graph_orm(request, lift_name):
     history = get_lift_history(request.user, lift_name)
     data = []
@@ -64,6 +67,7 @@ def get_lift_graph_orm(request, lift_name):
     return render(request, "graphs/lift_graph_orm.html", {'data': json.dumps(data)})
 
 
+@login_required
 def get_bw_cal_time(request):
     '''
     Time series of Bodyweight / Cals / Day 
@@ -102,6 +106,7 @@ def get_bw_cal_time(request):
     context = {"day_data": json.dumps(out_data)}
     return render(request, 'graphs/bw-cal-time.html', context)
 
+@login_required
 def get_bw_graph(request):
     '''Time series of Bodyweight / Day'''
     df, _, _ = get_bodyweight_summary(request)
@@ -119,6 +124,7 @@ def get_bw_graph(request):
 
 
 
+@login_required
 def get_cal_graph(request):
     '''Time series of Calories / Day'''
     days = request.user.days.all().exclude(date=date(1, 1, 1))
@@ -136,6 +142,7 @@ def get_cal_graph(request):
     return render(request, 'graphs/cal-time.html', context)
 
 # Unused
+@login_required
 def get_volume_graph(request):
     '''Time series of Volume / Day'''
     days = Day.objects.filter(user=request.user).exclude(date=date(1, 1, 1))
@@ -163,8 +170,9 @@ def get_volume_graph(request):
 
 # === Macro breakdown Pie Charts ===
 
+@login_required
 def get_macro_completion(request):
-    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
     carbs, protein, fat = day.macro_breakdown
     total = day.calories_consumed
     goals = {}
@@ -185,30 +193,34 @@ def get_macro_completion(request):
         'Calories': day.calorie_goal,
     }
     # return percentage of goals achieved: weighted average of goals and data
-    completion = (data['Sleep'] / goals['Sleep'] * 0.1 +
-                  data['Water'] / goals['Water'] * 0.1 +
-                  data['Fat'] / goals['Fat'] * 0.3 +
-                  data['Carbs'] / goals['Carbs'] * 0.4 +
-                  data['Protein'] / goals['Protein'] * 0.1 +
-                  data['Calories'] / goals['Calories'] * 0.1) * 100
+    def safe_div(a, b, weight): return (a / b * weight) if b else 0
+    completion = (safe_div(data['Sleep'], goals['Sleep'], 0.1) +
+                  safe_div(data['Water'], goals['Water'], 0.1) +
+                  safe_div(data['Fat'], goals['Fat'], 0.3) +
+                  safe_div(data['Carbs'], goals['Carbs'], 0.4) +
+                  safe_div(data['Protein'], goals['Protein'], 0.1) +
+                  safe_div(data['Calories'], goals['Calories'], 0.1)) * 100
     context = {"completion": round(completion)}
     return render(request, 'core/completion.html', context)
 
+@login_required
 def get_mineral_completion(request):
-    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
     completion = day.mineral_completion
     context = {"completion": round(completion)}
     return render(request, 'core/completion.html', context)
 
+@login_required
 def get_vitamin_completion(request):
-    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
     completion = day.vitamin_completion
     context = {"completion": round(completion)}
     return render(request, 'core/completion.html', context)
 
+@login_required
 def get_macro_breakdown(request):
     ''' return macro breakdown for a specific date '''
-    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
     carbs, protein, fat = day.macro_breakdown
     total = day.calories_consumed
     goals = {}
@@ -234,8 +246,9 @@ def get_macro_breakdown(request):
     }
     return render(request, 'graphs/macro-pie.html', context)
 
+@login_required
 def get_mineral_breakdown(request):
-    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
     goal_type = get_goal_type(request.user)
     goals = {}
     for mineral, values in RDA_LOOKUP['Minerals'].items():
@@ -247,8 +260,9 @@ def get_mineral_breakdown(request):
     }
     return render(request, 'graphs/mineral-pie.html', context)
 
+@login_required
 def get_vitamin_breakdown(request):
-    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
     goal_type = get_goal_type(request.user)
     goals = {}
     for vitamin, values in RDA_LOOKUP['Vitamins'].items():
@@ -260,8 +274,9 @@ def get_vitamin_breakdown(request):
     }
     return render(request, 'graphs/vitamin-pie.html', context)
 
+@login_required
 def get_nutrient_overview(request):
-    day = Day.objects.get(user=request.user, date=request.GET.get("selected_date"))
+    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
     carbs, protein, fat = day.macro_breakdown
     total = day.calories_consumed
     goal_type = get_goal_type(request.user)
@@ -414,8 +429,8 @@ def get_calorie_summary(request, time=7):
         "mean_p": round(float(avg_pro), 2),
         "stddev_c": round(float(fluctation_c), 2),
         "stddev_p": round(float(fluctation_p), 2),
-        "meal": top_meal['name'],
-        "count": top_meal['count'],
+        "meal": top_meal['name'] if top_meal else None,
+        "count": top_meal['count'] if top_meal else 0,
         "max_drawdown": round(float(max_drawdown), 2),
         "max_runup": round(float(max_runup), 2),
         "max": df['cals'].max(),

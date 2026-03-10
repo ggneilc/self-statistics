@@ -49,9 +49,10 @@ class MealConsumptionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None) # Grab the user from kwargs
         super().__init__(*args, **kwargs)
-        qs = Food.objects.filter(is_active=True)
         if user:
-            qs = qs.filter(owner=user)
+            qs = Food.objects.available_to_user(user).filter(is_active=True)
+        else:
+            qs = Food.objects.filter(is_active=True)
         self.fields['food'].queryset = qs.distinct()
         self.fields['unit'].choices = [('', 'Unit')]
 
@@ -119,9 +120,10 @@ class IngredientForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None) # Grab the user from kwargs
         super().__init__(*args, **kwargs)
-        qs = Food.objects.filter(is_active=True)
         if user:
-            qs = qs.filter(owner=user)
+            qs = Food.objects.available_to_user(user).filter(is_active=True)
+        else:
+            qs = Food.objects.filter(is_active=True)
         self.fields['ingredient'].queryset = qs.distinct()
         self.fields['unit'].choices = [('', 'Unit')]
 

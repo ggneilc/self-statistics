@@ -26,7 +26,7 @@
         {% widthratio mv.level|add:"-0.0" 1 100 as total_progress %}
         {# Check if the level ends in .5 #}
         <div class="exp-container" style="flex:1;"
-            data-tooltip="{{ lift.level|stringformat:'.1f'|slice:'-2:'|yesno:'1/2 workouts to next level,0/2 workouts to next level' }}"
+            data-tooltip="{{ mv.level|stringformat:'.1f'|slice:'-2:'|yesno:'1/2 workouts to next level,0/2 workouts to next level' }}"
             data-placement="bottom">
             <div class="exp-bar" 
              style="width: {% if mv.level|stringformat:'.1f'|slice:'-2:' == '.5' %}50%{% else %}0%{% endif %};">

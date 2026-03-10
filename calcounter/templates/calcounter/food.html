@@ -120,12 +120,15 @@
 </li>
 
 
+{{ pantry.macros|json_script:pantry.macro_script_id }}
+{{ pantry.minerals|json_script:pantry.mineral_script_id }}
+{{ pantry.vitamins|json_script:pantry.vitamin_script_id }}
 <script>
 // Self-invoking call for this specific food item
 (function() {
-  const macros = {{ pantry.macros|safe }};
-  const minerals = {{ pantry.minerals|safe }};
-  const vitamins = {{ pantry.vitamins|safe }};
+  const macros = JSON.parse(document.getElementById('{{ pantry.macro_script_id }}').textContent);
+  const minerals = JSON.parse(document.getElementById('{{ pantry.mineral_script_id }}').textContent);
+  const vitamins = JSON.parse(document.getElementById('{{ pantry.vitamin_script_id }}').textContent);
 
   drawNutrientPie("#macro-{{ pantry.id }}", macros, "Macros", ["var(--protein-color)", "var(--fat-color)", "var(--carb-color)"]);
   // 6 colors for minerals and vitamins

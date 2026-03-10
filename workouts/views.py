@@ -8,6 +8,7 @@
     - Movement          : defines a type of lift 
     - Weekly Volume     : Weekly volume of sets performed 
 """
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,  get_object_or_404
 from django.http import HttpResponse, HttpRequest
 from django.template.loader import render_to_string
@@ -34,6 +35,7 @@ bodypart_map = dict(BODYPARTS)
 
 # --- C_R_UD : get_X
 
+@login_required
 def get_workouts(request: HttpRequest,
                  mode: str = 'history') -> HttpResponse:
     ''' workouts for a user (workout history) '''
@@ -49,11 +51,13 @@ def get_workouts(request: HttpRequest,
         ).select_related("day", "workout_type").order_by("-day__date")
         return render(request, 'workouts/workout_list.html', {"workouts": workouts, "active_workout": False})
 
+@login_required
 def get_workout(request: HttpRequest, workout_id: int) -> HttpResponse:
     ''' returns a specific workout (inspected workout) '''
     workout = get_object_or_404(Workout, pk=workout_id, day__user=request.user)
     return render(request, 'workouts/workout_details.html', {"workout": workout})
 
+@login_required
 def get_movements(request: HttpRequest) -> HttpResponse:
     '''
     Returns a list of movements available to a user
@@ -113,12 +117,22 @@ def get_movements(request: HttpRequest) -> HttpResponse:
         return render(request, 'workouts/manager_available_movements_list.html', context)
     return render(request, 'workouts/movements.html', context)
 
+@login_required
 def get_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     ''' specific movement overview'''
-    mvment = Movement.objects.get(pk=movement_id)
+    mvment = get_object_or_404(Movement, pk=movement_id, user=request.user)
     return render(request, 'workouts/movement_details.html', {"movement": mvment})
 
+<<<<<<< HEAD
+=======
+# TODO
+@login_required
+def get_lifts(request: HttpRequest, movement_id: int) -> HttpResponse:
+    ''' lifts for selected movement (movement details) '''
+    pass
+>>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
 
+@login_required
 def get_wtypes(request: HttpRequest) -> HttpResponse:
     ''' workout types for a user '''
     url_name = request.resolver_match.url_name
@@ -128,10 +142,16 @@ def get_wtypes(request: HttpRequest) -> HttpResponse:
     }
     return render(request, "workouts/workout_types.html", context) 
 
+@login_required
 def get_weekly_sets(request: HttpRequest) -> HttpResponse:
     ''' sets performed per muscle group this week '''
-    date = request.GET['selected_date']
-    today = datetime.strptime(date, "%Y-%m-%d").date()
+    date = request.GET.get('selected_date')
+    if not date:
+        return HttpResponse(status=400)
+    try:
+        today = datetime.strptime(date, "%Y-%m-%d").date()
+    except ValueError:
+        return HttpResponse(status=400)
     print(f"{today=}")
     this_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
     # Get the user's goal
@@ -162,6 +182,7 @@ def get_weekly_sets(request: HttpRequest) -> HttpResponse:
     }
     return render(request, 'workouts/weekly_sets.html', ctx)
 
+@login_required
 def get_bodyparts(request: HttpRequest,
                   wtype_id: int | None = None) -> HttpResponse:
     ''' list of bodyparts, can be filtered by wtype_id '''
@@ -173,6 +194,7 @@ def get_bodyparts(request: HttpRequest,
         bodyparts = BODYPARTS
     return render(request, 'workouts/bodypart_chips.html', {"bodyparts": bodyparts, "active": False})
 
+@login_required
 def get_categories(request: HttpRequest) -> HttpResponse:
     ''' list of all categories '''
     url_name = request.resolver_match.url_name
@@ -181,6 +203,7 @@ def get_categories(request: HttpRequest) -> HttpResponse:
 
 # --- _C_RUD : add_X
 
+@login_required
 def add_workout(request: HttpRequest, wtype_id: int) -> HttpResponse:
     ''' add new workout to today with wtype '''
     wtype = get_object_or_404(WorkoutType, pk=wtype_id, user=request.user)
@@ -193,6 +216,7 @@ def add_workout(request: HttpRequest, wtype_id: int) -> HttpResponse:
     bodyparts = workout.bodypart_list()
     return render(request, 'workouts/active_workout.html', {"workout": workout, "bodyparts": bodyparts})
 
+<<<<<<< HEAD
 def _manager_available_list_response(request: HttpRequest) -> HttpResponse:
     ''' Build available (library) movements list for movement manager; same filters as get_movements movements_available. '''
     bodypart = request.GET.get('bodypart')
@@ -215,6 +239,9 @@ def _manager_available_list_response(request: HttpRequest) -> HttpResponse:
     return render(request, 'workouts/manager_available_movements_list.html', {"movements": mvments})
 
 
+=======
+@login_required
+>>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
 def add_movement(request: HttpRequest,
                  mv_id: int | None = None) -> HttpResponse:
     ''' user registers movement '''
@@ -232,7 +259,7 @@ def add_movement(request: HttpRequest,
             if request.GET.get('from') == 'manager':
                 return _manager_available_list_response(request)
             return get_movements(request)
-        movement = MovementLibrary.objects.get(pk=mv_id)
+        movement = get_object_or_404(MovementLibrary, pk=mv_id, is_premium=False)
         Movement.objects.create(
             user=request.user,
             base_movement=movement,
@@ -250,6 +277,8 @@ def add_movement(request: HttpRequest,
             movement.user = request.user
             movement.save()
             return get_movements(request)
+        else:
+            return render(request, 'workouts/movement_form.html', {"form": form})
     elif url_name == 'mv_form':
         bodypart = request.GET.get('bodypart')
         category = request.GET.get('category')   
@@ -267,6 +296,7 @@ def add_movement(request: HttpRequest,
         }
         return render(request, 'workouts/movement_form.html', context)
 
+@login_required
 def add_lift(request: HttpRequest, movement_id: int | None = None) -> HttpResponse:
     ''' instantiate a movement for current workout '''
     if request.method == "GET" and movement_id is None:
@@ -282,7 +312,7 @@ def add_lift(request: HttpRequest, movement_id: int | None = None) -> HttpRespon
             "categories": categories,
         })
     movement = get_object_or_404(Movement, pk=movement_id, user=request.user)
-    workout = Workout.objects.get(day__user=request.user, is_active=True)
+    workout = get_object_or_404(Workout, day__user=request.user, is_active=True)
     lift = Lift.objects.create(
         workout=workout,
         movement=movement
@@ -291,6 +321,7 @@ def add_lift(request: HttpRequest, movement_id: int | None = None) -> HttpRespon
     # return the active lift
     return render(request, 'workouts/active_lift.html', {"lift": lift, "editing": False, "set_form": form})
 
+@login_required
 def add_set(request: HttpRequest, lift_id: int) -> HttpResponse:
     ''' add a set to current lift '''
     lift = get_object_or_404(Lift, pk=lift_id, workout__day__user=request.user)
@@ -307,6 +338,13 @@ def add_set(request: HttpRequest, lift_id: int) -> HttpResponse:
     return render(request,
                   "workouts/set_entry.html",
                   {"form": form, "lift": lift, "editing": False})
+<<<<<<< HEAD
+=======
+
+@login_required
+def add_wtype(request: HttpRequest) -> HttpResponse:
+    ''' add a new workout type '''
+>>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
     pass
 
 def add_workout_type(request):
@@ -341,10 +379,12 @@ def add_workout_type(request):
 
 # --- CR_U_D : edit_X
 
+@login_required
 def edit_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     ''' edit movement info (name/bodypart)'''
     pass
 
+@login_required
 def edit_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
     ''' reopens lift to edit '''
     lift = get_object_or_404(Lift, pk=lift_id, workout__day__user=request.user)
@@ -354,6 +394,7 @@ def edit_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
         set_forms.append(SetForm(instance=s))
     return render(request, 'workouts/active_lift.html', {"lift": lift, "set_forms": set_forms, "editing": True})
 
+@login_required
 def edit_set(request: HttpRequest, set_id: int) -> HttpResponse:
     ''' turns set_row to set_form '''
     set = get_object_or_404(Set, pk=set_id, lift__workout__day__user=request.user)
@@ -366,6 +407,7 @@ def edit_set(request: HttpRequest, set_id: int) -> HttpResponse:
         form = SetForm(instance=set)
         return render(request, 'workouts/set_entry.html', {"form": form, "set": set, "editing": True})
 
+<<<<<<< HEAD
 def edit_workout_type(request: HttpRequest, type_id: int) -> HttpResponse:
     ''' return prefilled form '''
     valid_codes = [code for code, _ in BODYPARTS]
@@ -394,7 +436,14 @@ def edit_workout_type(request: HttpRequest, type_id: int) -> HttpResponse:
         "bodyparts": BODYPARTS,
         "selected_bodyparts": selected_bodyparts,
     })
+=======
+@login_required
+def edit_wtype(request: HttpRequest, type_id: int) -> HttpResponse:
+    ''' edit type name/color/bodyparts '''
+    pass
+>>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
 
+@login_required
 def change_color(request: HttpRequest) -> HttpResponse:
     '''
         recieves color value to set workout type
@@ -402,7 +451,7 @@ def change_color(request: HttpRequest) -> HttpResponse:
         - workout_id
         - color
     '''
-    workout = Workout.objects.get(pk=request.POST.get('workout_id'))
+    workout = get_object_or_404(Workout, pk=request.POST.get('workout_id'), day__user=request.user)
     workout.workout_type.color = request.POST.get('color')
     workout.workout_type.save()
     return get_workouts(request)
@@ -410,11 +459,13 @@ def change_color(request: HttpRequest) -> HttpResponse:
 
 # --- CRU_D_ : delete_X , if data exists; archive
 
+@login_required
 def delete_workout(request: HttpRequest, workout_id: int) -> HttpResponse:
     workout = get_object_or_404(Workout, pk=workout_id, day__user=request.user)
     workout.delete()
     return get_workouts(request)
 
+@login_required
 def delete_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     ''' if no lifts, delete movement, otherwise archive '''
     movement = get_object_or_404(Movement, pk=movement_id, user=request.user)
@@ -425,13 +476,21 @@ def delete_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
         movement.save()
     return get_movements(request)
 
+@login_required
 def delete_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
     pass
 
+@login_required
 def delete_set(request: HttpRequest, set_id: int) -> HttpResponse:
     set = get_object_or_404(Set, pk=set_id, lift__workout__day__user=request.user)
     set.delete()
     return clear(request)
+<<<<<<< HEAD
+=======
+
+@login_required
+def delete_wtype(request: HttpRequest, type_id: int) -> HttpResponse:
+>>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
     pass
 
 def delete_workout_type(request: HttpRequest, w_type: int) -> HttpResponse:
@@ -445,12 +504,14 @@ def delete_workout_type(request: HttpRequest, w_type: int) -> HttpResponse:
 
 # --- Active Workout Interactions
 
+@login_required
 def wtype_selection(request: HttpRequest) -> HttpResponse:
     ''' returns `type_entry.html` for user to choose this workout's type ''' 
     wtypes = request.user.workout_types.all()
     return render(request, 'workouts/type_entry.html', {"workout_types": wtypes})
 
 
+@login_required
 def end_workout(request: HttpRequest, workout_id: int) -> HttpResponse:
     ''' end the active workout '''
     workout = get_object_or_404(Workout, pk=workout_id, day__user=request.user, is_active=True)
@@ -460,16 +521,18 @@ def end_workout(request: HttpRequest, workout_id: int) -> HttpResponse:
     return render(request, 'workouts/workout_history.html')
 
 
+@login_required
 def end_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
     ''' end the active lift : if no sets, delete lift '''
     lift = get_object_or_404(Lift, pk=lift_id, workout__day__user=request.user)
     if lift.sets.count() == 0:
         lift.delete()
-    workout = Workout.objects.get(day__user=request.user, is_active=True)
+    workout = get_object_or_404(Workout, day__user=request.user, is_active=True)
     return render(request, 'workouts/active_workout.html', {"workout": workout})
 
 # --- Load Areas / Helpers
 
+@login_required
 def clear(request: HttpRequest) -> HttpResponse:
     return HttpResponse('')
 
