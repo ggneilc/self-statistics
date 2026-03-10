@@ -1,6 +1,7 @@
 <dialog open>
 <article id="profile-article">
 <div id="profile-container" class="horizontal-group">
+
 	<nav id="profile-nav">
 		<ul id="profile-list">
 			<li class="profile-item">
@@ -9,7 +10,10 @@
 					hx-trigger="click"
 					hx-swap="innerHTML"
 					hx-target="#profile-main"
-					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Personal Info</button>
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+					<i class="fa-solid fa-user"></i>
+					<span class="profile-btn-label">Info</span>
+				</button>
 			</li>
 			<li class="profile-item">
 				<button class="profile-btn"
@@ -17,7 +21,10 @@
 					hx-trigger="click"
 					hx-swap="innerHTML"
 					hx-target="#profile-main"
-					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Theme</button>
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+					<i class="fa-solid fa-palette"></i>
+					<span class="profile-btn-label">Theme</span>
+				</button>
 			</li>
 			<li class="profile-item">
 				<button class="profile-btn"
@@ -25,7 +32,10 @@
 					hx-trigger="click"
 					hx-swap="innerHTML"
 					hx-target="#profile-main"
-					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Foods</button>
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+					<i class="fa-solid fa-utensils"></i>
+					<span class="profile-btn-label">Foods</span>
+				</button>
 			</li>
 			<li class="profile-item">
 				<button class="profile-btn"
@@ -33,34 +43,39 @@
 					hx-trigger="click"
 					hx-swap="innerHTML"
 					hx-target="#profile-main"
-					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Graphs</button>
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+					<i class="fa-solid fa-chart-line"></i>
+					<span class="profile-btn-label">Graphs</span>
+				</button>
 			</li>
 			<li class="profile-item">
 				<button class="profile-btn"
 					hx-get="{% url 'core:workout_setting' %}"
 					hx-target="#profile-main"
-					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Workouts</button>
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+					<i class="fa-solid fa-dumbbell"></i>
+					<span class="profile-btn-label">Workouts</span>
+				</button>
 			</li>
 		</ul>
 
-		<div class="profile-nav-footer" style="min-height:0;">
-			<button class="profile-logout-btn" style="min-height: 0; display: flex; align-items: center; justify-content: center;"
-				hx-post="{% url 'core:logout' %}">
-				<i class="fa fa-right-from-bracket"></i> Logout
-			</button>
-			<button class="profile-close-btn" style="min-height: 0; display: flex; align-items: center; justify-content: center;"
+		<div class="profile-nav-footer">
+			<button class="profile-close-btn"
 				hx-get="{% url 'core:close_profile' %}"
 				hx-swap="innerHTML"
 				hx-target="#dummy"
 				onclick="event.stopPropagation()">
 				<i class="fa fa-xmark"></i>
+				<span class="profile-btn-label">Close</span>
 			</button>
 		</div>
 	</nav>
 
 	<div id="profile-main">
 		{% include './personal_info.html' with user=user %}
+		<!-- Mobile only: logout sits below settings content -->
 	</div>
+
 </div>
 </article>
 </dialog>

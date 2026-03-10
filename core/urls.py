@@ -29,7 +29,7 @@ urlpatterns = [
     path("bodyweight/set", views.add_bodyweight, name="set_bw"),
     path("bodyweight/edit", views.edit_bodyweight, name="edit_bw"),
 
-    path("profile/tz", views.update_timezone, name="set_tz"),
+    path("profile/settings", views.settings_page, name="settings"),
     path("profile/personal", views.info_setting, name="info_setting"),
     path("profile/theme", views.theme_setting, name="theme_setting"),
     path("profile/food", views.food_setting, name="food_setting"),

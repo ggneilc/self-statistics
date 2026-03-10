@@ -1,7 +1,7 @@
 <!-- templates/profile/update_timezone.html -->
 
 <form
-    hx-post="{% url 'core:set_tz' %}"
+    hx-post="{% url 'core:settings' %}"
     hx-target="#profile-main"
     hx-swap="innerHTML"
     hx-on::after-request="if(event.detail.successful) { document.body.dispatchEvent(new CustomEvent('showToast', { detail: { message: 'Profile saved successfully!', type: 'success' } })); }"
@@ -38,4 +38,8 @@
   </div>
 
   <button type="submit" class="form_btn" style="width: 100%; margin-top: 1rem;">Save Profile</button>
+  <button class="profile-logout-btn profile-logout-mobile"
+    hx-post="{% url 'core:logout' %}">
+    <i class="fa fa-right-from-bracket"></i> Logout
+  </button>
 </form>
