@@ -1,7 +1,7 @@
 <div class="settings-content">
-  <div style="text-align: center; margin-bottom: 2rem;">
+  <div style="text-align: center;">
     <div class="profile-pic-large" style="margin: 0 auto;"></div>
     <h2>{{user.username}}</h2>
   </div>
-  <div hx-get="{% url 'core:set_tz'%}" hx-trigger="load"></div>
+  <div hx-get="{% url 'core:settings'%}" hx-trigger="load"></div>
 </div>

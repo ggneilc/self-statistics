@@ -17,7 +17,9 @@
     <a href="#" class="mobile-profile-trigger" aria-label="Settings"
        hx-get="{% url 'core:profile' %}"
        hx-target="#dummy"
-       hx-swap="innerHTML"><div class="profile-pic profile-pic-mobile"></div></a>
+       hx-swap="innerHTML">
+      <div class="profile-pic profile-pic-mobile"></div>
+    </a>
   </div>
   <ul class="nav-dashboard-links">
     <li><a class="nav-link-active{% if request.resolver_match.url_name == 'dashboard_page' %}nav-link-active{% endif %}" data-page="dashboard" hx-get="{% url 'core:dashboard_page' %}"  hx-target="#content" hx-on:click="document.querySelectorAll('.nav-dashboard-links a').forEach(a => a.classList.remove('nav-link-active')); this.classList.add('nav-link-active')">

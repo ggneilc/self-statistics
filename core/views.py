@@ -120,7 +120,7 @@ def get_profile(request):
 
 
 @login_required
-def update_timezone(request):
+def settings_page(request):
     profile = getattr(request.user, 'profile', None)
     form = ProfileForm(request.POST or None, instance=profile)
     if request.method == "POST" and form.is_valid():
@@ -128,7 +128,7 @@ def update_timezone(request):
         response = get_profile(request)
         response['HX-Trigger'] = 'profileSaved'
         return response
-    return render(request, "core/update_timezone.html", {"form": form})
+    return render(request, "core/settings_page.html", {"form": form})
 
 
 @login_required
