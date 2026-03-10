@@ -196,7 +196,7 @@ def get_macro_completion(request):
     def safe_div(a, b, weight): return (a / b * weight) if b else 0
     completion = (safe_div(data['Sleep'], goals['Sleep'], 0.1) +
                   safe_div(data['Water'], goals['Water'], 0.1) +
-                  safe_div(data['Fat'], goals['Fat'], 0.3) +
+                  safe_div(data['Fat'], goals['Fat'], 0.2) +
                   safe_div(data['Carbs'], goals['Carbs'], 0.4) +
                   safe_div(data['Protein'], goals['Protein'], 0.1) +
                   safe_div(data['Calories'], goals['Calories'], 0.1)) * 100

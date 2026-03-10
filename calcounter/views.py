@@ -331,14 +331,16 @@ def get_units_for_ingredient(request):
     food_id = request.GET.get('food_id')
     if not food_id:
         return HttpResponse('<option value="">Select food first</option>')
-    units = FoodUnit.objects.filter(food_id=food_id)
+    units = FoodUnit.objects.filter(food_id=food_id).filter(
+        food__in=Food.objects.available_to_user(request.user)
+    )
     print(f"{units=}")
     return render(request, 'calcounter/unit_options.html', {'units': units})
 
 @login_required
 def add_pantry_food(request, food_id):
     '''Add a new food to pantry (templates)'''
-    food = get_object_or_404(Food, pk=food_id)
+    food = get_object_or_404(Food.objects.available_to_user(request.user), pk=food_id)
     # 1. Create the 'Grams' unit (every food should have this)
     FoodUnit.objects.get_or_create(
         food=food,
@@ -376,7 +378,7 @@ def add_pantry_food(request, food_id):
 @login_required
 def food_unit_modal(request, food_id):
     ''' return modal for editing food units '''
-    food = get_object_or_404(Food, pk=food_id)
+    food = get_object_or_404(Food.objects.available_to_user(request.user), pk=food_id)
     pantry_item = PantryItem.objects.filter(food=food, user=request.user).first()
     if request.POST:
         new_name = request.POST.get('pantry_name')
@@ -402,7 +404,7 @@ def food_unit_modal(request, food_id):
 @login_required
 def select_food_unit(request, food_id, unit_id):
     ''' set selected food unit for food '''
-    food = get_object_or_404(Food, pk=food_id)
+    food = get_object_or_404(Food, pk=food_id, owner=request.user)
     unit = get_object_or_404(food.units, pk=unit_id)
     food.unit = unit
     food.save()

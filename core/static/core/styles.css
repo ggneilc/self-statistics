@@ -1164,6 +1164,7 @@ text {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    padding-top: env(safe-area-inset-top);
   }
 
   /* Prevent vh-based heights from pushing the nav off-screen; use flex instead */
@@ -1205,7 +1206,8 @@ text {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
     /* Add safe area inset for iOS home indicator and Android gesture bar */
-    padding-bottom: max(0.75rem, calc(0.75rem + env(safe-area-inset-bottom)));
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-top: 0.5rem;
     /* Ensure navbar stays visible above system UI */
     z-index: 1000;
     background-color: var(--muted-color);
