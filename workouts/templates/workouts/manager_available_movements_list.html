@@ -10,6 +10,14 @@
     {{ mv.name }}
   </div>
   {% empty %}
-  <p class="movement-manager-empty">No movements found. Try changing filters or search.</p>
+  <p class="movement-manager-empty">No movements found. Click the plus icon to create a new movement.</p>
   {% endfor %}
+  <div class="smaller-movement"
+    hx-get="{% url 'workouts:mv_form' %}?from=manager"
+    hx-target="#available-movements-list"
+    hx-trigger="click"
+    hx-swap="innerHTML"
+    hx-include="[name='bodypart'], [name='category'], [name='q']">
+    <i class="fa fa-plus"></i>
+  </div>
 </div>

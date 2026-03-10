@@ -34,6 +34,16 @@
 			hx-trigger="load, change from:.lift-selection-select">
 			<div class="htmx-indicator">Loading…</div>
 		</div>
+		<div class="horizontal-group">
+			<button class="outline" style="flex: 1; color: var(--pico-muted-color);border: 1px dashed var(--pico-muted-border-color);"
+				hx-get="{% url 'workouts:mv_form' %}?from=lift"
+				hx-target="#active-selection-movements"
+				hx-trigger="click"
+				hx-swap="innerHTML">
+				<i class="fa fa-plus"></i>
+				Add New Movement
+			</button>
+		</div>
 	</div>
 </div>
 

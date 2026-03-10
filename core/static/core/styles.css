@@ -1889,6 +1889,21 @@ text {
   .movement-manager-filters {
     grid-template-columns: 1fr;
   }
+  #t_entry_form {
+    flex-direction: column;
+  }
+  #t_entry_form .form-field{
+    width: 100%;
+  }
+  #available-movements-list form fieldset {
+    flex-direction: column;
+  }
+  #wtypes-list-container {
+    overflow-x: auto;
+  }
+  #add-wtype-button {
+    min-width: 15vw;
+  }
 }
 #t_entry_form {
   flex: 1;

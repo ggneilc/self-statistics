@@ -19,10 +19,10 @@ urlpatterns = [
      path("movement/add/<int:mv_id>",  views.add_movement, name="add_mv"),
      path("movement/add/custom",       views.add_movement, name="add_custom_mv"),
      # listing movements & filtering
-path("movements/",   views.get_movements,     name="movements"),
-    path("movements/global/",      views.get_movements,  name="movements_global"),
-    path("movements/active/",      views.get_movements,     name="movements_active"),
-    path("movements/available/",  views.get_movements,     name="movements_available"),
+     path("movements/",   views.get_movements,     name="movements"),
+     path("movements/global/",      views.get_movements,  name="movements_global"),
+     path("movements/active/",      views.get_movements,     name="movements_active"),
+     path("movements/available/",  views.get_movements,     name="movements_available"),
      path("movement/<int:movement_id>/", views.get_movement, name="movement"),
      # filter chips
      path("bodyparts/",   views.get_bodyparts,    name="bodyparts"),

@@ -123,7 +123,6 @@ def get_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     mvment = get_object_or_404(Movement, pk=movement_id, user=request.user)
     return render(request, 'workouts/movement_details.html', {"movement": mvment})
 
-
 @login_required
 def get_wtypes(request: HttpRequest) -> HttpResponse:
     ''' workout types for a user '''
@@ -229,7 +228,6 @@ def _manager_available_list_response(request: HttpRequest) -> HttpResponse:
     mvments = queryset.filter(filters).distinct()
     return render(request, 'workouts/manager_available_movements_list.html', {"movements": mvments})
 
-
 def add_movement(request: HttpRequest,
                  mv_id: int | None = None) -> HttpResponse:
     ''' user registers movement '''
@@ -264,15 +262,23 @@ def add_movement(request: HttpRequest,
             movement = form.save(commit=False)
             movement.user = request.user
             movement.save()
+            workout = Workout.objects.filter(day__user=request.user, is_active=True).first()
+            bodyparts = workout.bodypart_list()
+            categories = LIFT_TYPES
+            if request.GET.get('from') == 'lift':
+                return add_lift(request, movement.id)
             return get_movements(request)
         else:
             return render(request, 'workouts/movement_form.html', {"form": form})
     elif url_name == 'mv_form':
         bodypart = request.GET.get('bodypart')
-        category = request.GET.get('category')   
+        category = request.GET.get('category')
+        name = request.GET.get('q')
+        from_ = request.GET.get('from')
         print(f"found filters {bodypart=} | {category=}")
         bodypart_name = bodypart_map.get(bodypart) if bodypart is not None else ''
         form = MovementForm(initial={
+            'name': name,
             'bodypart': bodypart,
             'category': category
         })
@@ -280,7 +286,8 @@ def add_movement(request: HttpRequest,
             "form": form,
             "is_filtered_bp": bool(bodypart),
             "is_filtered_cat": bool(category),
-            "bodypart_name": bodypart_name
+            "bodypart_name": bodypart_name,
+            "from": from_
         }
         return render(request, 'workouts/movement_form.html', context)
 
