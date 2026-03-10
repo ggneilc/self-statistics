@@ -20,10 +20,48 @@
 	</button>
 </div>
 
+<div id="rest-display" class="rest-timer-bar">
+	<span class="rest-timer-label">REST</span>
+	<span id="rest-time-value">—</span>
+</div>
+
 <div id="end-workout" hx-swap-oob="true">
 	<button class="end"
 		hx-get="{% url 'workouts:end_lift' lift.id %}"
 		hx-target="#active-workout"
-		hx-swap="outerHTML">FINISHED</button>
+		hx-swap="outerHTML"
+		onclick="stopRestTimerAndPopulate()">FINISHED</button>
 </div>
+
+<style>
+.rest-timer-bar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	padding: 0.5rem 1rem;
+	border-radius: var(--pico-border-radius);
+	border: 1px solid var(--pico-muted-border-color);
+	color: var(--pico-muted-color);
+	font-size: small;
+	letter-spacing: 0.1em;
+	transition: color 0.3s, border-color 0.3s;
+}
+.rest-timer-bar.active {
+	color: var(--pico-primary);
+	border-color: var(--pico-primary);
+}
+.rest-timer-label {
+	text-transform: uppercase;
+	font-size: 0.65rem;
+	opacity: 0.6;
+}
+#rest-time-value {
+	font-size: 1.4rem;
+	font-weight: bold;
+	font-variant-numeric: tabular-nums;
+	min-width: 3ch;
+	text-align: center;
+}
+</style>
 

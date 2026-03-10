@@ -1,8 +1,8 @@
-<div id="active-workout" class="vertical-group">
+<div id="active-workout" class="vertical-group" hx-on:htmx:load="startWorkoutTimer({{ workout.id }})">
 
 	<div id="active-info" class="vertical-group" style="flex:1;">
 		<div id="workout-name">{{workout.workout_type.name}} Workout</div>
-		<div id="workout-time"> 00:31 </div>
+		<div id="workout-time">00:00</div>
 	</div>
 	<div id="meters" class="vertical-group" style="flex:1;">
 		<div id="energy-meter" class="meter"> </div>
@@ -17,7 +17,8 @@
 	<div id="end-workout"> <button class="end"
 			hx-get="{% url 'workouts:end_workout' workout.id %}"
 			hx-target="#workout-history"
-			hx-swap="innerHTML"> End Workout </button></div>
+			hx-swap="innerHTML"
+			onclick="stopWorkoutTimer(); stopRestTimerAndPopulate()"> End Workout </button></div>
 </div>
 
 
