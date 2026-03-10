@@ -1,8 +1,8 @@
 <form  class="horizontal-group"
     {% if not editing %}
-    hx-post="{% url 'workouts:add_set' lift.id %}" 
+    hx-post="{% url 'workouts:add_set' lift.id %}"
     {% else %}
-    hx-post="{% url 'workouts:edit_set' set.id %}" 
+    hx-post="{% url 'workouts:edit_set' set.id %}"
     {% endif %}
     hx-swap="outerHTML">
 
@@ -16,10 +16,10 @@
     hx-target="closest form"
     hx-swap="outerHTML"> x </button>
 
-  {{ form.reps }} 
-  {{ form.weight }} 
+  {{ form.reps }}
+  {{ form.weight }}
 
-  <button class="enter outline" name="action" type="submit" value="submit"> > </button>
+  <button class="enter outline" name="action" type="submit" value="submit" onclick="startRestTimer()"> > </button>
 </form>
 
 <style>
