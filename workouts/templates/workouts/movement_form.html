@@ -1,7 +1,9 @@
 <form
     {% if from == 'lift' %}
-    hx-get="{% url 'workouts:add_custom_mv' %}?from=lift"
+    hx-post="{% url 'workouts:add_custom_mv' %}?from=lift"
     hx-target="#lift-target"
+    hx-swap="outerHTML"
+    hx-on::after-request="if(event.detail.successful){ var c=document.getElementById('lift-selection-container'); if(c){ c.innerHTML=''; } }"
     {% else %}
     hx-post="{% url 'workouts:add_custom_mv' %}"
     hx-target="#overview-target"
@@ -18,5 +20,5 @@
         {{ form.secondary_bodypart }}
     </fieldset>
 
-    <button type="submit" hx-on:click="this.closest('dialog').removeAttribute('open')">Create Movement</button>
+    <button type="submit">Create Movement</button>
 </form>

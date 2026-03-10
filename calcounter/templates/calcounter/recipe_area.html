@@ -10,20 +10,16 @@
             <i class="fa-solid fa-link"></i>
         </button>
         <button data-tooltip="All Recipes" data-placement="bottom" style="padding: 0 0.3rem;"
-            hx-get="{% url 'calcounter:list_recipes' %}"
-            hx-target="#recipe-list">
-          <i class="fa-solid fa-list-ul"></i>
+            hx-get="{% url 'calcounter:list_recipes' %}" hx-target="#recipe-list">
+            <i class="fa-solid fa-list-ul"></i>
         </button>
 
         <button data-tooltip="New Recipe" data-placement="bottom" style="padding: 0 0.3rem;"
-            hx-get="{% url 'calcounter:add_recipe' %}"
-            hx-target="#recipe-list">
-          <i class="fa-solid fa-pen"></i>
+            hx-get="{% url 'calcounter:add_recipe' %}" hx-target="#recipe-list">
+            <i class="fa-solid fa-pen"></i>
         </button>
     </span>
 
 </header>
-<div id="recipe-list" class="vertical-group" style="flex:1; overflow-y:auto;"
-    hx-get="{% url 'calcounter:list_recipes' %}"
-    hx-trigger="load">
-</div>
+<ul id="recipe-list" style="flex:1;" hx-get="{% url 'calcounter:list_recipes' %}" hx-trigger="load">
+</ul>

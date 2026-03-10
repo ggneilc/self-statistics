@@ -706,6 +706,7 @@ main {
 #workout-history {
   flex: 1;
   height: 96vh;
+  overflow-x: hidden;
 }
 
 #stats {
@@ -886,6 +887,12 @@ main {
 
 .partial {
   max-height: 80vh;
+}
+
+#meal-input,
+#recipe-area,
+#pantry-log {
+  margin-bottom: 0;
 }
 
 #recipe-area,
@@ -1623,10 +1630,16 @@ text {
 }
 
 #workout_list {
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 0.3rem;
+  margin: 0;
+  list-style: none;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .inline-workout {
@@ -1737,6 +1750,7 @@ text {
   display: flex;
   flex-direction: column;
   max-height: 96vh;
+  margin-bottom: 0;
 }
 
 #overview-target {
@@ -1823,12 +1837,13 @@ text {
 
 #workout-type-manager {
   border-bottom: 1px solid var(--pico-primary);
-  min-height: 0;
   gap: 0;
 }
 
 #movement-manager {
   width: 100%;
+  min-height:0;
+  overflow-y: auto;
   flex:1;
 }
 #movement-manager p {
@@ -2143,7 +2158,6 @@ text {
 
 #lift-carosel {
   flex: 1;
-  max-height: 80vh;
   padding: 0.3rem;
   overflow-y: auto;
 }
@@ -2994,6 +3008,7 @@ dialog[open]>#profile-article {
 
 .filter-accordion {
     display: flex;
+    overflow-x: auto;
     gap: 0.3rem;
     max-width: 0;
     opacity: 0;
@@ -3002,7 +3017,7 @@ dialog[open]>#profile-article {
 }
 
 .filter-accordion.open {
-    max-width: 1000px;
+    max-width: 20vw;
     opacity: 1;
     margin-right: 0.5rem;
 }

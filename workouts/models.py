@@ -8,7 +8,8 @@ LIFT_TYPES = [
     ('M', 'Machine'),
     ('C', 'Cable'),
     ('B', 'Barbell'),
-    ('D', 'Dumbbell')
+    ('D', 'Dumbbell'),
+    ('H', 'Bodyweight'),
 ]
 
 BODYPARTS = [
@@ -184,8 +185,7 @@ class Lift(models.Model):
         )['total'] or 0
 
     def get_best_set(self):
-        # Returns the set with the highest weight, or highest volume
-        return self.sets.order_by('-weight', '-reps').first()
+        return self.sets.order_by('-weight').first()
 
     def estimated_1rm(self):
         best = self.get_best_set()

@@ -3,6 +3,7 @@
   Pantry
 
 <span style="position: absolute; right: 1rem;">
+  <div id="unit-target"></div>
   <button data-tooltip="All" data-placement="bottom" style="padding: 0 0.3rem;"
   hx-get="{% url 'calcounter:list_f' 'all' %}"
   hx-target="#pantry-log"><i class="fa-solid fa-list-ul"></i></button>
@@ -22,7 +23,6 @@
 </span>
 </header>
 {% if foods %}
-  <div id="unit-target"></div>
   <ul id="food-list">
     {% for pantry in foods %}
     {% include './food.html' with pantry=pantry open=False %}
