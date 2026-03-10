@@ -123,14 +123,6 @@ def get_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     mvment = get_object_or_404(Movement, pk=movement_id, user=request.user)
     return render(request, 'workouts/movement_details.html', {"movement": mvment})
 
-<<<<<<< HEAD
-=======
-# TODO
-@login_required
-def get_lifts(request: HttpRequest, movement_id: int) -> HttpResponse:
-    ''' lifts for selected movement (movement details) '''
-    pass
->>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
 
 @login_required
 def get_wtypes(request: HttpRequest) -> HttpResponse:
@@ -216,7 +208,6 @@ def add_workout(request: HttpRequest, wtype_id: int) -> HttpResponse:
     bodyparts = workout.bodypart_list()
     return render(request, 'workouts/active_workout.html', {"workout": workout, "bodyparts": bodyparts})
 
-<<<<<<< HEAD
 def _manager_available_list_response(request: HttpRequest) -> HttpResponse:
     ''' Build available (library) movements list for movement manager; same filters as get_movements movements_available. '''
     bodypart = request.GET.get('bodypart')
@@ -239,9 +230,6 @@ def _manager_available_list_response(request: HttpRequest) -> HttpResponse:
     return render(request, 'workouts/manager_available_movements_list.html', {"movements": mvments})
 
 
-=======
-@login_required
->>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
 def add_movement(request: HttpRequest,
                  mv_id: int | None = None) -> HttpResponse:
     ''' user registers movement '''
@@ -338,13 +326,6 @@ def add_set(request: HttpRequest, lift_id: int) -> HttpResponse:
     return render(request,
                   "workouts/set_entry.html",
                   {"form": form, "lift": lift, "editing": False})
-<<<<<<< HEAD
-=======
-
-@login_required
-def add_wtype(request: HttpRequest) -> HttpResponse:
-    ''' add a new workout type '''
->>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
     pass
 
 def add_workout_type(request):
@@ -407,7 +388,6 @@ def edit_set(request: HttpRequest, set_id: int) -> HttpResponse:
         form = SetForm(instance=set)
         return render(request, 'workouts/set_entry.html', {"form": form, "set": set, "editing": True})
 
-<<<<<<< HEAD
 def edit_workout_type(request: HttpRequest, type_id: int) -> HttpResponse:
     ''' return prefilled form '''
     valid_codes = [code for code, _ in BODYPARTS]
@@ -436,12 +416,6 @@ def edit_workout_type(request: HttpRequest, type_id: int) -> HttpResponse:
         "bodyparts": BODYPARTS,
         "selected_bodyparts": selected_bodyparts,
     })
-=======
-@login_required
-def edit_wtype(request: HttpRequest, type_id: int) -> HttpResponse:
-    ''' edit type name/color/bodyparts '''
-    pass
->>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
 
 @login_required
 def change_color(request: HttpRequest) -> HttpResponse:
@@ -485,12 +459,6 @@ def delete_set(request: HttpRequest, set_id: int) -> HttpResponse:
     set = get_object_or_404(Set, pk=set_id, lift__workout__day__user=request.user)
     set.delete()
     return clear(request)
-<<<<<<< HEAD
-=======
-
-@login_required
-def delete_wtype(request: HttpRequest, type_id: int) -> HttpResponse:
->>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
     pass
 
 def delete_workout_type(request: HttpRequest, w_type: int) -> HttpResponse:

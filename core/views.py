@@ -162,61 +162,6 @@ def workout_setting(request):
     types = request.user.workout_types.all()
     return render(request, 'core/workout_settings.html', {"workout_types": types})
 
-<<<<<<< HEAD
-=======
-
-@login_required
-def add_workout_type(request):
-    '''
-        POST: adds the type
-        GET: returns entry form
-    '''
-    if request.POST:
-        f = WTypeForm(request.POST)
-        if f.is_valid():
-            new_type = f.save(commit=False)
-            new_type.user = request.user
-            if new_type.color is None:
-                new_type.color = random_color()
-            new_type.save()
-            types = request.user.workout_types.all()
-            response = render(request, 'core/workout_settings.html', {"workout_types": types})
-            response['HX-Trigger'] = 'workoutTypeCreated'
-            return response
-    form = WTypeForm()
-    return render(request, 'workouts/new_type_entry.html', {"form": form})
-
-
-@login_required
-def edit_workout_type(request, type_id):
-    ''' return prefilled form '''
-    w_type = get_object_or_404(WorkoutType, pk=type_id, user=request.user)
-    if request.POST:
-        f = WTypeForm(request.POST, instance=w_type)
-        if f.is_valid():
-            new_type = f.save()
-            types = request.user.workout_types.all()
-            response = render(request, 'core/workout_settings.html', {"workout_types": types})
-            response['HX-Trigger'] = 'workoutTypeUpdated'
-            return response
-    form = WTypeForm(instance=w_type)
-    return render(request, 'workouts/edit_type_entry.html', {"form": form, "type_id": type_id})
-
-
-@login_required
-def del_workout_type(request, w_type):
-    workout_t = get_object_or_404(WorkoutType, pk=w_type, user=request.user)
-    workout_t.delete()
-    types = request.user.workout_types.all()
-    response = render(request, 'core/workout_settings.html', {"workout_types": types})
-    response['HX-Trigger'] = 'workoutTypeDeleted'
-    return response
-
-
-def random_color():
-    return "#{:06x}".format(randint(0, 0xFFFFFF))
-
->>>>>>> 24a00937c03c34d617ec7cb3d2cbb536cca8447d
 # === Navbar Pages ===
 
 @login_required
