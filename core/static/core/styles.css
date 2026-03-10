@@ -102,6 +102,15 @@ main {
   height: 50px;
   border-radius: 50%;
   border: 1px solid var(--pico-secondary);
+  background-color: var(--pico-secondary);
+  -webkit-mask-image: url("/static/core/default_pfp.svg");
+  mask-image: url("/static/core/default_pfp.svg");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .username {
@@ -1266,6 +1275,7 @@ text {
     height: 40px;
     min-width: 40px;
     min-height: 40px;
+    margin-top: 0.25rem;
   }
 
   /* Match icon size across nav: FA icons same visual weight as profile pic */

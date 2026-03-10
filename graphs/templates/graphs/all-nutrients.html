@@ -110,16 +110,33 @@
         const g = svgEl.append("g");
         const bgGroup = g.append("g").attr("class", "background-bars");
         const fgGroup = g.append("g").attr("class", "foreground-bars");
-        const labelGroup = g.append("g").attr("class", "labels");
 
-        // Center label
-        g.append("text")
+        // Center label (dynamic on hover) as three stacked lines
+        const centerLabelGroup = g.append("g")
+            .attr("class", "center-label")
+            .attr("text-anchor", "middle");
+
+        const centerLabelName = centerLabelGroup.append("text")
             .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "middle")
-            .style("font-size", "1.2rem")
+            .attr("y", -10)
+            .style("font-size", "0.9rem")
             .style("font-weight", "bold")
             .style("fill", "var(--pico-muted-color)")
             .text("Nutrients");
+
+        const centerLabelValues = centerLabelGroup.append("text")
+            .attr("text-anchor", "middle")
+            .attr("y", 6)
+            .style("font-size", "0.75rem")
+            .style("fill", "var(--pico-muted-color)")
+            .text("");
+
+        const centerLabelPercent = centerLabelGroup.append("text")
+            .attr("text-anchor", "middle")
+            .attr("y", 20)
+            .style("font-size", "0.75rem")
+            .style("fill", "var(--pico-muted-color)")
+            .text("");
 
         let initialRender = true;
 
@@ -142,18 +159,46 @@
 
             const visibleData = data.filter(d => !d.isGap);
 
+            function setCenterLabelDefault() {
+                centerLabelName.text("Nutrients");
+                centerLabelValues.text("");
+                centerLabelPercent.text("");
+            }
+
+            function setCenterLabelFromDatum(d) {
+                const pct = isFinite(d.percentage) ? Math.round(d.percentage) : 0;
+                const actualRounded = Math.round(d.actual * 10) / 10;
+                const goalVal = d.goal ?? 0;
+                centerLabelName.text(d.name);
+                centerLabelValues.text(`${actualRounded} / ${goalVal}`);
+                centerLabelPercent.text(`${pct}% complete`);
+            }
+
+            function handleHoverOver(event, d) {
+                d3.select(this).attr("stroke", "#fff").attr("stroke-width", 2);
+                setCenterLabelFromDatum(d);
+            }
+
+            function handleHoverOut(event, d) {
+                d3.select(this).attr("stroke", "none");
+                setCenterLabelDefault();
+            }
+
             // Background bars (Target 100%)
             const bgBars = bgGroup.selectAll("path")
                 .data(visibleData, d => d.name);
 
-            bgBars.enter()
+            const bgEnter = bgBars.enter()
                 .append("path")
                 .attr("fill", d => {
                     const c = getComputedColor(colorMap[d.name] || '#aaa');
                     const rgb = d3.rgb(c);
                     return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
                 })
-                .merge(bgBars)
+                .on("mouseover", handleHoverOver)
+                .on("mouseout", handleHoverOut);
+
+            bgEnter.merge(bgBars)
                 .attr("d", d3.arc()
                     .innerRadius(innerRadius)
                     .outerRadius(y(100))
@@ -172,17 +217,8 @@
             const fgEnter = fgBars.enter()
                 .append("path")
                 .attr("fill", d => getComputedColor(colorMap[d.name] || '#aaa'))
-                .on("mouseover", function (event, d) {
-                    d3.select(this).attr("stroke", "#fff").attr("stroke-width", 2);
-                    tooltip.transition().duration(200).style("opacity", .9);
-                    tooltip.html(`<strong>${d.name}</strong><br/>Actual: ${Math.round(d.actual * 10) / 10}<br/>Goal: ${d.goal}<br/>(${Math.round(d.percentage)}%)`)
-                        .style("left", (event.pageX + 10) + "px")
-                        .style("top", (event.pageY - 28) + "px");
-                })
-                .on("mouseout", function (event, d) {
-                    d3.select(this).attr("stroke", "none");
-                    tooltip.transition().duration(500).style("opacity", 0);
-                });
+                .on("mouseover", handleHoverOver)
+                .on("mouseout", handleHoverOut);
 
             const fgMerge = fgEnter.merge(fgBars);
 
@@ -213,39 +249,6 @@
                 );
             }
             fgBars.exit().remove();
-
-            // Labels
-            const labels = labelGroup.selectAll("g")
-                .data(visibleData, d => d.name);
-
-            const labelsEnter = labels.enter()
-                .append("g");
-
-            labelsEnter.append("text")
-                .style("font-size", "11px")
-                .style("font-weight", "600")
-                .style("fill", "var(--text, #f5f5f5)")
-                .text(d => d.name.startsWith("Vitamin ") ? d.name.replace("Vitamin ", "") : d.name)
-                .attr("text-anchor", function (d) {
-                    const angle = x(d.name) + x.bandwidth() / 2;
-                    // If angle is past PI (180 deg), anchor end
-                    return (angle > Math.PI) ? "end" : "start";
-                })
-                .attr("alignment-baseline", "middle");
-
-            labelsEnter.merge(labels)
-                .attr("transform", function (d) {
-                    const angle = x(d.name) + x.bandwidth() / 2;
-                    const r = outerRadius + 12;
-                    return `translate(${r * Math.sin(angle)},${-r * Math.cos(angle)})`;
-                })
-                .selectAll("text")
-                .attr("text-anchor", function (d) {
-                    const angle = x(d.name) + x.bandwidth() / 2;
-                    return (angle > Math.PI) ? "end" : "start";
-                });
-
-            labels.exit().remove();
 
             initialRender = false;
         }
