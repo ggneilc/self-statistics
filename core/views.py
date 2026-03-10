@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from random import randint
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import login
@@ -106,16 +107,19 @@ def auth_modal(request):
     return render(request, "core/auth_modal.html")
 
 
+@login_required
 def close_profile(request):
     return HttpResponse("")
 
 
+@login_required
 def get_profile(request):
     return render(request, "core/profile.html")
 
 # TODO: kinda jank
 
 
+@login_required
 def update_timezone(request):
     profile = getattr(request.user, 'profile', None)
     form = ProfileForm(request.POST or None, instance=profile)
@@ -127,18 +131,22 @@ def update_timezone(request):
     return render(request, "core/update_timezone.html", {"form": form})
 
 
+@login_required
 def info_setting(request):
     return render(request, 'core/personal_info.html', {"user": request.user})
 
 
+@login_required
 def theme_setting(request):
     return render(request, 'core/theme.html')
 
 
+@login_required
 def food_setting(request):
     return render(request, 'core/food_settings.html')
 
 
+@login_required
 def graph_setting(request):
     profile = request.user.profile
     if request.method == "POST":
@@ -149,11 +157,13 @@ def graph_setting(request):
     return render(request, 'core/graph_settings.html', {"profile": profile})
 
 
+@login_required
 def workout_setting(request):
     types = request.user.workout_types.all()
     return render(request, 'core/workout_settings.html', {"workout_types": types})
 
 
+@login_required
 def add_workout_type(request):
     '''
         POST: adds the type
@@ -175,9 +185,10 @@ def add_workout_type(request):
     return render(request, 'workouts/new_type_entry.html', {"form": form})
 
 
+@login_required
 def edit_workout_type(request, type_id):
     ''' return prefilled form '''
-    w_type = WorkoutType.objects.get(pk=type_id)
+    w_type = get_object_or_404(WorkoutType, pk=type_id, user=request.user)
     if request.POST:
         f = WTypeForm(request.POST, instance=w_type)
         if f.is_valid():
@@ -190,8 +201,9 @@ def edit_workout_type(request, type_id):
     return render(request, 'workouts/edit_type_entry.html', {"form": form, "type_id": type_id})
 
 
+@login_required
 def del_workout_type(request, w_type):
-    workout_t = WorkoutType.objects.get(pk=w_type)
+    workout_t = get_object_or_404(WorkoutType, pk=w_type, user=request.user)
     workout_t.delete()
     types = request.user.workout_types.all()
     response = render(request, 'core/workout_settings.html', {"workout_types": types})
@@ -204,6 +216,7 @@ def random_color():
 
 # === Navbar Pages ===
 
+@login_required
 def dashboard_page(request):
     # Consider Refactoring
     day_count = (
@@ -220,10 +233,12 @@ def dashboard_page(request):
     return render(request, 'core/dashboard.html', { 'day_count': day_count })
 
 
+@login_required
 def workout_page(request):
     return render(request, 'core/workout_dashboard.html')
 
 
+@login_required
 def nutrition_page(request):
     return render(request, 'core/nutrition_dashboard.html')
 
@@ -270,6 +285,7 @@ def signup_view(request):
 
 # === Day Stuff ===
 
+@login_required
 def get_current_streak(request):
     today = date.today()
     streak = 0
@@ -290,6 +306,7 @@ def get_current_streak(request):
     return render(request, "core/streak_highlight.html", {"streak": streak})
 
 
+@login_required
 def get_water(request):
     """Return water input form (for modal)."""
     return render(request, 'core/water_input.html')
@@ -297,6 +314,7 @@ def get_water(request):
 
 # TODO: update to return an animation of water filling the input,
 # then return to input : (no display, macro-chart shows data)
+@login_required
 def add_water(request):
     date = request.POST.get('selected_date')
     day = get_or_create_day(user=request.user, selected_date=date)
@@ -308,6 +326,7 @@ def add_water(request):
     return render(request, 'core/water_input.html')
 
 
+@login_required
 def get_sleep(request):
     date = request.GET.get('selected_date')
     day = get_or_create_day(user=request.user, selected_date=date)
@@ -318,6 +337,7 @@ def get_sleep(request):
         print("sleep already set")
         return render(request, 'core/sleep_update.html', context={"sleep": day.sleep})
 
+@login_required
 def edit_sleep(request):
     date = request.GET.get('selected_date')
     day = get_or_create_day(user=request.user, selected_date=date)
@@ -326,6 +346,7 @@ def edit_sleep(request):
                   {"edit": True, "sleep": day.sleep})
 
 
+@login_required
 def add_sleep(request):
     date = request.POST.get('selected_date')
     day = get_or_create_day(user=request.user, selected_date=date)
@@ -335,6 +356,7 @@ def add_sleep(request):
     print(f"added new sleep: {request.POST.get('sleep')}")
     return render(request, 'core/sleep_update.html', context={"sleep": sleep})
 
+@login_required
 def get_bodyweight(request):
     '''
         Display user's bodyweight for the selected day
@@ -350,6 +372,7 @@ def get_bodyweight(request):
         return render(request, 'core/bodyweight_update.html', context={"bodyweight": day.bodyweight})
 
 
+@login_required
 def edit_bodyweight(request):
     date = request.GET.get('selected_date')
     day = get_or_create_day(user=request.user, selected_date=date)
@@ -358,6 +381,7 @@ def edit_bodyweight(request):
                   {"edit": True, "bw": day.bodyweight})
 
 
+@login_required
 def add_bodyweight(request):
     date = request.POST.get('selected_date')
     day = get_or_create_day(user=request.user, selected_date=date)
@@ -368,11 +392,13 @@ def add_bodyweight(request):
     return render(request, 'core/bodyweight_update.html', context={"bodyweight": bw})
 
 
+@login_required
 def display_today(request):
     day = get_or_create_today(request.user)
     return display_day(request, day.date)
 
 
+@login_required
 def display_day(request, date):
     '''
         detailed day display to graph_display__container
@@ -386,6 +412,7 @@ def display_day(request, date):
 
 
 # Task(name, done)
+@login_required
 def daily_goals(request):
     day = get_or_create_today(request.user)
 #    day = request.user.days.latest("date")
@@ -399,6 +426,7 @@ def daily_goals(request):
     return render(request, 'core/hud_tasks.html', {"tasks": tasks})
 
 
+@login_required
 def get_macro_goal(request):
     day = get_or_create_today(request.user)
     context = {
@@ -408,6 +436,7 @@ def get_macro_goal(request):
     return render(request, 'core/macro_highlight.html', context)
 
 
+@login_required
 def default_hud(request):
     today = get_or_create_today(request.user)
     date = today.date.isoformat().split("T")[0]
@@ -430,6 +459,7 @@ def default_hud(request):
     return render(request, 'core/hud_default.html', context)
 
 
+@login_required
 def calorie_hud(request):
     day = get_or_create_today(request.user)
 #    day = request.user.days.latest("date")
@@ -442,9 +472,11 @@ def calorie_hud(request):
     return render(request, 'core/hud_cals.html', {"macro": macros})
 
 
+@login_required
 def set_calorie_goal(request):
     pass
 
 
+@login_required
 def set_protein_goal(request):
     pass

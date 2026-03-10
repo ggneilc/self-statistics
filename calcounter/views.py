@@ -614,7 +614,7 @@ def edit_unit(request, unit_id):
 @login_required
 def get_unit(request, unit_id):
     # This handles the "Cancel" button
-    unit = get_object_or_404(FoodUnit, id=unit_id)
+    unit = get_object_or_404(FoodUnit, id=unit_id, food__owner=request.user)
     return render(request, 'calcounter/unit_display_row.html', {'unit': unit})
 
 @login_required
@@ -625,7 +625,7 @@ def update_recipe(request, recipe_id):
         if form.is_valid():
             form.save()
             return render(request, 'calcounter/recipe_area.html')
-    recipe = get_object_or_404(Recipe, id=recipe_id)
+    recipe = get_object_or_404(Recipe, id=recipe_id, food__owner=request.user)
     form = RecipeForm(instance=recipe, user=request.user)
     return render(request, 'calcounter/recipe_entry.html', {'form': form, 'recipe': recipe, 'editing': True })
 
@@ -683,7 +683,7 @@ def delete_food(request, pantry_id):
       - else, delete pantryitem and food
     2. if pantryitem is simple food: just delete pantryitem
     ''' 
-    pantry_item = get_object_or_404(PantryItem, id=pantry_id)
+    pantry_item = get_object_or_404(PantryItem, id=pantry_id, food__owner=request.user)
     underlying_food = pantry_item.food
     # check if food is used in meals or recipes
     delete, mark = False, False
