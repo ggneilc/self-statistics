@@ -10,6 +10,9 @@
             hx-get="{% url 'workouts:movements' %}?wtype={{workout_type.id}}"
             hx-target="#overview-target"
             {% else %}
+            hx-on:click="document.getElementById('wtype-editor').classList.remove('hidden')"
+            hx-get="{% url 'workouts:edit_type' workout_type.id %}"
+            hx-target="#wtype-editor-form"
             {% endif %}
             hx-trigger="click"
             hx-swap="innerHTML swap:0.4s">

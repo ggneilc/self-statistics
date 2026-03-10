@@ -1,0 +1,15 @@
+<div class="horizontal-group overflow-auto manager-available-movements"
+  style="padding: 0.5rem 0.2rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: center;">
+  {% for mv in movements %}
+  <div class="smaller-movement"
+    hx-get="{% url 'workouts:add_mv' mv.id %}?from=manager"
+    hx-target="#available-movements-list"
+    hx-trigger="click"
+    hx-swap="innerHTML"
+    hx-include="[name='bodypart'], [name='category'], [name='q']">
+    {{ mv.name }}
+  </div>
+  {% empty %}
+  <p class="movement-manager-empty">No movements found. Try changing filters or search.</p>
+  {% endfor %}
+</div>

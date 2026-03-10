@@ -1636,18 +1636,6 @@ text {
   gap: 0.25rem;
 }
 
-.food:hover::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,0.08),
-    transparent
-  );
-}
-
 .workout-icon {
   width: 2.5rem;
   height: 2.5rem;
@@ -1754,6 +1742,9 @@ text {
 #overview-target {
   flex: 1;
   display: flex;
+  min-height: 0;
+  min-width: 0;
+  align-items: start;
 }
 
 #lift-graph {
@@ -1823,6 +1814,104 @@ text {
 
 .lift-accolade-value {
   font-size: x-large;
+}
+
+#wtype-editor,
+#wtypes-list {
+  margin-bottom: 1rem;
+}
+
+#workout-type-manager {
+  border-bottom: 1px solid var(--pico-primary);
+  min-height: 0;
+  gap: 0;
+}
+
+#movement-manager {
+  width: 100%;
+  flex:1;
+}
+#movement-manager p {
+  margin-bottom: 5px;
+  font-size: small;
+  color: var(--pico-muted-color);
+}
+
+/* Movement manager: filters and available list (same behaviour as active lift selection) */
+.movement-manager-filters {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  align-items: end;
+}
+.movement-manager-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.movement-manager-field label {
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+}
+.movement-manager-input,
+.movement-manager-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--pico-border-radius);
+  background: var(--pico-background-color);
+  border: 1px solid var(--pico-muted-border-color);
+  color: var(--pico-color);
+}
+.movement-manager-list-wrap {
+  min-height: 120px;
+  overflow: auto;
+  position: relative;
+}
+.movement-manager-list-wrap .htmx-indicator {
+  display: none;
+  color: var(--pico-muted-color);
+  text-align: center;
+  padding: 1rem;
+}
+.movement-manager-list-wrap:has(.htmx-request) .htmx-indicator {
+  display: block;
+}
+.movement-manager-list-wrap:has(.htmx-request) .manager-available-movements {
+  opacity: 0.5;
+}
+.movement-manager-empty {
+  color: var(--pico-muted-color);
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 1rem;
+}
+@media (max-width: 768px) {
+  .movement-manager-filters {
+    grid-template-columns: 1fr;
+  }
+}
+#t_entry_form {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+#t_entry_form input,
+#t_entry_form button {
+  margin-bottom: 0;
+}
+#wtypes-list > button {
+  flex: 1;
+}
+#add-wtype-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--pico-muted-color);
+  margin-bottom: 1rem;
+  border-radius: var(--pico-border-radius);
 }
 
 /* === Movement Details Page === */
@@ -2044,11 +2133,14 @@ text {
   overflow-y: auto;
 }
 
-/* Lift overview: 4 movements per row, 0.5rem gap; last row does not stretch to fill */
+/* Lift overview: 3 movements per row; rows don't stretch so few items don't cause horizontal scroll */
 #lift-carosel.list-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
+  align-content: start;
+  min-width: 0;
+  width: 100%;
 }
 
 
@@ -2311,19 +2403,69 @@ article:not(.htmx-added) {
   color: var(--pico-primary);
 }
 
-.form-field {
-  margin-bottom: 1.5rem;
-}
-
 .form-field label {
-  display: block;
-  margin-bottom: 0.5rem;
   font-weight: 600;
-  color: var(--pico-color);
+  font-size: small;
+  color: var(--pico-muted-color);
 }
 
 .form-field.has-error input {
   border-color: var(--pico-del-color);
+}
+
+/* Bodyparts checkbox dropdown (workout type add/edit) */
+.bodyparts-dropdown {
+  position: relative;
+  border: 1px solid var(--pico-form-element-border-color);
+  border-radius: var(--pico-border-radius);
+  background: var(--pico-form-element-background-color);
+  margin-bottom: 0;
+  height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 + var(--pico-border-width) * 2);
+  padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
+}
+.bodyparts-dropdown summary {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+  margin: 0;
+}
+.bodyparts-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+.bodyparts-dropdown summary::marker {
+  display: none;
+}
+.bodyparts-summary {
+  font-size: 1rem;
+  color: var(--pico-color);
+}
+.bodyparts-checkboxes {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  padding: 0.75rem;
+  border: 1px solid var(--pico-form-element-border-color);
+  border-radius: var(--pico-border-radius);
+  background: var(--pico-card-background-color);
+  box-shadow: var(--pico-box-shadow);
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: 0.35rem 1rem;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+.bodyparts-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.bodyparts-option input {
+  margin: 0;
 }
 
 .help-text {
