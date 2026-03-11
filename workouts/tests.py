@@ -172,8 +172,9 @@ class MovementDeletionTest(TestCase):
         lift2 = Lift.objects.create(movement=self.movement, workout=workout2)
         Set.objects.create(lift=lift2, reps=5, weight=155)
 
+        movement_id = self.movement.id
         self.movement.delete()
-        self.assertFalse(Lift.objects.filter(movement=self.movement).exists())
+        self.assertFalse(Lift.objects.filter(movement_id=movement_id).exists())
 
     def test_archive_preserves_lifts_and_sets(self):
         """Archiving a movement keeps all historical lifts and sets intact."""
