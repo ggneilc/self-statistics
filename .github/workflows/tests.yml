@@ -1,4 +1,4 @@
-name: Tests
+name: Tests & Coverage
 
 on:
   push:
@@ -22,7 +22,24 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run tests
+      - name: Run tests with coverage
         env:
           DJANGO_SETTINGS_MODULE: selfstats.settings.ci
-        run: python manage.py test --verbosity=2
+        run: |
+          coverage run --source='.' --omit='*/migrations/*,*/settings/*,manage.py,selfstats/*' manage.py test --verbosity=2
+
+      - name: Generate coverage report
+        run: coverage report --format=markdown >> $GITHUB_STEP_SUMMARY
+
+      - name: Generate HTML coverage report
+        run: coverage html
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov/
+          retention-days: 14
+
+      - name: Fail if coverage below 50%
+        run: coverage report --fail-under=50
