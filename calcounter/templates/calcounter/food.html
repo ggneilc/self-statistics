@@ -1,117 +1,122 @@
-<li class="food" id="pantry-item-{{ pantry.id }}" style="position:relative;"
-  hx-on:click="this.querySelector('.details').classList.toggle('hidden');
-  this.classList.toggle('active');">
-  <span>
-    {% if pantry.name %}
-    {{ pantry.name.upper }}
-    {% else %}
-    {{ pantry.food.name.upper }} 
-    {% endif %}
-
-    
-    <span style="position:absolute; right:1rem; font-size:small;">
-    {% for badge in pantry.badges %}
-    <span data-tooltip="{{badge.label}}" data-placement="top">
-      <i class="fa-solid {{ badge.icon }}" style="color:{{badge.color}}"></i>
-    </span>
-    {% endfor %}
-    {%if pantry.food.ingredient_set.exists %}
-    <span style="margin-left:5px;"data-tooltip="Self Made" data-placement="left" >
-      <i class="fa-solid fa-apple-whole" style="color:#69359c"></i>
-    </span>
-    {% else %}
-    <span style="margin-left:5px;"data-tooltip="USDA Certified" data-placement="left" >
-      <i class="fa-solid fa-certificate" style="color:var(--pico-primary)"></i>
-    </span>
-    {% endif %}
-    </span>
-  </span>
+{% load static %}
+<li class="food food-card food-class-{{ pantry.food.food_class }} vertical-group"
+    id="pantry-item-{{ pantry.id }}"
+    style="list-style: none;"
+    hx-on:click="this.querySelector('.details').classList.toggle('hidden');
+                 this.classList.toggle('active');">
+  <div class="inline-food" style="flex: 1; min-width: 0; align-items: center;">
+    {% with icon_path="calcounter/icons/"|add:pantry.food.food_class_icon|add:".svg" %}
+    <div class="workout-icon food-icon"
+         style="color: var(--food-card-color); -webkit-mask-image: url('{% static icon_path %}'); mask-image: url('{% static icon_path %}');"
+         title="{{ pantry.food.food_class|title }}"></div>
+    {% endwith %}
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem;">
+      <span class="workout-name food-name">
+        {% if pantry.name %}{{ pantry.name|upper }}{% else %}{{ pantry.food.name|upper }}{% endif %}
+      </span>
+      <span class="food-info" style="color: var(--food-card-color);">
+        {% if pantry.food.food_class == 'sugar' or pantry.food.food_class == 'starch' %}Carb{% else %}{{ pantry.food.food_class|title }}{% endif %}
+        · {{ pantry.food.calories|default:0 }} kcal / 100g
+      </span>
+    </div>
+    <div class="vertical-group">
+      <div class="food-macro-dots">
+      {% if pantry.food.protein %}<span class="food-macro-dot" style="background: var(--protein-color);" title="Protein"></span>{% endif %}
+      {% if pantry.food.fat %}<span class="food-macro-dot" style="background: var(--fat-color);" title="Fat"></span>{% endif %}
+      {% if pantry.food.fiber %}<span class="food-macro-dot" style="background: var(--fiber-color);" title="Fiber"></span>{% endif %}
+      {% if pantry.food.sugar %}<span class="food-macro-dot" style="background: var(--sugar-color);" title="Sugar"></span>{% endif %}
+      {% if pantry.food.starch %}<span class="food-macro-dot" style="background: var(--starch-color);" title="Starch"></span>{% endif %}
+      </div>
+      <div class="horizontal-group" style="gap: 0.25rem;">
+      {% for badge in pantry.badges %}
+      <span data-tooltip="{{ badge.label }}" data-placement="top">
+        <i class="fa-solid {{ badge.icon }}" style="color: {{ badge.color }}"></i>
+      </span>
+      {% endfor %}
+      {% if pantry.food.ingredient_set.exists %}
+      <span data-tooltip="Self Made" data-placement="left">
+        <i class="fa-solid fa-apple-whole" style="color: #69359c"></i>
+      </span>
+      {% else %}
+      <span data-tooltip="USDA Certified" data-placement="left">
+        <i class="fa-solid fa-certificate" style="color: var(--pico-primary)"></i>
+      </span>
+      {% endif %}
+      </div>
+    </div>
+  </div>
 
   {% if open %}
   <div class="details vertical-group" style="align-items: center;">
   {% else %}
-  <div class="details hidden vertical-group" style="align-items: center;"
-  hx-on:click="event.stopPropagation();">
+  <div class="details hidden vertical-group" style="align-items: center;" hx-on:click="event.stopPropagation();">
   {% endif %}
 
-  <span style="position:absolute;top:0.5rem;right:0.5rem;">
-    <button style="padding:0 0.5rem;"
+  <span style="position: absolute; top: -0.8rem; right: 0;">
+    <button style="padding: 0 0.5rem;"
       hx-get="{% url 'calcounter:unit' pantry.food.id %}"
       hx-target="#unit-target">
-        <i class="fa-solid fa-pen"></i>
+      <i class="fa-solid fa-pen"></i>
     </button>
-    <button style="padding:0 0.5rem;"
-        hx-delete="{% url 'calcounter:delete_food' pantry.id %}"
-        hx-target="closest li"
-        hx-swap="outerHTML">
+    <button style="padding: 0 0.5rem;"
+      hx-delete="{% url 'calcounter:delete_food' pantry.id %}"
+      hx-target="#pantry-item-{{ pantry.id }}"
+      hx-swap="outerHTML">
       <i class="fa-solid fa-trash"></i>
     </button>
   </span>
 
-
-
   <div class="nutrition vertical-group">
     <div class="horizontal-group nutrition-pies-row">
-      <div id="macro-{{pantry.id}}" class="nutrition-pie-container">
-      </div>
-      <div id="mineral-{{pantry.id}}" class="nutrition-pie-container">
-      </div>
-      <div id="vitamin-{{pantry.id}}" class="nutrition-pie-container">
-      </div>
+      <div id="macro-{{ pantry.id }}" class="nutrition-pie-container"></div>
+      <div id="mineral-{{ pantry.id }}" class="nutrition-pie-container"></div>
+      <div id="vitamin-{{ pantry.id }}" class="nutrition-pie-container"></div>
     </div>
   </div>
 
-
-  <div class="horizontal-group" style="padding-top:0.5rem;width:100%;">
-    <div id="status-{{ pantry.id }}" style="flex:2;
-    color: {% if pantry.status == 's' %}green{% elif pantry.status == 'l' %}orange{% else %}red{% endif %};">
+  <div class="horizontal-group" style="padding-top: 0.5rem; width: 100%;">
+    <div id="status-{{ pantry.id }}" style="flex: 2; color: {% if pantry.status == 's' %}green{% elif pantry.status == 'l' %}orange{% else %}red{% endif %};">
       {{ pantry.get_status_display }}
     </div>
-
-    <div style="flex:1; display: flex; align-items: center; gap: 5px;">
-      <button hx-post="{% url 'calcounter:update_pantry' pantry.id 'down' %}" 
+    <div style="flex: 1; display: flex; align-items: center; gap: 5px;">
+      <button hx-post="{% url 'calcounter:update_pantry' pantry.id 'down' %}"
               hx-target="#pantry-item-{{ pantry.id }}" hx-swap="outerHTML"
-              style="padding:0 0.5rem;">-</button>
-      
+              style="padding: 0 0.5rem;">−</button>
       <input name="amount" value="{{ pantry.amount }}"
-             style="width:50px;height:fit-content; text-align: center; margin: 0; padding:0;"
+             style="width: 50px; height: fit-content; text-align: center; margin: 0; padding: 0;"
              hx-post="{% url 'calcounter:update_pantry' pantry.id 'set' %}"
              hx-on:click="event.stopPropagation();"
              hx-trigger="keyup changed delay:500ms"
              hx-target="#pantry-item-{{ pantry.id }}" hx-swap="outerHTML">
-      
-      <button hx-post="{% url 'calcounter:update_pantry' pantry.id 'up' %}" 
+      <button hx-post="{% url 'calcounter:update_pantry' pantry.id 'up' %}"
               hx-target="#pantry-item-{{ pantry.id }}" hx-swap="outerHTML"
-              style="padding:0 0.5rem;">+</button>
+              style="padding: 0 0.5rem;">+</button>
     </div>
-
-    <div style="flex:2;">
+    <div style="flex: 2;">
       <div class="unit-container">
-      <select name="unit_id" class="unit-select"
-              hx-post="{% url 'calcounter:update_pantry' pantry.id 'unit' %}"
-              hx-target="#pantry-item-{{ pantry.id }}" hx-swap="outerHTML"
-              hx-on:click="event.stopPropagation();">
-        {% for unit in pantry.food.units.all %}
-          <option title="{{ pantry.unit.name }}"value="{{ unit.id }}" {% if unit == pantry.unit %}selected{% endif %}>
+        <select name="unit_id" class="unit-select"
+                hx-post="{% url 'calcounter:update_pantry' pantry.id 'unit' %}"
+                hx-target="#pantry-item-{{ pantry.id }}" hx-swap="outerHTML"
+                hx-on:click="event.stopPropagation();">
+          {% for unit in pantry.food.units.all %}
+          <option title="{{ pantry.unit.name }}" value="{{ unit.id }}" {% if unit == pantry.unit %}selected{% endif %}>
             {{ unit.name }}
           </option>
-        {% endfor %}
-      </select>
+          {% endfor %}
+        </select>
       </div>
     </div>
-
   </div>
 
   {% if pantry.food.ingredient_set.exists %}
-  <details style="width:100%;margin-bottom:0;"
-    hx-on:click="event.stopPropagation();">
+  <details style="width: 100%; margin-bottom: 0;" hx-on:click="event.stopPropagation();">
     <summary>Foods</summary>
     <div class="vertical-group">
-    {% for mapping in pantry.food.ingredient_set.all %}
+      {% for mapping in pantry.food.ingredient_set.all %}
       <div class="ingredient">
-        <span class="ingredient-name">{{ mapping.ingredient.name }}</span> : <span class="ingredient-unit">{{ mapping.amount}} {{ mapping.unit.name }}</span>
+        <span class="ingredient-name">{{ mapping.ingredient.name }}</span> : <span class="ingredient-unit">{{ mapping.amount }} {{ mapping.unit.name }}</span>
       </div>
-    {% endfor %}
+      {% endfor %}
     </div>
   </details>
   {% endif %}
@@ -119,19 +124,15 @@
   </div>
 </li>
 
-
 {{ pantry.macros|json_script:pantry.macro_script_id }}
 {{ pantry.minerals|json_script:pantry.mineral_script_id }}
 {{ pantry.vitamins|json_script:pantry.vitamin_script_id }}
 <script>
-// Self-invoking call for this specific food item
 (function() {
   const macros = JSON.parse(document.getElementById('{{ pantry.macro_script_id }}').textContent);
   const minerals = JSON.parse(document.getElementById('{{ pantry.mineral_script_id }}').textContent);
   const vitamins = JSON.parse(document.getElementById('{{ pantry.vitamin_script_id }}').textContent);
-
   drawNutrientPie("#macro-{{ pantry.id }}", macros, "Macros", ["var(--protein-color)", "var(--fat-color)", "var(--carb-color)"]);
-  // 6 colors for minerals and vitamins
   drawNutrientPie("#mineral-{{ pantry.id }}", minerals, "Minerals", ["var(--sodium-color)", "var(--potassium-color)", "var(--calcium-color)", "var(--magnesium-color)", "var(--zinc-color)", "var(--iron-color)"]);
   drawNutrientPie("#vitamin-{{ pantry.id }}", vitamins, "Vitamins", ["var(--vitamin-a-color)", "var(--vitamin-b6-color)", "var(--vitamin-b12-color)", "var(--vitamin-c-color)", "var(--vitamin-d-color)", "var(--vitamin-e-color)"]);
 })();

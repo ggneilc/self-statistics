@@ -9,6 +9,68 @@ from django.conf import settings
 from core.models import Day
 
 
+FRUIT_CLASSES = [
+    'apple',
+    'apples',
+    'banana',
+    'bananas',
+    'orange',
+    'oranges',
+    'pear',
+    'pears',
+    'pineapple',
+    'pineapples',
+    'strawberry',
+    'strawberries',
+    'watermelon',
+    'watermelons',
+    'grape',
+    'grapes',
+    'kiwi',
+    'kiwis',
+    'mango',
+    'mangos',
+    'melon',
+    'melons',
+    'nectarine',
+    'nectarines',
+    'peach',
+    'peaches',
+    'plum',
+    'plums',
+    'raspberry',
+    'raspberries',
+]
+
+VEGETABLE_CLASSES = [
+    'lettuce',
+    'lettuces',
+    'spinach',
+    'spinachs',
+    'broccoli',
+    'cauliflower',
+    'carrot',
+    'carrots',
+    'potato',
+    'potatoes',
+    'tomato',
+    'tomatoes',
+    'onion',
+    'onions',
+    'garlic',
+    'garlics',
+    'pepper',
+    'eggplant',
+    'zucchini',
+    'zucchinis',
+    'squash',
+    'pumpkin',
+    'corn',
+    'corns',
+]
+
+
+
 class FoodManager(models.Manager):
     def available_to_user(self, user):
         global_foods = models.Q(owner__isnull=True)
@@ -102,6 +164,54 @@ class Food(models.Model):
             "minerals": group_fields(MINERAL_MAP),
             "vitamins": group_fields(VITAMIN_MAP)
         }
+
+    @property
+    def food_class(self):
+        """
+        Returns the food's class based on dominant macronutrient.
+        One of: 'fat', 'protein', 'vegetable', 'sugar', 'starch'.
+        For carb-dominant foods: if fiber dominates -> vegetable;
+        otherwise sugar or starch by majority.
+        """
+        p = self.protein or 0
+        f = self.fat or 0
+        c = self.carb or 0
+        sugar_g = self.sugar or 0
+        fiber_g = self.fiber or 0
+        starch_g = max(0, c - sugar_g - fiber_g)
+
+        cal_p = p * 4
+        cal_f = f * 9
+        cal_c = c * 4
+
+        # Food name is usda string, usually : 'Apple, raw, all parts'
+        # We need to extract the first word and check if it is in the FRUIT_CLASSES or VEGETABLE_CLASSES
+        food_name = self.name.split(',')[0].lower()
+        if food_name in FRUIT_CLASSES:
+            return 'fruit'
+        if food_name in VEGETABLE_CLASSES:
+            return 'vegetable'
+        if cal_p >= cal_f and cal_p >= cal_c:
+            return 'protein'
+        if cal_f >= cal_p and cal_f >= cal_c:
+            return 'fat'
+        # Carb dominant: classify by carb breakdown
+        if fiber_g > 0 and fiber_g >= sugar_g and fiber_g >= starch_g:
+            return 'fiber'
+        if sugar_g >= starch_g:
+            return 'sugar'
+        return 'starch'
+
+    @property
+    def food_class_icon(self):
+        """Icon name for food_class (vegetable uses 'fiber' icon)."""
+        return 'fiber' if self.food_class == 'vegetable' else self.food_class
+
+    @property
+    def starch(self):
+        """Starch in g per 100g (carb minus sugar and fiber)."""
+        c, s, f = self.carb or 0, self.sugar or 0, self.fiber or 0
+        return max(0, c - s - f)
 
     def get_badges(self):
         badges = []

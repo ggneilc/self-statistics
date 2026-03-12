@@ -184,6 +184,10 @@ def list_foods(request, action, just_added=False):
     }
     return render(request, "calcounter/food_list.html", context)
 
+
+#TODO : add a view list single food for modal updates
+#TODO : add a view to list foods by class
+
 @login_required
 def list_recipes(request):
     ''' return list of recipes '''
@@ -347,6 +351,9 @@ def add_pantry_food(request, food_id):
         name="grams",
         defaults={'gram_weight': 1.0, 'is_standard': True}
     )
+
+    food_name = food.name.split(', ')
+    food_name = food_name[1] + ' ' + food_name[0]
     # if usda modifier info passed, save as food unit
     # otherwise, use default 100g
     modifier = request.POST.get('modifier')
@@ -363,6 +370,7 @@ def add_pantry_food(request, food_id):
         PantryItem.objects.create(
             user=request.user,
             food=food,
+            name=food_name,
             unit=usda_unit,
             amount=1
         )
@@ -370,6 +378,7 @@ def add_pantry_food(request, food_id):
         PantryItem.objects.create(
             user=request.user,
             food=food,
+            name=food_name,
             unit=FoodUnit.objects.get(food=food, name="grams"),
             amount=1
         )
@@ -451,6 +460,7 @@ def query_ingredient(request):
 @login_required
 def get_specific_usda_item(request, fdcId):
     single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}"
+    print(f"{single_url=}")
     foodItem = Food.objects.filter(fdc_id=fdcId).first()
     if not foodItem:
         response = requests.get(single_url)
@@ -685,7 +695,9 @@ def delete_food(request, pantry_id):
       - else, delete pantryitem and food
     2. if pantryitem is simple food: just delete pantryitem
     ''' 
-    pantry_item = get_object_or_404(PantryItem, id=pantry_id, food__owner=request.user)
+    print(f"deleting {pantry_id=}")
+    pantry_item = get_object_or_404(PantryItem, id=pantry_id)
+    print(f"pantry_item={pantry_item}")
     underlying_food = pantry_item.food
     # check if food is used in meals or recipes
     delete, mark = False, False
@@ -704,6 +716,7 @@ def delete_food(request, pantry_id):
     elif mark:
         underlying_food.is_active = False
         underlying_food.save()
+    print(f"deleted {pantry_id=}")
     return clear(request)
     
 

@@ -961,6 +961,10 @@ main {
   transition: all 0.3s ease;
 }
 
+.details {
+  position: relative;
+}
+
 .active {
   transform: translateY(-2px);
   box-shadow: -4px 4px 0px 0px #0d0d0f;
@@ -1009,6 +1013,9 @@ text {
 :root {
   --water-color: #1e88e5;
   --sleep-color: #69359c;
+
+  --vegetable-color: #4edc27;
+  --fruit-color: #43a047;
 
   --calorie-color: #7f7f80;
   --protein-color: var(--pico-primary);
@@ -1692,6 +1699,95 @@ text {
   color: var(--pico-primary);
   border-radius: var(--pico-border-radius);
   padding: 0.2rem 0.5rem;
+}
+
+/* === Food card (Pantry) – aligned with workout card === */
+.inline-food {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.food-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.food-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  flex: 1;
+  min-width: 0;
+}
+
+.food-info {
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+  flex: 2;
+}
+
+.food-macro-dots {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.food-macro-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+/* Food class colors (border/glow and label) – match design */
+.food-class-protein { --food-card-color: var(--protein-color); }
+.food-class-fat { --food-card-color: var(--fat-color); }
+.food-class-vegetable { --food-card-color: var(--fiber-color); }
+.food-class-fruit { --food-card-color: var(--fruit-color); }
+.food-class-fiber { --food-card-color: var(--fiber-color); }
+.food-class-sugar { --food-card-color: var(--sugar-color); }
+.food-class-starch { --food-card-color: var(--starch-color); }
+
+.food.food-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--food-card-color);
+  border-top-left-radius: var(--pico-border-radius);
+  border-bottom-left-radius: var(--pico-border-radius);
+}
+
+.food.food-card {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    transparent 65%,
+    color-mix(in srgb, var(--food-card-color) 30%, transparent)
+  ),
+  var(--pico-card-background-color);
+}
+
+.food.food-card:hover {
+  background: linear-gradient(
+    90deg,
+    transparent 55%,
+    color-mix(in srgb, var(--food-card-color) 40%, transparent)
+  ),
+  var(--pico-card-background-color);
+  box-shadow: 0 0 3px 0 var(--food-card-color);
 }
 
 #inspected-workout {
