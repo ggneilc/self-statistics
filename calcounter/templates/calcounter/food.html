@@ -3,9 +3,10 @@
     id="pantry-item-{{ pantry.id }}"
     style="list-style: none;"
     hx-on:click="this.querySelector('.details').classList.toggle('hidden');
+                document.getElementById('edit-{{ pantry.id }}').classList.toggle('hidden');
                  this.classList.toggle('active');">
   <div class="inline-food" style="flex: 1; min-width: 0; align-items: center;">
-    {% with icon_path="calcounter/icons/"|add:pantry.food.food_class_icon|add:".svg" %}
+    {% with icon_path="calcounter/icons/"|add:pantry.food.food_class|add:".svg" %}
     <div class="workout-icon food-icon"
          style="color: var(--food-card-color); -webkit-mask-image: url('{% static icon_path %}'); mask-image: url('{% static icon_path %}');"
          title="{{ pantry.food.food_class|title }}"></div>
@@ -15,8 +16,21 @@
         {% if pantry.name %}{{ pantry.name|upper }}{% else %}{{ pantry.food.name|upper }}{% endif %}
       </span>
       <span class="food-info" style="color: var(--food-card-color);">
-        {% if pantry.food.food_class == 'sugar' or pantry.food.food_class == 'starch' %}Carb{% else %}{{ pantry.food.food_class|title }}{% endif %}
+        {{ pantry.food.food_class|title }}
         · {{ pantry.food.calories|default:0 }} kcal / 100g
+        <span id="edit-{{ pantry.id }}" class="hidden">
+          <button class="food-edit-button"
+            hx-get="{% url 'calcounter:unit' pantry.food.id %}"
+            hx-target="#unit-target">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="food-delete-button"
+            hx-delete="{% url 'calcounter:delete_food' pantry.id %}"
+            hx-target="#pantry-item-{{ pantry.id }}"
+            hx-swap="outerHTML">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </span>
       </span>
     </div>
     <div class="vertical-group">
@@ -52,19 +66,6 @@
   <div class="details hidden vertical-group" style="align-items: center;" hx-on:click="event.stopPropagation();">
   {% endif %}
 
-  <span style="position: absolute; top: -0.8rem; right: 0;">
-    <button style="padding: 0 0.5rem;"
-      hx-get="{% url 'calcounter:unit' pantry.food.id %}"
-      hx-target="#unit-target">
-      <i class="fa-solid fa-pen"></i>
-    </button>
-    <button style="padding: 0 0.5rem;"
-      hx-delete="{% url 'calcounter:delete_food' pantry.id %}"
-      hx-target="#pantry-item-{{ pantry.id }}"
-      hx-swap="outerHTML">
-      <i class="fa-solid fa-trash"></i>
-    </button>
-  </span>
 
   <div class="nutrition vertical-group">
     <div class="horizontal-group nutrition-pies-row">

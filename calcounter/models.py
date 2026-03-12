@@ -51,8 +51,6 @@ VEGETABLE_CLASSES = [
     'cauliflower',
     'carrot',
     'carrots',
-    'potato',
-    'potatoes',
     'tomato',
     'tomatoes',
     'onion',
@@ -69,7 +67,59 @@ VEGETABLE_CLASSES = [
     'corns',
 ]
 
+BEEF_CLASSES = [
+    'beef',
+    'beefs',
+    'steak',
+    'sirloin',
+    'flank',
+    'round',
+    'chuck',
+    'shoulder',
+    'shortrib',
+    'brisket',
+]
 
+NOODLE_CLASSES = [
+    'noodle',
+    'noodles',
+    'barilla',
+    'soba',
+    'spaghetti',
+    'thin spaghetti',
+    'angel hair spaghetti',
+    'rigatoni',
+    'lasagna',
+    'lasagna',
+    'ravioli',
+    'tortellini',
+    'linguine',
+    'macaroni',
+    'pasta',
+    'fettuccine',
+    'farfalle',
+    'capellini',
+    'ramen',
+    'ramen noodle',
+    'ramen noodles',
+]
+
+CHICKEN_CLASSES = ['chicken', 'chickens']
+RICE_CLASSES = ['rice', 'rices']
+MILK_CLASSES = ['milk', 'milks']
+CHEESE_CLASSES = ['cheese', 'cheeses']
+EGGS_CLASSES = ['egg', 'eggs']
+POTATO_CLASSES = ['potato', 'potatoes']
+PORK_CLASSES = [
+    'pork',
+    'bacon',
+    'ham',
+    'sausage',
+    'bologna',
+    'salami',
+    'pepperoni',
+    'hot dog',
+]
 
 class FoodManager(models.Manager):
     def available_to_user(self, user):
@@ -184,13 +234,41 @@ class Food(models.Model):
         cal_f = f * 9
         cal_c = c * 4
 
-        # Food name is usda string, usually : 'Apple, raw, all parts'
-        # We need to extract the first word and check if it is in the FRUIT_CLASSES or VEGETABLE_CLASSES
-        food_name = self.name.split(',')[0].lower()
-        if food_name in FRUIT_CLASSES:
-            return 'fruit'
-        if food_name in VEGETABLE_CLASSES:
-            return 'vegetable'
+        # Food name is usda string:
+        # 'Apple, raw, all parts'
+        # 'Beef, rib, ...' 
+        # 'Whole, Milk, ...'
+        # need to classify by food name
+        # branded foods have no commas
+        if ',' in self.name:
+            food_name = self.name.split(',')
+        else:
+            food_name = self.name.split(' ')
+        print(f"{food_name=}")
+        for word in food_name:
+            word = word.strip().lower()
+            if word in FRUIT_CLASSES:
+                return 'fruit'
+            if word in VEGETABLE_CLASSES:
+                return 'vegetable'
+            if word in BEEF_CLASSES:
+                return 'protein'
+            if word in NOODLE_CLASSES:
+                return 'noodle'
+            if word in RICE_CLASSES:
+                return 'rice'
+            if word in MILK_CLASSES:
+                return 'milk'
+            if word in CHEESE_CLASSES:
+                return 'cheese'
+            if word in EGGS_CLASSES:
+                return 'egg'
+            if word in CHICKEN_CLASSES:
+                return 'chicken'
+            if word in POTATO_CLASSES:
+                return 'potato'
+            if word in PORK_CLASSES:
+                return 'pork'
         if cal_p >= cal_f and cal_p >= cal_c:
             return 'protein'
         if cal_f >= cal_p and cal_f >= cal_c:
@@ -201,11 +279,6 @@ class Food(models.Model):
         if sugar_g >= starch_g:
             return 'sugar'
         return 'starch'
-
-    @property
-    def food_class_icon(self):
-        """Icon name for food_class (vegetable uses 'fiber' icon)."""
-        return 'fiber' if self.food_class == 'vegetable' else self.food_class
 
     @property
     def starch(self):

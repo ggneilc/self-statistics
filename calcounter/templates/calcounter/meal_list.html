@@ -5,7 +5,7 @@
   {% else %}
   {{ date|date:"m/d" }} Meals 
   {% endif %}
-<span style="position: absolute; right: 1rem;"
+<span class="header-buttons" style="position: absolute; right: 1rem;"
   hx-on:click="
     const todayISO = new Date().toLocaleDateString('en-CA');
     setSelectedDate(todayISO);
