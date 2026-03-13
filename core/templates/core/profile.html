@@ -28,17 +28,6 @@
 			</li>
 			<li class="profile-item">
 				<button class="profile-btn"
-					hx-get="{% url 'core:food_setting' %}"
-					hx-trigger="click"
-					hx-swap="innerHTML"
-					hx-target="#profile-main"
-					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
-					<i class="fa-solid fa-utensils"></i>
-					<span class="profile-btn-label">Foods</span>
-				</button>
-			</li>
-			<li class="profile-item">
-				<button class="profile-btn"
 					hx-get="{% url 'core:graph_setting' %}"
 					hx-trigger="click"
 					hx-swap="innerHTML"
@@ -46,6 +35,17 @@
 					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
 					<i class="fa-solid fa-chart-line"></i>
 					<span class="profile-btn-label">Graphs</span>
+				</button>
+			</li>
+			<li class="profile-item">
+				<button class="profile-btn"
+					hx-get="{% url 'core:food_setting' %}"
+					hx-trigger="click"
+					hx-swap="innerHTML"
+					hx-target="#profile-main"
+					onclick="document.querySelectorAll('.profile-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">
+					<i class="fa-solid fa-utensils"></i>
+					<span class="profile-btn-label">Foods</span>
 				</button>
 			</li>
 			<li class="profile-item">

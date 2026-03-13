@@ -75,6 +75,7 @@ MealConsumptionFormSet = inlineformset_factory(
 )
 
 # --- Listing foods ---
+# i dont think just_added is used ; post never called
 @login_required
 def list_meals(request, just_added=False):
     ''' Returns `meal_list.html` with the `selected_date` '''
@@ -98,7 +99,6 @@ def list_meals(request, just_added=False):
         "meals": meals,
         "date": datetime.strptime(datestr, '%Y-%m-%d').date(),
         "today": date.today(),
-        "added": just_added
     }
     return render(request, "calcounter/meal_list.html", ctx)
 
@@ -328,9 +328,8 @@ def add_meal(request):
             return list_meals(request, True)
         else:
             return render(request, 'calcounter/meal_entry.html', {'form': form, 'formset': formset})
-    else:
-        form = MealForm()
-        formset = MealConsumptionFormSet()
+    form = MealForm()
+    formset = MealConsumptionFormSet()
     return render(request, 'calcounter/meal_entry.html', {'form': form, 'formset': formset})
 
 @login_required
@@ -746,17 +745,19 @@ def get_meal_type_of_input(request):
 
 @login_required
 def get_food_input(request):
-    return render(request, 'calcounter/food_entry_button.html')
+    return get_type_of_input(request)
 
 @login_required
 def get_search_area(request):
     return render(request, 'calcounter/ingred_search_area.html')
 
+def get_recipe_area(request):
+    return render(request, 'calcounter/recipe_area.html')
 
 @login_required
 def cancel_form_m(request):
     ''' Returns `entry_buttons` template '''
-    return render(request, "calcounter/meal_entry_button.html")
+    return clear(request)
 
 
 @login_required

@@ -706,7 +706,9 @@ main {
   display: flex;
 }
 
-#recipe-area {
+#recipe-area,
+#meal-log,
+#pantry-log {
   height: 96vh;
 }
 
@@ -887,11 +889,6 @@ main {
   max-height: 45vh;
 }
 
-#meal-log,
-#pantry-log {
-  overflow: hidden;
-}
-
 .full {
   max-height: 96vh;
 }
@@ -900,7 +897,7 @@ main {
   max-height: 80vh;
 }
 
-#meal-input,
+#meal-log,
 #recipe-area,
 #pantry-log {
   margin-bottom: 0;
@@ -1193,6 +1190,8 @@ text {
   }
 
   #recipe-area,
+  #meal-log,
+  #pantry-log,
   #workout-history {
     height: 100% !important;
     min-height: 0 !important;
@@ -1751,7 +1750,6 @@ text {
   cursor: pointer;
   color: var(--pico-muted-color);
   transition: color 0.2s ease;
-
 }
 .food-info button {
   font-size: 0.7rem;
@@ -1764,6 +1762,8 @@ text {
   transition: color 0.2s ease;
 }
 
+.nav-dashboard-links a:hover,
+.header-buttons button:hover,
 .food-edit-button:hover,
 .recipe-edit-button:hover {
   color: var(--pico-primary);

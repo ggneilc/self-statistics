@@ -1,6 +1,7 @@
-<header style="position:relative;">USDA Food Database
+<header style="position:relative;">
+	<i class="fa-solid fa-database" style="margin-right: 10px;"></i>USDA Food Database
 
-<span class="horizontal-group"
+<span class="header-buttons horizontal-group"
 style="position:absolute;right:1rem;top:0.5rem;">
 
   <label data-tooltip="Branded" data-placement="bottom"
@@ -13,17 +14,9 @@ style="position:absolute;right:1rem;top:0.5rem;">
 	<input type="checkbox" name="foundational" id="foundational">
   </label>
 
-  <button data-tooltip="Back" data-placement="bottom"
-  style="padding:0 0.5rem;"
+  <button data-tooltip="Back" data-placement="bottom" style="padding: 0 0.3rem;"
   	hx-get="{% url 'calcounter:list_f' 'all' %}"
-	hx-target="#pantry-log"
-	hx-on:click="
-	document.getElementById('pantry-input').classList.add('hidden');
-	document.getElementById('pantry-log').classList.remove('partial');
-	document.getElementById('pantry-log').classList.add('full');
-	">
-	<i class="fa-solid fa-xmark"></i>
-  </button>
+	hx-target="#pantry-log"><i class="fa-solid fa-xmark"></i></button>
 </span>
 </header>
 <input type="search"

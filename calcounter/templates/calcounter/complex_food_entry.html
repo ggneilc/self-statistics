@@ -1,22 +1,11 @@
 {% comment %} food form {% endcomment %}
 
-
-
-<button id="back-btn"
-	hx-get="{% url 'calcounter:cancel_f' %}"
-	hx-target="#pantry-input"
-	hx-trigger="click"
-	hx-on:click="
-    document.querySelector('#pantry-input').classList.toggle('big');
-    document.querySelector('#pantry-input').classList.toggle('overflow-auto');
-    document.querySelector('#pantry-input').classList.toggle('hidden');
-    document.querySelector('#pantry-log').classList.toggle('big');
-    document.querySelector('#pantry-log').classList.remove('partial');
-    document.querySelector('#pantry-log').classList.add('full');
-	"
-	style="position:absolute;top:10px;right:10px;padding:0 0.5rem;">
-    <i class="fa-solid fa-xmark"></i>
-    </button>
+<span id="pantry-title" hx-swap-oob="true"><i class="fa-solid fa-utensils" style="margin-right: 10px;"></i>New Food</span>
+<button id="pantry-input-btn"
+	hx-get="{% url 'calcounter:list_f' 'all' %}"
+	hx-target="#pantry-log"
+	hx-swap-oob="true">
+    <i class="fa-solid fa-xmark"></i></button>
 
 <form style="width:100%;"
     hx-post="{% url 'calcounter:complex_food' %}"
@@ -47,15 +36,7 @@
     </button>
     </div>
 
-    <button type="submit"
-    hx-on:click="
-    document.querySelector('#pantry-input').classList.toggle('big');
-    document.querySelector('#pantry-input').classList.toggle('overflow-auto');
-    document.querySelector('#pantry-input').classList.toggle('hidden');
-    document.querySelector('#pantry-log').classList.toggle('big');
-    document.querySelector('#pantry-log').classList.remove('partial');
-    document.querySelector('#pantry-log').classList.add('full');
-    ">Save Complex Food</button>
+    <button type="submit">Save Complex Food</button>
 </form>
 
 <script>

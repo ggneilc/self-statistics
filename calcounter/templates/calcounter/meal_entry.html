@@ -1,15 +1,9 @@
-<button id="back-btn"
-	hx-get="{% url "calcounter:cancel_m" %}"
-	hx-target="#meal-input"
-	hx-trigger="click"
-	hx-on:click="
-	document.querySelector('#meal-input').classList.remove('big');
-	document.querySelector('#meal-log').classList.add('big');
-	"
-	style="position:absolute;top:10px;right:10px;padding:0 0.5rem;">
-    <i class="fa-solid fa-xmark"></i>
-</button>
+<button id="meal-input-btn" hx-swap-oob="true" style="padding: 0 0.3rem;"
+	hx-get="{% url "calcounter:list_m" %}"
+	hx-target="#meal-log"
+	hx-trigger="click"><i class="fa-solid fa-xmark"></i></button>
 
+<div id="meal-input" class="input-area container overflow-auto">
 <form style="flex:1;"
     hx-post="{% url 'calcounter:add' %}"
 	hx-target="#meal-log">
@@ -51,6 +45,8 @@
     document.querySelector('#meal-log').classList.add('big');
     ">Save Meal</button>
 </form>
+</div>
+
 
 
 

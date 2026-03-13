@@ -7,6 +7,7 @@ urlpatterns = [
     path("list/meal/", views.list_meals, name="list_m"),
     path("list/food/<str:action>/", views.list_foods, name="list_f"),
     path("list/recipes/", views.list_recipes, name="list_recipes"),
+    path("list/recipe/", views.get_recipe_area, name="recipe_area"),
 
     path("food/button/", views.get_food_input, name="food_input"),
     path("food/complex/ingred/", views.add_ingredient_row, name="add_ingredient_row"),

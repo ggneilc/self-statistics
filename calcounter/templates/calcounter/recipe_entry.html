@@ -1,3 +1,10 @@
+<span id="recipe-title" hx-swap-oob="true"><i class="fa-solid fa-scroll" style="margin-right: 10px;"></i>New Recipe</span>
+<button id="recipe-input-btn"
+	hx-get="{% url 'calcounter:recipe_area' %}"
+	hx-target="#recipe-area"
+	hx-swap-oob="true">
+    <i class="fa-solid fa-xmark"></i></button>
+
 <form 
 {% if editing %}
     hx-post="{% url 'calcounter:edit_recipe' recipe.id %}"
