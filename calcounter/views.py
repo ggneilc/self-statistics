@@ -550,14 +550,14 @@ def query_ingredient(request):
 
 @login_required
 def get_specific_usda_item(request, fdcId):
-    single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}"
+    single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}&format=abridged"
     print(f"{single_url=}")
     foodItem = Food.objects.filter(fdc_id=fdcId).first()
     if not foodItem:
         response = requests.get(single_url)
         print(f"{response.status_code=}")
-        print(f"{response.text=}")
         item = response.json()
+        print(f"{item=}")
         print("made request to USDA")
         # --- 1. Extract All Available Nutrients and Map by ID ---
         # - extract portion info

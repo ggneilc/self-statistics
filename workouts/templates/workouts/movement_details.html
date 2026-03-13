@@ -1,9 +1,9 @@
 <article class="vertical-group movement-details" style="width: 100%;">
 
-  <div class="movement-details-header">
-    <span class="movement-details-name">{{ movement.name }}</span>
-    <span class="movement-details-level">Lv {{ movement.level|stringformat:"d" }}</span>
-  </div>
+  <span id="lift-overview-title" hx-swap-oob="true">
+    <i class="fa-solid fa-weight-hanging"></i>{{ movement.name }}
+    <span class="movement-details-level" style="border: none;">Lv {{ movement.level|stringformat:"d" }}</span>
+  </span>
 
   <div class="movement-graph-container">
     <div class="movement-graph-label">

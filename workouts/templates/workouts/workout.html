@@ -2,6 +2,7 @@
 <div id="workout-{{workout.id}}" class="workout" 
       hx-trigger="click"
       hx-get="{% url 'workouts:get_workout' workout.id %}"
+      hx-on:click="document.getElementById('modal-workout').classList.remove('hidden')"
       hx-target="#modal-workout">
      
 

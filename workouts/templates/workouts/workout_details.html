@@ -1,20 +1,24 @@
 <dialog open>
 <article style="height: 80vh;">
     <header style="position:relative;">
-        <button rel="prev"
-            hx-get="{% url 'workouts:clear' %}"
-            hx-target="#modal-workout"
-            hx-on:click="event.stopPropagation()"></button>
         <p>
         <i class="fa-solid fa-magnifying-glass-chart"></i>
-        Workout Details
-        <span style="position:absolute;right:3rem;">
-          <button data-tooltip="Delete Workout" data-placement="bottom" style="padding: 0 0.3rem;"
+        {{ workout.workout_type.name }}
+            <span class="movement-details-level" style="border: none;">{{ workout.day.date|date:"m/d/Y" }}</span>
+        <span class="header-buttons" style="position:absolute;right:1rem;">
+          <button data-tooltip="Delete Workout" data-placement="bottom" style="margin-right: 1rem; padding: 0 0.3rem; color: var(--pico-del-color);"
             hx-delete="{% url 'workouts:delete_workout' workout.id %}"
             hx-target="#workout_list"
             hx-swap="innerHTML"
-            hx-on:click="this.closest('dialog').removeAttribute('open')">
+            hx-on:click="this.closest('dialog').removeAttribute('open'); document.getElementById('modal-workout').classList.add('hidden')">
             <i class="fa-solid fa-trash"></i>
+          </button>
+        <button style="padding: 0 0.3rem;"
+            hx-get="{% url 'workouts:clear' %}"
+            hx-target="#modal-workout"
+            hx-on:click="event.stopPropagation(); document.getElementById('modal-workout').classList.add('hidden')">
+
+            <i class="fa-solid fa-xmark"></i>
           </button>
         </span>
         </p>
@@ -22,10 +26,6 @@
 
     <div class="horizontal-group" style="flex:1;min-height: 0;">
         <div class="vertical-group" style="flex:3;min-height: 0;">
-          <div class="movement-details-header">
-            <span class="movement-details-name">{{ workout.workout_type.name }}</span>
-            <span class="movement-details-level">{{ workout.day.date|date:"m/d/Y" }}</span>
-          </div>
           <div class="horizontal-group" style="flex:1;min-height: 0;">
           <div class="vertical-group" id="lift-details">
             <article id="lift-info" class="vertical-group movement-section" style="padding-bottom: 0.25rem; margin-bottom: 0;max-height:revert;height:60.5vh;">
