@@ -110,16 +110,19 @@
   </div>
 
   {% if pantry.food.ingredient_set.exists %}
-  <details style="width: 100%; margin-bottom: 0;" hx-on:click="event.stopPropagation();">
-    <summary>Foods</summary>
-    <div class="vertical-group">
+  <div class="ingredients-accordion" hx-on:click="event.stopPropagation();">
+    <button type="button" class="ingredients-toggle" hx-on:click="event.stopPropagation(); const list = this.closest('.ingredients-accordion').querySelector('.ingredients-list'); list.classList.toggle('hidden'); this.classList.toggle('open');">
+      <span class="ingredients-line"></span>
+      <span class="ingredients-label">Ingredients</span>
+      <i class="fa-solid fa-chevron-down ingredients-arrow"></i>
+      <span class="ingredients-line"></span>
+    </button>
+    <div class="ingredients-list vertical-group hidden" style="gap: 0.2rem; width: 95%;">
       {% for mapping in pantry.food.ingredient_set.all %}
-      <div class="ingredient">
-        <span class="ingredient-name">{{ mapping.ingredient.name }}</span> : <span class="ingredient-unit">{{ mapping.amount }} {{ mapping.unit.name }}</span>
-      </div>
+      {% include "calcounter/inline_ingredient.html" with mapping=mapping %}
       {% endfor %}
     </div>
-  </details>
+  </div>
   {% endif %}
 
   </div>

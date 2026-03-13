@@ -1,69 +1,90 @@
-{% load custom_filters %}
-<li><div class="meal" style="position:relative;"
-  hx-on:click="this.querySelector('.details').classList.toggle('hidden');
-  this.classList.toggle('active');">
-  <span class="scroll-text">{{ meal.name.upper|default:"Unnamed" }}</span>
-
-  <div class="details hidden vertical-group nutrition">
-
-    <span style="position:absolute;top:0.5rem;right:0.5rem;">
-      <button style="padding:0 0.3rem">
-        <i class="fa-solid fa-floppy-disk"></i>
-      </button>
-      <button style="padding:0 0.3rem;"
-        hx-delete="{% url 'calcounter:delete_meal' meal.id %}"
-        hx-target="closest li"
-        hx-swap="outerHTML">
-          <i class="fa-solid fa-trash"></i>
-        </button>
-    </span>
-
-    
-    <div class="horizontal-group nutrient"><span class="meal-macro-label">
-      macros</span>
-      <div data-tooltip="Calories" data-placement="top" class="calorie">{{ meal.nutrients.calories|floatformat:0}}</div>
-      <div data-tooltip="Protein" data-placement="top" class="protein">{{ meal.nutrients.protein|floatformat:0}}</div>
-      <div data-tooltip="Fat" data-placement="top" class="fat">{{ meal.nutrients.fat|floatformat:0}}</div>
-      <div data-tooltip="Carbohydrates" data-placement="top" class="carb">{{ meal.nutrients.carb|floatformat:0}}</div>
-      <div data-tooltip="Sugar" data-placement="top" class="sugar">{{ meal.nutrients.sugar|floatformat:0}}</div>
-      <div data-tooltip="Fiber" data-placement="top" class="fiber">{{ meal.nutrients.fiber|floatformat:0}}</div>
-      <div data-tooltip="Cholesterol" data-placement="top" class="cholesterol">{{ meal.nutrients.cholesterol|floatformat:0}}</div>
+{% load static %}
+<li class="food food-card food-class-{{ meal.food_class }} vertical-group"
+    id="meal-item-{{ meal.id }}"
+    style="list-style: none;"
+    hx-on:click="this.querySelector('.details').classList.toggle('hidden');
+                document.getElementById('meal-edit-{{ meal.id }}').classList.toggle('hidden');
+                 this.classList.toggle('active');">
+  <div class="inline-food" style="flex: 1; min-width: 0; align-items: center;">
+    <!-- icon here -->
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem;">
+      <span class="workout-name food-name">
+        {{ meal.name.upper|default:"Unnamed Meal" }}
+      </span>
+      <span class="food-info" style="color: var(--food-card-color);">
+         {{ meal.nutrients.calories|default:0 }} kcal · {{ meal.items.count }} items
+        <span id="meal-edit-{{ meal.id }}" class="hidden">
+          <button class="food-delete-button"
+            hx-delete="{% url 'calcounter:delete_meal' meal.id %}"
+            hx-target="#meal-item-{{ meal.id }}"
+            hx-swap="outerHTML">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </span>
+      </span>
     </div>
-    <div class="horizontal-group nutrient"><span class="meal-macro-label">
-      minerals</span>
-      <div data-tooltip="Sodium" data-placement="top" class="sodium">{{meal.nutrients.sodium|floatformat:0}}</div>
-      <div data-tooltip="Potassium" data-placement="top" class="potassium">{{meal.nutrients.potassium|floatformat:0}}</div>
-      <div data-tooltip="Calcium" data-placement="top" class="calcium">{{meal.nutrients.calcium|floatformat:0}}</div>
-      <div data-tooltip="Magnesium" data-placement="top" class="magnesium">{{meal.nutrients.magnesium|floatformat:0}}</div>
-      <div data-tooltip="Zinc" data-placement="top" class="zinc">{{meal.nutrients.zinc|floatformat:0}}</div>
-      <div data-tooltip="Iron" data-placement="top" class="iron">{{meal.nutrients.iron|floatformat:0}}</div>
+    <div class="vertical-group">
+      <div class="food-macro-dots">
+      {% if meal.nutrients.protein %}<span class="food-macro-dot" style="background: var(--protein-color);" title="Protein"></span>{% endif %}
+      {% if meal.nutrients.fat %}<span class="food-macro-dot" style="background: var(--fat-color);" title="Fat"></span>{% endif %}
+      {% if meal.nutrients.fiber %}<span class="food-macro-dot" style="background: var(--fiber-color);" title="Fiber"></span>{% endif %}
+      {% if meal.nutrients.sugar %}<span class="food-macro-dot" style="background: var(--sugar-color);" title="Sugar"></span>{% endif %}
+      {% if meal.nutrients.carb %}<span class="food-macro-dot" style="background: var(--starch-color);" title="Starch"></span>{% endif %}
+      </div>
     </div>
-    <div class="horizontal-group nutrient"><span class="meal-macro-label">
-      vitamins</span>
-      <div data-tooltip="Vitamin A" data-placement="top" class="vitamin-a">{{meal.nutrients.vitamin_a|floatformat:1}}</div>
-      <div data-tooltip="Vitamin B6" data-placement="top" class="vitamin-b6">{{meal.nutrients.vitamin_b6|floatformat:1}}</div>
-      <div data-tooltip="Vitamin B12" data-placement="top" class="vitamin-b12">{{meal.nutrients.vitamin_b12|floatformat:1}}</div>
-      <div data-tooltip="Vitamin C" data-placement="top" class="vitamin-c">{{meal.nutrients.vitamin_c|floatformat:1}}</div>
-      <div data-tooltip="Vitamin D" data-placement="top" class="vitamin-d">{{meal.nutrients.vitamin_d|floatformat:1}}</div>
-      <div data-tooltip="Vitamin E" data-placement="top" class="vitamin-e">{{meal.nutrients.vitamin_e|floatformat:1}}</div>
-    </div>
+  </div>
 
-    <details style="width:100%;margin-bottom:0;"
-    hx-on:click="event.stopPropagation();">
-      <summary>Foods</summary>
-      <div class="vertical-group">
+  {% if open %}
+  <div class="details vertical-group" style="align-items: center;">
+  {% else %}
+  <div class="details hidden vertical-group" style="align-items: center;" hx-on:click="event.stopPropagation();">
+  {% endif %}
+
+
+  <div class="nutrition vertical-group">
+    <div class="horizontal-group nutrition-pies-row">
+      <div id="meal-macro-{{ meal.id }}" class="nutrition-pie-container"></div>
+      <div id="meal-mineral-{{ meal.id }}" class="nutrition-pie-container"></div>
+      <div id="meal-vitamin-{{ meal.id }}" class="nutrition-pie-container"></div>
+    </div>
+  </div>
+
+
+  {% if meal.items.exists %}
+  <div class="ingredients-accordion" hx-on:click="event.stopPropagation();">
+    <button type="button" class="ingredients-toggle" hx-on:click="event.stopPropagation(); const list = this.closest('.ingredients-accordion').querySelector('.ingredients-list'); list.classList.toggle('hidden'); this.classList.toggle('open');">
+      <span class="ingredients-line"></span>
+      <span class="ingredients-label">Ingredients</span>
+      <i class="fa-solid fa-chevron-down ingredients-arrow"></i>
+      <span class="ingredients-line"></span>
+    </button>
+    <div class="ingredients-list vertical-group hidden" style="gap: 0.2rem; width: 95%;">
       {% for mapping in meal.items.all %}
-        <div class="ingredient">
-          {% if mapping.food %}
-          <span class="ingredient-name">{{ mapping.food.name }}</span> : <span class="ingredient-unit">{{ mapping.amount}} {{ mapping.unit.name }}</span>
-          {% else %}
-          <span class="ingredient-name">{{ mapping.description }}</span> : <span class="ingredient-unit">  <i class="fa-solid fa-keyboard"></i> </span>
-          {% endif %}
-        </div>
+        {% if mapping.food %}
+        {% include "calcounter/meal_inline_ingredient.html" with mapping=mapping %}
+        {% else %}
+        {% include "calcounter/meal_inline_ingredient.html" with mapping=mapping manual=True%}
+        {% endif %}
       {% endfor %}
     </div>
-    </details>
+  </div>
+  {% endif %}
 
   </div>
-</div></li>
+</li>
+
+{{ meal.macros|json_script:meal.macro_script_id }}
+{{ meal.minerals|json_script:meal.mineral_script_id }}
+{{ meal.vitamins|json_script:meal.vitamin_script_id }}
+<script>
+(function() {
+  const macros = JSON.parse(document.getElementById('{{ meal.macro_script_id }}').textContent);
+  const minerals = JSON.parse(document.getElementById('{{ meal.mineral_script_id }}').textContent);
+  const vitamins = JSON.parse(document.getElementById('{{ meal.vitamin_script_id }}').textContent);
+  drawNutrientPie("#meal-macro-{{ meal.id }}", macros, "Macros", ["var(--protein-color)", "var(--fat-color)", "var(--carb-color)"]);
+  drawNutrientPie("#meal-mineral-{{ meal.id }}", minerals, "Minerals", ["var(--sodium-color)", "var(--potassium-color)", "var(--calcium-color)", "var(--magnesium-color)", "var(--zinc-color)", "var(--iron-color)"]);
+  drawNutrientPie("#meal-vitamin-{{ meal.id }}", vitamins, "Vitamins", ["var(--vitamin-a-color)", "var(--vitamin-b6-color)", "var(--vitamin-b12-color)", "var(--vitamin-c-color)", "var(--vitamin-d-color)", "var(--vitamin-e-color)"]);
+})();
+</script>
+
 

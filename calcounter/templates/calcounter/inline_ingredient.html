@@ -1,0 +1,30 @@
+{% load static %}
+<div class="food-card food-class-{{ mapping.ingredient.food_class }} vertical-group"
+    id="ingredient-item-{{ mapping.id }}">
+  <div class="inline-food" style="flex: 1; min-width: 0; align-items: center;">
+    {% with icon_path="calcounter/icons/"|add:mapping.ingredient.food_class|add:".svg" %}
+    <div class="workout-icon food-icon"
+         style="color: var(--food-card-color); -webkit-mask-image: url('{% static icon_path %}'); mask-image: url('{% static icon_path %}');"
+         title="{{ mapping.ingredient.food_class|title }}"></div>
+    {% endwith %}
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem;">
+      <span class="workout-name food-name" style="font-size: 0.8rem;">
+        {{ mapping.ingredient.name|upper }}
+      </span>
+      <span class="food-info" style="color: var(--food-card-color);font-size: 0.6rem;">
+        {{ mapping.ingredient.food_class|title }}
+        · {{ mapping.ingredient.calories|default:0 }} kcal / 100g
+        · {{ mapping.amount }} {{ mapping.unit.name }}
+      </span>
+    </div>
+    <div class="vertical-group">
+      <div class="food-macro-dots">
+      {% if mapping.ingredient.protein %}<span class="food-macro-dot" style="background: var(--protein-color);" title="Protein"></span>{% endif %}
+      {% if mapping.ingredient.fat %}<span class="food-macro-dot" style="background: var(--fat-color);" title="Fat"></span>{% endif %}
+      {% if mapping.ingredient.fiber %}<span class="food-macro-dot" style="background: var(--fiber-color);" title="Fiber"></span>{% endif %}
+      {% if mapping.ingredient.sugar %}<span class="food-macro-dot" style="background: var(--sugar-color);" title="Sugar"></span>{% endif %}
+      {% if mapping.ingredient.starch %}<span class="food-macro-dot" style="background: var(--starch-color);" title="Starch"></span>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>

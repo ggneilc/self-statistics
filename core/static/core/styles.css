@@ -928,21 +928,20 @@ main {
 
 .ingredient {
   flex: 1;
-  background-color: var(--pico-card-sectioning-background-color);
-  border-radius: var(--pico-border-radius);
-  padding: 0 10px;
-  box-shadow: -2px 2px 0px 0px #0d0f0f;
-  border: 1px solid #0d0f0f;
 }
 
 .ingredient-name {
-  color: var(--pico-color)
+  color: var(--pico-color);
+  font-weight: bold;
+  font-size: 0.8rem;
 }
 
 .ingredient-unit {
-  color: var(--pico-primary)
+  color: var(--pico-muted-color);
+  font-size: 0.6rem;
 }
 
+.ingredient,
 .workout,
 .recipe,
 .meal,
@@ -1738,6 +1737,11 @@ text {
   flex: 2;
 }
 
+@media (max-width: 768px) {
+  .food-info {
+    font-size: 0.6rem;
+  }
+}
 .header-buttons button {
   font-size: 1rem;
   padding: 0 0.25rem;
@@ -1760,12 +1764,14 @@ text {
   transition: color 0.2s ease;
 }
 
-.food-edit-button:hover {
+.food-edit-button:hover,
+.recipe-edit-button:hover {
   color: var(--pico-primary);
   transform: scale(1.1);
   transition: color 0.2s ease, transform 0.2s ease;
 }
-.food-delete-button:hover {
+.food-delete-button:hover,
+.recipe-delete-button:hover {
   color: var(--pico-del-color);
   transform: scale(1.1);
   transition: color 0.2s ease, transform 0.2s ease;
@@ -1824,6 +1830,113 @@ text {
 }
 
 .food.food-card:hover {
+  background: linear-gradient(
+    90deg,
+    transparent 55%,
+    color-mix(in srgb, var(--food-card-color) 40%, transparent)
+  ),
+  var(--pico-card-background-color);
+  box-shadow: 0 0 3px 0 var(--food-card-color);
+}
+
+/* Recipe cards use same food-card look as food/pantry */
+.ingredients-accordion {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.ingredients-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--pico-muted-color);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ingredients-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--food-card-color), transparent);
+  opacity: 0.7;
+}
+
+.ingredients-label {
+  white-space: nowrap;
+}
+
+.ingredients-arrow {
+  font-size: 0.65rem;
+  transition: transform 0.2s ease;
+}
+
+.ingredients-toggle.open .ingredients-arrow {
+  transform: rotate(180deg);
+}
+
+.ingredients-list {
+  width: 100%;
+}
+
+.preparation-accordion {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.preparation-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--pico-muted-color);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.preparation-toggle.open .ingredients-arrow {
+  transform: rotate(180deg);
+}
+
+.preparation-body {
+  width: 100%;
+}
+
+.recipe.food-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--food-card-color);
+  border-top-left-radius: var(--pico-border-radius);
+  border-bottom-left-radius: var(--pico-border-radius);
+}
+
+.recipe.food-card {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    transparent 65%,
+    color-mix(in srgb, var(--food-card-color) 30%, transparent)
+  ),
+  var(--pico-card-background-color);
+}
+
+.recipe.food-card:hover {
   background: linear-gradient(
     90deg,
     transparent 55%,

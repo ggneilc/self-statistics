@@ -87,6 +87,13 @@ def list_meals(request, just_added=False):
     print(f"{meals=}")
     for meal in meals:
         meal.nutrients = meal.get_nutrients_consumed()
+        macros, minerals, vitamins = meal_fingerprint(request.user, meal)
+        meal.macros = macros
+        meal.minerals = minerals
+        meal.vitamins = vitamins
+        meal.macro_script_id = f"macros-{meal.id}"
+        meal.mineral_script_id = f"minerals-{meal.id}"
+        meal.vitamin_script_id = f"vitamins-{meal.id}"
     ctx = {
         "meals": meals,
         "date": datetime.strptime(datestr, '%Y-%m-%d').date(),
@@ -144,6 +151,91 @@ def food_fingerprint(user, pantry_item):
         {"name": "E",   "ratio": get_ratio(data['vitamin_e'],   goals['E']), "value": round(data['vitamin_e'], 1)},
     ]
     return macros, minerals, vitamins
+
+def meal_fingerprint(user, meal):
+    gender = user.profile.gender  # 'M' or 'F'
+    age = user.profile.age  # integer
+    gender_str = 'Male' if gender == 'M' else 'Female'
+    if age < 19:
+        goal_type = 'Young ' + gender_str
+    else:
+        goal_type = 'Adult ' + gender_str
+    goals = {}
+    for mineral, values in RDA_LOOKUP['Minerals'].items():
+        goals[mineral] = values[goal_type]
+    for vitamin, values in RDA_LOOKUP['Vitamins'].items():
+        goals[vitamin] = values[goal_type]
+ 
+    def get_ratio(value, goal):
+        if not goal or goal == 0: return 0
+        return min(float(value) / float(goal), 1.0) 
+
+    total_macros = {
+        'protein': 0,
+        'fat': 0,
+        'carb': 0,
+        'sugar': 0,
+        'fiber': 0,
+    }
+    total_minerals = {
+        'sodium': 0,
+        'potassium': 0,
+        'calcium': 0,
+        'magnesium': 0,
+        'zinc': 0,
+        'iron': 0,
+    }
+    total_vitamins = {
+        'vitamin_a': 0,
+        'vitamin_b6': 0,
+        'vitamin_b12': 0,
+        'vitamin_c': 0,
+        'vitamin_d': 0,
+        'vitamin_e': 0,
+    }
+    data = meal.get_nutrients_consumed()
+    total_macros['protein'] += data['protein']
+    total_macros['fat'] += data['fat']
+    total_macros['carb'] += data['carb']
+    total_macros['sugar'] += data['sugar']
+    total_macros['fiber'] += data['fiber']
+    total_minerals['sodium'] += data['sodium']
+    total_minerals['potassium'] += data['potassium']
+    total_minerals['calcium'] += data['calcium']
+    total_minerals['magnesium'] += data['magnesium']
+    total_minerals['zinc'] += data['zinc']
+    total_minerals['iron'] += data['iron']
+    total_vitamins['vitamin_a'] += data['vitamin_a']
+    total_vitamins['vitamin_b6'] += data['vitamin_b6']
+    total_vitamins['vitamin_b12'] += data['vitamin_b12']
+    total_vitamins['vitamin_c'] += data['vitamin_c']
+    total_vitamins['vitamin_d'] += data['vitamin_d']
+    total_vitamins['vitamin_e'] += data['vitamin_e']
+    macros = [
+        {"name": "Protein", "value": round(total_macros['protein'])},
+        {"name": "Fat",     "value": round(total_macros['fat'])},
+        {"name": "Carbs",   "value": round(total_macros['carb']),
+        "sugar": round(total_macros['sugar']),
+        "fiber": round(total_macros['fiber'])},
+    ]
+    minerals = [
+        {"name": "Na",     "ratio": get_ratio(total_minerals['sodium'],       goals['sodium']), "value": round(total_minerals['sodium'])},
+        {"name": "K",  "ratio": get_ratio(total_minerals['potassium'],    goals['potassium']), "value": round(total_minerals['potassium'])},
+        {"name": "Ca",    "ratio": get_ratio(total_minerals['calcium'],      goals['calcium']), "value": round(total_minerals['calcium'])},
+        {"name": "Mg",  "ratio": get_ratio(total_minerals['magnesium'],    goals['magnesium']), "value": round(total_minerals['magnesium'])},
+        {"name": "Zn",       "ratio": get_ratio(total_minerals['zinc'],         goals['zinc']), "value": round(total_minerals['zinc'])},
+        {"name": "Fe",       "ratio": get_ratio(total_minerals['iron'],         goals['iron']), "value": round(total_minerals['iron'])},
+    ]
+    vitamins = [
+        {"name": "A",   "ratio": get_ratio(total_vitamins['vitamin_a'],   goals['A']), "value": round(total_vitamins['vitamin_a'], 1)},
+        {"name": "B6",  "ratio": get_ratio(total_vitamins['vitamin_b6'],  goals['B6']), "value": round(total_vitamins['vitamin_b6'], 1)},
+        {"name": "B12", "ratio": get_ratio(total_vitamins['vitamin_b12'], goals['B12']), "value": round(total_vitamins['vitamin_b12'], 1)},
+        {"name": "C",   "ratio": get_ratio(total_vitamins['vitamin_c'],   goals['C']), "value": round(total_vitamins['vitamin_c'], 1)},
+        {"name": "D",   "ratio": get_ratio(total_vitamins['vitamin_d'],   goals['D']), "value": round(total_vitamins['vitamin_d'], 1)},
+        {"name": "E",   "ratio": get_ratio(total_vitamins['vitamin_e'],   goals['E']), "value": round(total_vitamins['vitamin_e'], 1)},
+    ]
+    return macros, minerals, vitamins
+
 
 @login_required
 def list_foods(request, action, just_added=False):

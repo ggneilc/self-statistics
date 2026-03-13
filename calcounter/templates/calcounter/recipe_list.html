@@ -1,38 +1,73 @@
+{% load static %}
 {% for recipe in recipes %}
-<li class="recipe" style="position:relative;" hx-on:click="this.querySelector('.details').classList.toggle('hidden')">
-  <span>{{ recipe.food.name.upper }}</span>
-  <div class="details hidden">
+<li class="recipe food-card food-class-{{ recipe.food.food_class }} vertical-group"
+    id="recipe-item-{{ recipe.id }}"
+    style="position: relative; list-style: none;"
+    hx-on:click="this.querySelector('.details').classList.toggle('hidden');
+                document.getElementById('recipe-edit-{{ recipe.id }}').classList.toggle('hidden');
+                 this.classList.toggle('active');">
+  <div class="inline-food" style="flex: 1; min-width: 0; align-items: center;">
+    {% with icon_path="calcounter/icons/"|add:recipe.food.food_class|add:".svg" %}
+    <div class="workout-icon food-icon"
+         style="color: var(--food-card-color); -webkit-mask-image: url('{% static icon_path %}'); mask-image: url('{% static icon_path %}');"
+         title="{{ recipe.food.food_class|title }}"></div>
+    {% endwith %}
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem;">
+      <span class="workout-name food-name"> <i class="fa-solid fa-book"></i> {{ recipe.food.name|upper }}</span>
+      <span class="food-info" style="color: var(--food-card-color);">
+        {{recipe.prep_time}} mins | {{recipe.cook_time}} mins · {{ recipe.food.calories|default:0 }} kcal / 100g
+        <span id="recipe-edit-{{ recipe.id }}" class="hidden">
+          <button class="recipe-edit-button"
+            hx-get="{% url 'calcounter:edit_recipe' recipe.id %}"
+            hx-target="#recipe-list">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="recipe-delete-button"
+            hx-delete="{% url 'calcounter:delete_recipe' recipe.id %}"
+            hx-target="closest .recipe" hx-swap="outerHTML">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </span>
+      </span>
+    </div>
+    <div class="food-macro-dots">
+      {% if recipe.food.protein %}<span class="food-macro-dot" style="background: var(--protein-color);" title="Protein"></span>{% endif %}
+      {% if recipe.food.fat %}<span class="food-macro-dot" style="background: var(--fat-color);" title="Fat"></span>{% endif %}
+      {% if recipe.food.fiber %}<span class="food-macro-dot" style="background: var(--fiber-color);" title="Fiber"></span>{% endif %}
+      {% if recipe.food.sugar %}<span class="food-macro-dot" style="background: var(--sugar-color);" title="Sugar"></span>{% endif %}
+      {% if recipe.food.starch %}<span class="food-macro-dot" style="background: var(--starch-color);" title="Starch"></span>{% endif %}
+    </div>
+  </div>
 
-    <span style="position:absolute;top:0.5rem;right:0.5rem;">
-      <button style="padding:0 0.5rem;" hx-get="{% url 'calcounter:edit_recipe' recipe.id %}" hx-target="#recipe-list">
-        <i class="fa-solid fa-pen"></i>
+  <div class="details hidden vertical-group" style="align-items: center;" hx-on:click="event.stopPropagation();">
+
+    
+
+    <div class="ingredients-accordion">
+      <button type="button" class="ingredients-toggle" hx-on:click="event.stopPropagation(); const list = this.closest('.ingredients-accordion').querySelector('.ingredients-list'); list.classList.toggle('hidden'); this.classList.toggle('open');">
+        <span class="ingredients-line"></span>
+        <span class="ingredients-label">Ingredients</span>
+        <i class="fa-solid fa-chevron-down ingredients-arrow"></i>
+        <span class="ingredients-line"></span>
       </button>
-      <button style="padding:0 0.5rem;" hx-delete="{% url 'calcounter:delete_recipe' recipe.id %}"
-        hx-target="closest .recipe" hx-swap="outerHTML">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    </span>
-
-
-    <h3> Ingredients </h3>
-    <div class="vertical-group">
-      {% for mapping in recipe.food.ingredient_set.all %}
-      <div class="horizontal-group">
-        <div style="display:flex;align-items:center;">
-          <input type="checkbox" hx-on:click="event.stopPropagation();" style="margin-right:0;">
-        </div>
-        <div class="ingredient">
-          <span class="ingredient-name">{{ mapping.ingredient.name }}</span> : <span class="ingredient-unit">
-            {{mapping.amount}} {{ mapping.unit.name }}</span>
-        </div>
+      <div class="ingredients-list vertical-group hidden" style="gap: 0.2rem; width: 95%;">
+        {% for mapping in recipe.food.ingredient_set.all %}
+          {% include "calcounter/inline_ingredient.html" with mapping=mapping %}
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-    <h3>Preparation</h3>
-    <div class="instructions-body">
-      {# linebreaks converts single newlines to <br> and double to <p> #}
+
+    <div class="preparation-accordion">
+      <button type="button" class="preparation-toggle" hx-on:click="event.stopPropagation(); const body = this.closest('.preparation-accordion').querySelector('.preparation-body'); body.classList.toggle('hidden'); this.classList.toggle('open');">
+        <span class="ingredients-line"></span>
+        <span class="ingredients-label">Preparation</span>
+        <i class="fa-solid fa-chevron-down ingredients-arrow"></i>
+        <span class="ingredients-line"></span>
+      </button>
+      <div class="preparation-body instructions-body hidden">
         {{ recipe.instructions|linebreaks }}
+      </div>
     </div>
   </div>
-  </div>
-  {% endfor %}
+</li>
+{% endfor %}

@@ -244,7 +244,6 @@ class Food(models.Model):
             food_name = self.name.split(',')
         else:
             food_name = self.name.split(' ')
-        print(f"{food_name=}")
         for word in food_name:
             word = word.strip().lower()
             if word in FRUIT_CLASSES:
