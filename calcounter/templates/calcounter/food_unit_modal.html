@@ -1,5 +1,5 @@
 <dialog open>
-    <article>
+    <article style="overflow-y: auto;">
     <header>{{food.name}}
         <button rel="prev"
         hx-get="{% url 'calcounter:clear'%}"
@@ -8,7 +8,7 @@
 
 
 
-    <section>
+    <section style="display:flex;flex-direction:column;min-height:0;">
         <div>
             <label for="pantry_name">Pantry Display Name</label>
             <input type="text" 

@@ -21,6 +21,7 @@
         <span id="edit-{{ pantry.id }}" class="hidden">
           <button class="food-edit-button"
             hx-get="{% url 'calcounter:unit' pantry.food.id %}"
+            hx-on:click="document.getElementById('unit-target').classList.remove('hidden');"
             hx-target="#unit-target">
             <i class="fa-solid fa-pen"></i>
           </button>

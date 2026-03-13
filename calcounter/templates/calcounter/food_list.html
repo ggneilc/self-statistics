@@ -2,7 +2,6 @@
   <span id="pantry-title"><i class="fa-solid fa-jar"></i>Pantry</span>
 
 <span class="header-buttons" style="position: absolute; right: 1rem;">
-  <div id="unit-target"></div>
   <button data-tooltip="In Stock" data-placement="bottom" style="padding: 0 0.3rem;"
     hx-get="{% url 'calcounter:list_f' 'in_stock' %}"
     hx-target="#pantry-log"><i class="fa-solid fa-basket-shopping"></i></button>
@@ -24,6 +23,7 @@
 </header>
   <ul id="food-list">
     <div id="pantry-input" class="hidden"></div>
+    <div id="unit-target" class="hidden"></div>
   {% if foods %}
     {% for pantry in foods %}
     {% include './food.html' with pantry=pantry open=False %}
