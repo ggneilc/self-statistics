@@ -17,8 +17,9 @@
       </span>
       <span class="food-info" style="color: var(--food-card-color);">
         {{ pantry.food.food_class|title }}
-        · {{ pantry.food.calories|default:0 }} kcal / 100g
-        <span id="edit-{{ pantry.id }}" class="hidden">
+        · {{ pantry.nutrients.calories|floatformat:0 }} kcal /
+        {% if pantry.unit.gram_weight == 1 %}100g{% else %}{{pantry.unit.name}}{% endif %}
+        <span id="edit-{{ pantry.id }}" {% if not open %}class="hidden"{% endif %}>
           <button class="food-edit-button"
             hx-get="{% url 'calcounter:unit' pantry.food.id %}"
             hx-on:click="document.getElementById('unit-target').classList.remove('hidden');"
@@ -61,13 +62,8 @@
     </div>
   </div>
 
-  {% if open %}
-  <div class="details vertical-group" style="align-items: center;">
-  {% else %}
-  <div class="details hidden vertical-group" style="align-items: center;" hx-on:click="event.stopPropagation();">
-  {% endif %}
-
-
+  
+  <div class="details vertical-group {% if not open %}hidden{% endif %}" style="align-items: center;">
   <div class="nutrition vertical-group">
     <div class="horizontal-group nutrition-pies-row">
       <div id="macro-{{ pantry.id }}" class="nutrition-pie-container"></div>

@@ -12,7 +12,7 @@
         {{ meal.name.upper|default:"Unnamed Meal" }}
       </span>
       <span class="food-info" style="color: var(--food-card-color);">
-         {{ meal.nutrients.calories|default:0 }} kcal · {{ meal.items.count }} items
+         {{ meal.nutrients.calories|floatformat:0|default:0 }} kcal · {{ meal.items.count }} items
         <span id="meal-edit-{{ meal.id }}" class="hidden">
           <button class="food-delete-button"
             hx-delete="{% url 'calcounter:delete_meal' meal.id %}"

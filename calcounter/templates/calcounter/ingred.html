@@ -73,7 +73,6 @@
     "> BACK </button>
 <button style="flex: 1;"
 	hx-post="{% url 'calcounter:add_p' food_id %}"
-    hx-vals='{"modifier": "{{ modifier }}", "amount": "{{ amount }}", "gram_weight": "{{ gram }}"}'
 	hx-trigger="click"
 	hx-target="#pantry-log"> ADD </button>
 </div>

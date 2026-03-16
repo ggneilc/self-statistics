@@ -436,43 +436,18 @@ def get_units_for_ingredient(request):
 def add_pantry_food(request, food_id):
     '''Add a new food to pantry (templates)'''
     food = get_object_or_404(Food.objects.available_to_user(request.user), pk=food_id)
-    # 1. Create the 'Grams' unit (every food should have this)
-    FoodUnit.objects.get_or_create(
-        food=food,
-        name="grams",
-        defaults={'gram_weight': 1.0, 'is_standard': True}
-    )
-
     food_name = food.name.split(', ')
-    food_name = food_name[1] + ' ' + food_name[0]
-    # if usda modifier info passed, save as food unit
-    # otherwise, use default 100g
-    modifier = request.POST.get('modifier')
-    gram_weight = request.POST.get('gram_weight')
-    print(f"{modifier=}, {gram_weight=}")
-    if modifier and gram_weight:
-        # 2. Create the custom unit 'cup', 'slice', etc
-        usda_unit, _ = FoodUnit.objects.get_or_create(
-            food=food,
-            name=modifier,
-            defaults={'gram_weight': float(gram_weight), 'is_standard': True}
-        )
-        print(f"{usda_unit=}")
-        PantryItem.objects.create(
-            user=request.user,
-            food=food,
-            name=food_name,
-            unit=usda_unit,
-            amount=1
-        )
+    if len(food_name) > 1:
+        food_name = food_name[1] + ' ' + food_name[0]
     else:
-        PantryItem.objects.create(
-            user=request.user,
-            food=food,
-            name=food_name,
-            unit=FoodUnit.objects.get(food=food, name="grams"),
-            amount=1
-        )
+        food_name = food.name
+    PantryItem.objects.create(
+        user=request.user,
+        food=food,
+        name=food_name,
+        unit=FoodUnit.objects.get(food=food, name="grams"),
+        amount=1
+    )
     return list_foods(request, 'all')
 
 @login_required
@@ -548,66 +523,89 @@ def query_ingredient(request):
         })
     return render(request, 'calcounter/ingred_search.html', {"foods": results})
 
+
+def parse_usda_nutrients(item):
+    all_nutrients = {}
+    nutrients = item.get("foodNutrients", [])
+    for n in nutrients:
+        # n = {amounts, nutrient{number, name, unitName}}
+        # n_info = nutrient{number, name, unitName}
+        n_info = n.get("nutrient", n)
+        nutrient_id = int(float(n_info.get("number", 0)))
+        if nutrient_id in NUTRIENT_MAP.values():
+            # Branded vitamin fallback: convert IU -> µg and store under standard ID
+            if nutrient_id in BRANDED_VITAMIN_FALLBACKS:
+                fallback = BRANDED_VITAMIN_FALLBACKS[nutrient_id]
+                std_id = fallback["standard_id"]
+                # Only use fallback if we don't already have the standard value
+                if std_id not in all_nutrients:
+                    converted = fallback["convert"](n.get("amount", 0.0))
+                    all_nutrients[std_id] = {
+                        "name":  n_info.get("name"),
+                        "value": round(converted, 2),
+                        "unit":  "µg"
+                    }
+                    print(f"Branded fallback: {nutrient_id} -> {std_id}, {all_nutrients[std_id]=}")
+            else:
+                all_nutrients[nutrient_id] = {
+                    "name":  n_info.get("name"),
+                    "value": n.get("amount", 0.00),
+                    "unit":  n_info.get("unitName", "N/A")
+                }
+                print(f"{all_nutrients[nutrient_id]=}")
+    # --- Some foods don't have energy values, calculate instead ---
+    cals = all_nutrients.get(208, {}).get("value", 0.0)
+    if (cals == {} or cals == 0.0):
+        # Atwater Factors calorie calculation 4-9-4
+        protein = all_nutrients.get(203, {}).get('value', 0)
+        fat = all_nutrients.get(204, {}).get('value', 0)
+        carbs = all_nutrients.get(205, {}).get('value', 0)
+        all_nutrients[208] = {
+            "name": "Energy",
+            "value": (protein * 4) + (fat * 9) + (carbs * 4),
+            "unit": "kcal"
+        }
+
+    servings = []
+    # attempt to retrieve serving size
+    serving_sizes = item.get("foodPortions", [])
+    if serving_sizes:
+        for serving_size in serving_sizes:
+            gram_weight = serving_size.get("gramWeight", 0)
+            amount = serving_size.get("amount", 1)
+            modifier = serving_size.get("modifier", "")
+            if gram_weight > 0 and amount > 0 and modifier:
+                servings.append({
+                    "gram_weight": gram_weight,
+                    "modifier": str(amount) + " " + modifier
+                })
+    else:
+        # branded food
+        servingSize = item.get("servingSize", 0)
+        servingSizeUnit = item.get("servingSizeUnit", "")
+        if servingSize > 0 and servingSizeUnit:
+            servings.append({
+                "gram_weight": servingSize,
+                "modifier": "1 " + servingSizeUnit
+            })
+
+    return all_nutrients, servings
+
 @login_required
 def get_specific_usda_item(request, fdcId):
-    single_url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}&format=abridged"
-    print(f"{single_url=}")
     foodItem = Food.objects.filter(fdc_id=fdcId).first()
     if not foodItem:
-        response = requests.get(single_url)
-        print(f"{response.status_code=}")
+        # Attempt to query full API first, then fallback to abridged
+        url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}"
+        response = requests.get(url)
+        if response.status_code != 200:
+            url += "&format=abridged"
+            response = requests.get(url)
+            if response.status_code != 200:
+                print(f"Error fetching USDA data: {response.status_code}")
+                return HttpResponse("Error fetching USDA data")
         item = response.json()
-        print(f"{item=}")
-        print("made request to USDA")
-        # --- 1. Extract All Available Nutrients and Map by ID ---
-        # - extract portion info
-        portion = item.get("foodPortions", [])[0] if item.get("foodPortions", []) else {}
-        portion_name = portion.get("modifier", "serving")
-        portion_amt = portion.get("amount", 1)
-        portion_gram = portion.get("gramWeight", 100)
-        # 1 gram = no portion info
-        print(f"{portion_gram} grams per {portion_amt} {portion_name}")
-        # - extract nutrients
-        all_nutrients = {}
-        nutrients = item.get("foodNutrients", [])
-        for n in nutrients:
-            # n = {amounts, nutrient{number, name, unitName}}
-            # n_info = nutrient{number, name, unitName}
-            n_info = n.get("nutrient", n)
-            nutrient_id = int(float(n_info.get("number", 0)))
-            if nutrient_id in NUTRIENT_MAP.values():
-                # Branded vitamin fallback: convert IU -> µg and store under standard ID
-                if nutrient_id in BRANDED_VITAMIN_FALLBACKS:
-                    fallback = BRANDED_VITAMIN_FALLBACKS[nutrient_id]
-                    std_id = fallback["standard_id"]
-                    # Only use fallback if we don't already have the standard value
-                    if std_id not in all_nutrients:
-                        converted = fallback["convert"](n.get("amount", 0.0))
-                        all_nutrients[std_id] = {
-                            "name":  n_info.get("name"),
-                            "value": round(converted, 2),
-                            "unit":  "µg"
-                        }
-                        print(f"Branded fallback: {nutrient_id} -> {std_id}, {all_nutrients[std_id]=}")
-                else:
-                    all_nutrients[nutrient_id] = {
-                        "name":  n_info.get("name"),
-                        "value": n.get("amount", 0.00),
-                        "unit":  n_info.get("unitName", "N/A")
-                    }
-                    print(f"{all_nutrients[nutrient_id]=}")
-        # --- Some foods don't have energy values, calculate instead ---
-        cals = all_nutrients.get(208, {}).get("value", 0.0)
-        if (cals == {} or cals == 0.0):
-            # Atwater Factors calorie calculation 4-9-4
-            protein = all_nutrients.get(203, {}).get('value', 0)
-            fat = all_nutrients.get(204, {}).get('value', 0)
-            carbs = all_nutrients.get(205, {}).get('value', 0)
-            all_nutrients[208] = {
-                "name": "Energy",
-                "value": (protein * 4) + (fat * 9) + (carbs * 4),
-                "unit": "kcal"
-            }
+        all_nutrients, servings = parse_usda_nutrients(item)
         # --- Save the Food Item for future use
         foodItem = Food.objects.create(
             name=item.get("description"),
@@ -632,24 +630,26 @@ def get_specific_usda_item(request, fdcId):
             vitamin_d=all_nutrients.get(328, {}).get('value', 0),
             vitamin_e=all_nutrients.get(323, {}).get('value', 0),
         )
+        # create standard grams unit for food
         FoodUnit.objects.get_or_create(
             food=foodItem,
-            name=portion_name if portion_gram != 1 else "grams",
-            defaults={'gram_weight': portion_gram, 'is_standard': True }
+            name="grams",
+            defaults={'gram_weight': 1, 'is_standard': True }
         )
-    else:
-        print("found existing food item in DB")
-        unit = foodItem.units.first()
-        portion_name = unit.name
-        portion_gram = unit.gram_weight
-        portion_amt = 1
+        if servings:
+            for serving in servings:
+                FoodUnit.objects.get_or_create(
+                    food=foodItem,
+                    name=serving["modifier"],
+                    defaults={'gram_weight': serving["gram_weight"], 'is_standard': True }
+                )
     final_data = foodItem.to_formatted_dict()
     context = {
         'food': final_data,
         'food_id': foodItem.pk,
-        'gram': portion_gram,
-        'amount': portion_amt,
-        'modifier': portion_name
+        'gram': 100,
+        'amount': 1,
+        'modifier': "serving"
     }
     return render(request, 'calcounter/ingred.html', context)
 
@@ -695,9 +695,6 @@ def update_pantry_item(request, item_id, action):
     pantry_item.mineral_script_id = f"minerals-{pantry_item.id}"
     pantry_item.vitamin_script_id = f"vitamins-{pantry_item.id}"
 
-    # need to recalculate badges, nutrients
-    # 3. Return the updated snippet
-    # We re-render the individual LI so the detail state and status update correctly
     return render(request, 'calcounter/food.html', {'pantry': pantry_item, 'open': True})
 
 @login_required

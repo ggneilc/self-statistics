@@ -43,7 +43,7 @@ def set_macro_goal(sender, instance, created, **kwargs):
                                         user.profile.height) - (6.75 * user.profile.age)
         cals = BMR * 1.725
         pro = bw * 0.8
-    elif user.profile.gender == "W":
+    elif user.profile.gender == "F":
         bw_kg = bw * 0.45359237
         BMR = 655.1 + (9.563 * bw_kg) + (1.850 *
                                          user.profile.height) - (4.676 * user.profile.age)
