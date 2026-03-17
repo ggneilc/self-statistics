@@ -18,11 +18,7 @@
     {{ formset.management_form }}
     <div id="ingredient-list">
         {% for ingredient_form in formset %}
-            <div class="ingredient-row horizontal-group">
-                {{ ingredient_form.ingredient }} 
-                {{ ingredient_form.amount }}
-                {{ ingredient_form.unit }}
-            </div>
+            {% include 'calcounter/ingredient_row.html' with form=ingredient_form %}
         {% endfor %}
     </div>
 
@@ -38,9 +34,3 @@
 
     <button type="submit">Save Complex Food</button>
 </form>
-
-<script>
-(function() {
-document.querySelectorAll('.tom-select-ingredient').forEach(el => setupTomSelectIngredient(el));
-})();
-</script>

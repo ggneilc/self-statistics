@@ -1,0 +1,23 @@
+{% if foods %}
+<div class="typeahead-results" role="listbox">
+  {% for food in foods %}
+    <button
+      type="button"
+      class="typeahead-option"
+      role="option"
+      data-food-id="{{ food.id }}"
+      data-food-label="{{ food.name|escape }}"
+      data-target-hidden-id="{{ target_hidden_id }}"
+      data-target-input-id="{{ target_input_id }}"
+      data-target-unit-id="{{ target_unit_id }}"
+    >
+      {{ food.name }}
+    </button>
+  {% endfor %}
+</div>
+{% else %}
+<div class="typeahead-results typeahead-empty" aria-live="polite">
+  <small>No matches</small>
+</div>
+{% endif %}
+

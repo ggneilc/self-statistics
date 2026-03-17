@@ -1,16 +1,23 @@
+<div class="unit-row-container vertical-group">
 <div class="unit-row horizontal-group" style="align-items:center;justify-content:space-between;">
     <div>
-        <span class="editable"
-            hx-get="{% url 'calcounter:edit_unit' unit.id %}"
+        <span 
+        {% if not unit.is_standard %}
+            class="editable"
+            hx-get="{% url 'calcounter:edit_unit' pantry_id unit.id %}"
+        {% endif %}
             hx-trigger="click"
-            hx-target="closest .unit-row">
+            hx-target="closest .unit-row-container">
         {{unit.name}}
         </span>
         :
-        <span class="editable"
-            hx-get="{% url 'calcounter:edit_unit' unit.id %}"
+        <span 
+        {% if not unit.is_standard %}
+            hx-get="{% url 'calcounter:edit_unit' pantry_id unit.id %}"
+            class="editable"
+        {% endif %}
             hx-trigger="click"
-            hx-target="closest .unit-row">
+            hx-target="closest .unit-row-container">
         {{unit.gram_weight}}
         </span>
         g
@@ -23,9 +30,9 @@
         </span>
         {% else %}
         <span class="editable"
-            hx-get="{% url 'calcounter:delete_unit' unit.id %}"
+            hx-get="{% url 'calcounter:delete_unit' pantry_id unit.id %}"
             hx-trigger="click"
-            hx-target="closest .unit-row"
+            hx-target="closest .unit-row-container"
             hx-swap="outerHTML"> 
             <i class="fa-solid fa-xmark" style="color:red;"></i>
         </span>
@@ -33,3 +40,4 @@
     </div>
 </div>
 <hr/>
+</div>

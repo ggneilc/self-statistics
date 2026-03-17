@@ -1,43 +1,143 @@
-<dialog open>
-    <article style="overflow-y: auto;">
-    <header>{{food.name}}
-        <button rel="prev"
-        hx-get="{% url 'calcounter:clear'%}"
-        hx-target="#unit-target"></button>
-    </header>
+{% load static %}
+<header style="position:relative;display:flex;">
+    {% with icon_path="calcounter/icons/"|add:pantry_item.food.food_class|add:".svg" %}
+    <div class="workout-icon food-icon"
+         style="color: var(--food-card-color); -webkit-mask-image: url('{% static icon_path %}'); mask-image: url('{% static icon_path %}');
+            margin-bottom: -2rem;
+            margin-left: -0.8rem;
+            margin-top: -0.2rem;"
+         title="{{ pantry_item.food.food_class|title }}"></div>
+    {% endwith %}
+    {{pantry_item.food.name|upper}}
+    <span class="header-buttons" style="position: absolute; right: 1rem;">
+        <button data-tooltip="Close" data-placement="bottom" style="padding: 0 0.3rem;"
+            hx-get="{% url 'calcounter:list_f' 'all' %}"
+            hx-target="#pantry-log"><i class="fa-solid fa-xmark"></i></button>
+    </span>
+</header>
 
+<div id="pantry-item-inspector" class="vertical-group">
+    <div id="unit-table" class="hidden">
+        <dialog open>
+        <article>
+            <header>
+                <button rel="prev"
+                    hx-on:click="event.stopPropagation();document.getElementById('unit-table').classList.add('hidden');">
+                </button>
+                <p>Conversion Table</p>
+            </header>
+        <table>
+            <thead>
+                <tr>
+                    <th>Unit</th>
+                    <th>Water (g)</th>
+                    <th>Flour (g)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1 teaspoon</td>
+                    <td>5g</td>
+                    <td>2.6g</td>
+                </tr>
+                <tr>
+                    <td>1 tablespoon</td>
+                    <td>15g</td>
+                    <td>8g</td>
+                </tr>
+                <tr>
+                    <td>1 fluid ounce</td>
+                    <td>30g</td>
+                    <td>15g</td>
+                </tr>
+                <tr>
+                    <td>1/4 cup</td>
+                    <td>59g</td>
+                    <td>30g</td>
+                </tr>
+                <tr>
+                    <td>1/2 cup</td>
+                    <td>118g</td>
+                    <td>60g</td>
+                </tr>
+                <tr>
+                    <td>1 cup</td>
+                    <td>237g</td>
+                    <td>120g</td>
+                </tr>
+                <tr>
+                    <td>1/2 lb (8oz)</td>
+                    <td>227g</td>
+                    <td>227g</td>
+                </tr>
+                <tr>
+                    <td>1 lb (16oz)</td>
+                    <td>454g</td>
+                    <td>454g</td>
+                </tr>
+            </tbody>
+        </table>
+        </article>
+        </dialog>
+    </div>
+    <label for="pantry_name">Pantry Display Name</label>
+    <input type="text" 
+        name="pantry_name" 
+        id="pantry_name" 
+        value="{{ pantry_item.name|default:pantry_item.food.name }}" 
+        placeholder="e.g. Large Grade A Eggs"
+        hx-post="{% url 'calcounter:update_pantry_name' pantry_item.id %}"
+        hx-trigger="keyup changed delay:500ms"
+        hx-swap="none"> <small>This updates how the item appears in your pantry list.</small>
+ 
+    <div class="horizontal-group nutrition-pies-row" style="flex: 1;">
+        <div id="macro-{{ pantry_item.id }}" class="nutrition-pie-container"></div>
+        <div id="mineral-{{ pantry_item.id }}" class="nutrition-pie-container"></div>
+        <div id="vitamin-{{ pantry_item.id }}" class="nutrition-pie-container"></div>
+    </div>
+    <p>Add New Unit</p>
+    <form id="unit-form" style="position:relative;">
+        <span class="header-buttons" style="position: absolute; left: 4.5rem;top:-2.2rem;">
+            <button hx-on:click="event.preventDefault();
+            document.getElementById('unit-table').classList.remove('hidden');">
+            <i class="fa-solid fa-table-cells-large"></i></button>
+        </span>
+        {% csrf_token %} 
+        <div class="horizontal-group">
+            <fieldset role="group">
+            {{ form.name }}
+            <fieldset role="group" style="flex: 2;">
+            {{ form.gram_weight }}
+            <button 
+                style="padding: 0.2rem;"
+                hx-post="{% url 'calcounter:unit' pantry_item.id %}"
+                hx-target="#unit-target"
+                hx-swap="beforeend"
+                type="submit"> <i class="fa-solid fa-arrow-right"></i> </button></fieldset>
+            </fieldset>
+            </div>
 
-
-    <section style="display:flex;flex-direction:column;min-height:0;">
-        <div>
-            <label for="pantry_name">Pantry Display Name</label>
-            <input type="text" 
-               name="pantry_name" 
-               id="pantry_name" 
-               value="{{ pantry_item.name|default:food.name }}" 
-               placeholder="e.g. Large Grade A Eggs"
-               form="unit-form"> <small>This updates how the item appears in your pantry list.</small>
-        </div>
-        <hr>
-
-
-        {% for unit in foodunits %}
-            {% include 'calcounter/unit_display_row.html' with unit=unit%}
-        {% endfor%}
-    <h3>Add New Unit</h3>
-        <form id="unit-form">
-           {% csrf_token %} 
-           <div class="horizontal-group">
-           {{ form.as_p }}
-           </div>
-
-        <button 
-        hx-post="{% url 'calcounter:unit' food.id %}"
-        hx-target="#unit-target"
-        hx-include="#pantry_name"
-        type="submit">Save</button>
         </form>
-    </section>
 
-    </article>
-</dialog>
+    <hr>
+    <div id="unit-target" class="vertical-group">
+    {% for unit in foodunits %}
+        {% include 'calcounter/unit_display_row.html' with unit=unit pantry_id=pantry_item.id %}
+    {% endfor%}
+    </div>
+</div>
+
+
+{{ pantry_item.macros|json_script:pantry_item.macro_script_id }}
+{{ pantry_item.minerals|json_script:pantry_item.mineral_script_id }}
+{{ pantry_item.vitamins|json_script:pantry_item.vitamin_script_id }}
+<script>
+(function() {
+  const macros = JSON.parse(document.getElementById('{{ pantry_item.macro_script_id }}').textContent);
+  const minerals = JSON.parse(document.getElementById('{{ pantry_item.mineral_script_id }}').textContent);
+  const vitamins = JSON.parse(document.getElementById('{{ pantry_item.vitamin_script_id }}').textContent);
+  drawNutrientPie("#macro-{{ pantry_item.id }}", macros, "Macros", ["var(--protein-color)", "var(--fat-color)", "var(--carb-color)"]);
+  drawNutrientPie("#mineral-{{ pantry_item.id }}", minerals, "Minerals", ["var(--sodium-color)", "var(--potassium-color)", "var(--calcium-color)", "var(--magnesium-color)", "var(--zinc-color)", "var(--iron-color)"]);
+  drawNutrientPie("#vitamin-{{ pantry_item.id }}", vitamins, "Vitamins", ["var(--vitamin-a-color)", "var(--vitamin-b6-color)", "var(--vitamin-b12-color)", "var(--vitamin-c-color)", "var(--vitamin-d-color)", "var(--vitamin-e-color)"]);
+})();
+</script>

@@ -27,18 +27,20 @@ urlpatterns = [
          views.get_specific_usda_item, name="get_ingred"),
 
     path("units-ingred/", views.get_units_for_ingredient, name="get_units_for_ingredient"),
+    path("typeahead/foods/", views.typeahead_foods, name="typeahead_foods"),
     path("unit/<int:food_id>/", views.food_unit_modal, name="unit"),
-    path("edit/unit/<int:unit_id>/", views.edit_unit, name="edit_unit"),
-    path("edit/unit-return/<int:unit_id>/", views.get_unit, name="get_unit"),
+    path("edit/unit/<int:pantry_id>/<int:unit_id>/", views.edit_unit, name="edit_unit"),
+    path("edit/unit-return/<int:pantry_id>/<int:unit_id>/", views.get_unit, name="get_unit"),
 
     path("update/<int:item_id>/<str:action>/", views.update_pantry_item, name="update_pantry"),
     path("update/recipe/<int:recipe_id>/", views.update_recipe, name="edit_recipe"),
+    path("update/name/<int:pantry_id>/", views.update_pantry_name, name="update_pantry_name"),
 
     path("back/meal/", views.cancel_form_m, name="cancel_m"),
     path("back/food/", views.cancel_form_f, name="cancel_f"),
     path("delete/f/<int:pantry_id>/", views.delete_food, name="delete_food"),
     path("delete/m/<int:meal_id>/", views.delete_meal, name="delete_meal"),
     path("delete/r/<int:recipe_id>/", views.delete_recipe, name="delete_recipe"),
-    path("delete/u/<int:unit_id>/", views.delete_unit, name="delete_unit"),
+    path("delete/u/<int:pantry_id>/<int:unit_id>/", views.delete_unit, name="delete_unit"),
     path("clear/", views.clear, name="clear"),
 ]

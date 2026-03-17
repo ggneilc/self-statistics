@@ -1,5 +1,28 @@
-<div class="ingredient-row horizontal-group">
-    {{ form.ingredient }}
+<div class="ingredient-row vertical-group">
+    <div class="typeahead" data-typeahead="ingredient">
+        {{ form.ingredient }}
+        {{ form.ingredient_query }}
+        <div
+            id="{{ form.ingredient_query.id_for_label }}__results"
+            class="typeahead-results-container"
+            aria-live="polite"
+        ></div>
+        <div
+            class="typeahead-trigger"
+            hx-get="{% url 'calcounter:typeahead_foods' %}"
+            hx-trigger="keyup changed delay:200ms from:#{{ form.ingredient_query.id_for_label }}"
+            hx-vals='js:{
+              q: document.getElementById("{{ form.ingredient_query.id_for_label }}").value,
+              target_hidden_id: "{{ form.ingredient.id_for_label }}",
+              target_input_id: "{{ form.ingredient_query.id_for_label }}",
+              target_unit_id: "{{ form.unit.id_for_label }}"
+            }'
+            hx-target="#{{ form.ingredient_query.id_for_label }}__results"
+            hx-swap="innerHTML"
+        ></div>
+    </div>
+    <div class="horizontal-group">
     {{ form.amount }}
     {{ form.unit }}
+    </div>
 </div>

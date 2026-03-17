@@ -21,9 +21,9 @@
         {% if pantry.unit.gram_weight == 1 %}100g{% else %}{{pantry.unit.name}}{% endif %}
         <span id="edit-{{ pantry.id }}" {% if not open %}class="hidden"{% endif %}>
           <button class="food-edit-button"
-            hx-get="{% url 'calcounter:unit' pantry.food.id %}"
+            hx-get="{% url 'calcounter:unit' pantry.id %}"
             hx-on:click="document.getElementById('unit-target').classList.remove('hidden');"
-            hx-target="#unit-target">
+            hx-target="#pantry-log">
             <i class="fa-solid fa-pen"></i>
           </button>
           <button class="food-delete-button"

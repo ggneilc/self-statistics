@@ -246,6 +246,8 @@ class Food(models.Model):
             food_name = self.name.split(' ')
         for word in food_name:
             word = word.strip().lower()
+            if word == 'spices':
+                return 'spices'
             if word in FRUIT_CLASSES:
                 return 'fruit'
             if word in VEGETABLE_CLASSES:

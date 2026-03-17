@@ -432,6 +432,30 @@ def get_units_for_ingredient(request):
     print(f"{units=}")
     return render(request, 'calcounter/unit_options.html', {'units': units})
 
+
+@login_required
+def typeahead_foods(request):
+    q = (request.GET.get('q') or '').strip()
+    target_hidden_id = request.GET.get('target_hidden_id') or ''
+    target_input_id = request.GET.get('target_input_id') or ''
+    target_unit_id = request.GET.get('target_unit_id') or ''
+
+    foods = []
+    if q:
+        foods = (
+            Food.objects.available_to_user(request.user)
+            .filter(is_active=True, name__icontains=q)
+            .order_by('name')[:20]
+        )
+
+    ctx = {
+        "foods": foods,
+        "target_hidden_id": target_hidden_id,
+        "target_input_id": target_input_id,
+        "target_unit_id": target_unit_id,
+    }
+    return render(request, "calcounter/typeahead_food_results.html", ctx)
+
 @login_required
 def add_pantry_food(request, food_id):
     '''Add a new food to pantry (templates)'''
@@ -453,23 +477,25 @@ def add_pantry_food(request, food_id):
 @login_required
 def food_unit_modal(request, food_id):
     ''' return modal for editing food units '''
-    food = get_object_or_404(Food.objects.available_to_user(request.user), pk=food_id)
-    pantry_item = PantryItem.objects.filter(food=food, user=request.user).first()
+    pantry_item = get_object_or_404(PantryItem, pk=food_id, user=request.user)
     if request.POST:
-        new_name = request.POST.get('pantry_name')
-        if pantry_item and new_name:
-            pantry_item.name = new_name
-            pantry_item.save()
         form = FoodUnitForm(request.POST)
         if form.is_valid():
             food_unit = form.save(commit=False)
-            food_unit.food = food
+            food_unit.food = pantry_item.food
             food_unit.save()
-            print("saved food unit")
-    foodunits = food.units.all()
+            return render(request, 'calcounter/unit_display_row.html', {'unit': food_unit, 'pantry_id': pantry_item.id})
+
+    macros, minerals, vitamins = food_fingerprint(request.user, pantry_item)
+    pantry_item.macros = macros
+    pantry_item.minerals = minerals
+    pantry_item.vitamins = vitamins
+    pantry_item.macro_script_id = f"macros-{pantry_item.id}"
+    pantry_item.mineral_script_id = f"minerals-{pantry_item.id}"
+    pantry_item.vitamin_script_id = f"vitamins-{pantry_item.id}"
+    foodunits = pantry_item.food.units.all()
     form = FoodUnitForm()
     context = {
-        'food': food,
         'foodunits': foodunits,
         'form': form,
         'pantry_item': pantry_item
@@ -662,6 +688,14 @@ def meal_into_complexfood(request, meal_id):
 
 # --- CRUD : Update a food ---
 
+def update_pantry_name(request, pantry_id):
+    pantry_item = get_object_or_404(PantryItem, id=pantry_id, user=request.user)
+    new_name = request.POST.get('pantry_name')
+    if pantry_item and new_name:
+        pantry_item.name = new_name
+        pantry_item.save()
+    return HttpResponse(200)
+
 @login_required
 def update_pantry_item(request, item_id, action):
     pantry_item = get_object_or_404(PantryItem, id=item_id, user=request.user)
@@ -698,24 +732,26 @@ def update_pantry_item(request, item_id, action):
     return render(request, 'calcounter/food.html', {'pantry': pantry_item, 'open': True})
 
 @login_required
-def edit_unit(request, unit_id):
-    unit = get_object_or_404(FoodUnit, id=unit_id, food__owner=request.user)
+def edit_unit(request, pantry_id, unit_id):
+    pantry_item = get_object_or_404(PantryItem, id=pantry_id, user=request.user)
+    unit = get_object_or_404(FoodUnit, id=unit_id, food=pantry_item.food)
     
     if request.method == 'POST':
         unit.name = request.POST.get('name')
         unit.gram_weight = request.POST.get('gram_weight')
         unit.save()
         # Return the READ-ONLY snippet (the code from Step 1)
-        return render(request, 'calcounter/unit_display_row.html', {'unit': unit})
+        return render(request, 'calcounter/unit_display_row.html', {'unit': unit, 'pantry_id': pantry_id})
     
     # Return the EDIT FORM snippet (Step 2)
-    return render(request, 'calcounter/unit_edit_form.html', {'unit': unit})
+    return render(request, 'calcounter/unit_edit_form.html', {'unit': unit, 'pantry_id': pantry_id})
 
 @login_required
-def get_unit(request, unit_id):
+def get_unit(request, pantry_id, unit_id):
     # This handles the "Cancel" button
-    unit = get_object_or_404(FoodUnit, id=unit_id, food__owner=request.user)
-    return render(request, 'calcounter/unit_display_row.html', {'unit': unit})
+    pantry_item = get_object_or_404(PantryItem, id=pantry_id, user=request.user)
+    unit = get_object_or_404(FoodUnit, id=unit_id, food=pantry_item.food)
+    return render(request, 'calcounter/unit_display_row.html', {'unit': unit, 'pantry_id': pantry_id})
 
 @login_required
 def update_recipe(request, recipe_id):
@@ -811,8 +847,9 @@ def delete_food(request, pantry_id):
     
 
 @login_required
-def delete_unit(request, unit_id):
-    unit = get_object_or_404(FoodUnit, id=unit_id, food__owner=request.user)
+def delete_unit(request, pantry_id, unit_id):
+    pantry_item = get_object_or_404(PantryItem, id=pantry_id, user=request.user)
+    unit = get_object_or_404(FoodUnit, id=unit_id, food=pantry_item.food)
     unit.delete()
     return clear(request)
 

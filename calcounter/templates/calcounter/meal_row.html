@@ -1,14 +1,26 @@
-<div class="consumption-row vertical-group"
-style="border: 1px solid #0d0f0f;padding:1rem;margin-bottom:0.5rem;box-shadow: -3px 3px 0px 0px #0d0f0f;">
-    <fieldset role="group">
+<div class="consumption-row vertical-group">
+    <div class="typeahead" data-typeahead="food">
         {{ form.food }}
-        <button hx-on:click="event.preventDefault();"
-                hx-delete="{% url 'calcounter:clear' %}"
-                hx-target="closest .consumption-row"
-                hx-swap="outerHTML">
-            <i class="fa-solid fa-trash"></i>
-        </button>
-    </fieldset>
+        {{ form.food_query }}
+        <div
+            id="{{ form.food_query.id_for_label }}__results"
+            class="typeahead-results-container"
+            aria-live="polite"
+        ></div>
+        <div
+            class="typeahead-trigger"
+            hx-get="{% url 'calcounter:typeahead_foods' %}"
+            hx-trigger="keyup changed delay:200ms from:#{{ form.food_query.id_for_label }}"
+            hx-vals='js:{
+              q: document.getElementById("{{ form.food_query.id_for_label }}").value,
+              target_hidden_id: "{{ form.food.id_for_label }}",
+              target_input_id: "{{ form.food_query.id_for_label }}",
+              target_unit_id: "{{ form.unit.id_for_label }}"
+            }'
+            hx-target="#{{ form.food_query.id_for_label }}__results"
+            hx-swap="innerHTML"
+        ></div>
+    </div>
     <div class="horizontal-group">
     {{ form.amount }}
     {{ form.unit }}

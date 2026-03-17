@@ -3,7 +3,7 @@
 	hx-target="#meal-log"
 	hx-trigger="click"><i class="fa-solid fa-xmark"></i></button>
 
-<div id="meal-input" class="input-area container overflow-auto">
+<div id="meal-input" class="input-area container overflow-auto" style="padding:0;">
 <form style="flex:1;"
     hx-post="{% url 'calcounter:add' %}"
 	hx-target="#meal-log">
@@ -46,12 +46,3 @@
     ">Save Meal</button>
 </form>
 </div>
-
-
-
-
-<script>
-(function() {
-document.querySelectorAll('.tom-select-meal').forEach(el => setupTomSelectMeal(el));
-})();
-</script>

@@ -151,6 +151,14 @@ main {
   height: 20vh;
 }
 
+/* Prevent long TomSelect values from widening the meal/ingredient layouts */
+.consumption-row,
+.ingredient-row {
+  min-width: 0;
+  max-width: 100%;
+  overflow-y: visible;
+}
+
 .split-stat,
 .stat {
   background: linear-gradient(145deg, var(--pico-card-background-color), var(--pico-card-sectioning-background-color));
@@ -1023,6 +1031,7 @@ text {
   --fiber-color: #43a047;
   --starch-color: #848243;
   --cholesterol-color: #D5573B;
+  --spice-color: #dbce82;
 
   --sodium-color: #737c87;
   --potassium-color: #815b4d;
@@ -1806,6 +1815,7 @@ text {
 .food-class-noodle { --food-card-color: var(--starch-color); }
 .food-class-potato { --food-card-color: var(--starch-color); }
 .food-class-pork { --food-card-color: var(--protein-color); }
+.food-class-spices { --food-card-color: var(--spice-color); }
 
 .food.food-card::before {
   content: "";
@@ -2104,16 +2114,30 @@ text {
   gap: 0;
 }
 
+#pantry-item-inspector,
 #movement-manager {
   width: 100%;
   min-height:0;
   overflow-y: auto;
   flex:1;
 }
+
+#pantry-item-inspector p,
 #movement-manager p {
   margin-bottom: 5px;
   font-size: small;
   color: var(--pico-muted-color);
+}
+
+.unit-row-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .unit-row-buttons{
+    flex-direction: column;
+  }
 }
 
 /* Movement manager: filters and available list (same behaviour as active lift selection) */
@@ -2521,50 +2545,64 @@ text {
 
 .ts-wrapper {
   flex: 3;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .ingred-input {
   flex: 1;
 }
 
-/* 1. Prevent Pico from forcing height/padding on the TomSelect wrapper */
-.ts-wrapper.form-control,
-.ts-wrapper.single .ts-control {
-  height: auto !important;
-  padding: 0 !important;
-  background-color: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+/* === HTMX typeahead (replacement for Tom Select in meal/ingredient rows) === */
+.typeahead {
+  position: relative;
+  width: 100%;
+  min-width: 0;
 }
 
-/* 2. Style the actual clickable control to look like a Pico input */
-.ts-control {
-  background-color: var(--pico-form-element-background-color) !important;
-  border: 1px solid var(--pico-form-element-border-color) !important;
-  border-radius: var(--pico-border-radius) !important;
-  padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal) !important;
-  color: var(--pico-color) !important;
-  min-height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2);
+.typeahead .food-typeahead-input {
+  width: 100%;
+  min-width: 0;
 }
 
-/* 3. Highlight the focus state to match Pico's primary color */
-.ts-wrapper.focus .ts-control {
-  border-color: var(--pico-primary-focus) !important;
-  box-shadow: 0 0 0 var(--outline-width) var(--primary-focus) !important;
+.typeahead-results-container .typeahead-results,
+.typeahead-results-container .typeahead-empty {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 1200;
+  background: var(--pico-dropdown-background-color, var(--pico-card-sectioning-background-color));
+  border: 1px solid var(--pico-form-element-border-color);
+  border-radius: var(--pico-border-radius);
+  box-shadow: var(--pico-card-box-shadow, 0 8px 20px rgba(0, 0, 0, 0.35));
 }
 
-/* 4. Fix dropdown z-index so it doesn't hide behind other Pico elements */
-.ts-dropdown {
-  z-index: 1000;
-  background: var(--pico-card-sectioning-background-color) !important;
-  color: var(--pico-color) !important;
-  border: 1px solid var(--pico-form-element-border-color) !important;
+.typeahead-results-container .typeahead-results {
+  max-height: 14rem;
+  overflow: auto;
+  padding: 0.25rem;
 }
 
-.ts-control>input {
-  background: var(--pico-form-element-background-color) !important;
-  border: 1px solid var(--pico-form-element-border-color) !important;
-  padding: 1rem !important;
+.typeahead-results-container .typeahead-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 0.5rem 0.6rem;
+  border-radius: calc(var(--pico-border-radius) * 0.75);
+  color: var(--pico-secondary);
+  cursor: pointer;
+}
+
+.typeahead-results-container .typeahead-option:hover,
+.typeahead-results-container .typeahead-option:focus {
+  background: var(--pico-dropdown-hover-background-color, rgba(127, 127, 127, 0.2));
+  outline: none;
+}
+
+.typeahead-results-container .typeahead-empty {
+  padding: 0.5rem 0.75rem;
 }
 
 svg:not(:host),

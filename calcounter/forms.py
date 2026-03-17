@@ -9,6 +9,16 @@ class MealConsumptionForm(forms.ModelForm):
     food_name = forms.CharField(max_length=255, required=False,
                                 widget=forms.TextInput(attrs={'readonly': 'readonly'}))
 
+    food_query = forms.CharField(
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Search food…',
+            'autocomplete': 'off',
+            'class': 'food-typeahead-input',
+        })
+    )
+
     # We only need the foreign key fields and the property field
     class Meta:
         model = MealConsumption
@@ -18,7 +28,7 @@ class MealConsumptionForm(forms.ModelForm):
                   'sodium', 'potassium', 'calcium', 'iron', 'magnesium', 'zinc',
                   'vitamin_a', 'vitamin_c', 'vitamin_d', 'vitamin_b6', 'vitamin_b12', 'vitamin_e']
         widgets = {
-            'food': forms.Select(attrs={'placeholder': 'Select food', 'class': 'tom-select-meal'}),
+            'food': forms.HiddenInput(attrs={'class': 'food-typeahead-hidden'}),
             'amount': forms.NumberInput(attrs={'placeholder': 'Amount', 'class': 'ingred-input'}),
             'unit': forms.Select(attrs={'class': 'unit-selector ingred-input'}),
 
@@ -55,6 +65,13 @@ class MealConsumptionForm(forms.ModelForm):
             qs = Food.objects.filter(is_active=True)
         self.fields['food'].queryset = qs.distinct()
         self.fields['unit'].choices = [('', 'Unit')]
+
+        # Pre-fill visible query field when editing an existing row
+        try:
+            if self.instance and getattr(self.instance, "food_id", None):
+                self.fields["food_query"].initial = self.instance.food.name
+        except Exception:
+            pass
 
         # make all fields not required: view will filter based on type of entry
         for field in self.fields.values():
@@ -108,11 +125,20 @@ class IngredientForm(forms.ModelForm):
     # Similar display field for ingredient name
     ingredient_name = forms.CharField(max_length=255, required=False,
                                       widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    ingredient_query = forms.CharField(
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Search ingredient…',
+            'autocomplete': 'off',
+            'class': 'food-typeahead-input',
+        })
+    )
     class Meta:
         model = Ingredient
         fields = ['ingredient', 'amount', 'unit']
         widgets = {
-            'ingredient': forms.Select(attrs={'placeholder': 'ingredient', 'class': 'tom-select-ingredient'}),
+            'ingredient': forms.HiddenInput(attrs={'class': 'food-typeahead-hidden'}),
             'amount': forms.NumberInput(attrs={'placeholder': 'Amount', 'class': 'ingred-input'}),
             'unit': forms.Select(attrs={'class': 'unit-selector ingred-input'}),
         }
@@ -127,6 +153,12 @@ class IngredientForm(forms.ModelForm):
         self.fields['ingredient'].queryset = qs.distinct()
         self.fields['unit'].choices = [('', 'Unit')]
 
+        try:
+            if self.instance and getattr(self.instance, "ingredient_id", None):
+                self.fields["ingredient_query"].initial = self.instance.ingredient.name
+        except Exception:
+            pass
+
 
 class FoodForm(forms.ModelForm):
     class Meta:
@@ -134,11 +166,20 @@ class FoodForm(forms.ModelForm):
         # Only fields the user sets for a custom food
         fields = ['name']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ensure name is always required at the form level
+        self.fields['name'].required = True
+
 
 class FoodUnitForm(forms.ModelForm):
     class Meta:
         model = FoodUnit
-        fields = ['name', 'gram_weight', 'is_standard']
+        fields = ['name', 'gram_weight']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Name', 'style': 'flex: 1;'}),
+            'gram_weight': forms.NumberInput(attrs={'placeholder': 'Gram Weight', 'style': 'flex: 5;'}),
+        }
 
 
 class RecipeForm(forms.ModelForm):
