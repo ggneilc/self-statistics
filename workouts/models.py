@@ -111,6 +111,10 @@ class Workout(models.Model):
     def lift_count(self):
         return self.lifts.count()
 
+    @property
+    def best_set(self):
+        return Set.objects.filter(lift__workout=self).order_by('-weight').first()
+
     def bodypart_list(self):
         codes = self.workout_type.target_muscles.values_list('bodypart', flat=True)
         return [(code, bodypart_map[code]) for code in codes if code in bodypart_map]

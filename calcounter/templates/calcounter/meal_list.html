@@ -22,6 +22,9 @@
     {% include './meal.html' with meal=meal %}
     {% endfor %}
   {% else %}
-  <li class="food blank-inspect">Eat a Meal</li>
+  <li class="food blank-inspect"
+    hx-get="{% url 'calcounter:add' %}"
+    hx-target="#meal-list"
+    style="cursor:pointer;">Eat a Meal</li>
   {% endif %}
 </ul>

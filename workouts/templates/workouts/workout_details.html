@@ -64,7 +64,12 @@
               <div class="movement-accolade-card">
                 <div class="lift-accolade-header">Top Set</div>
                 <div class="lift-accolade-value">
-                  <span class="movement-empty-value">—</span>
+                  {% if workout.best_set %}
+                    {{ workout.best_set.weight }}<span class="accolade-unit">lbs</span>
+                    <span style="font-size:small;color:var(--pico-muted-color);">× {{ workout.best_set.reps }}</span>
+                  {% else %}
+                    <span class="movement-empty-value">—</span>
+                  {% endif %}
                 </div>
               </div>
             </article>
