@@ -11,6 +11,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render,  get_object_or_404
 from django.http import HttpResponse, HttpRequest
+from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
 from .models import (
     Workout,
@@ -315,9 +316,29 @@ def add_lift(request: HttpRequest, movement_id: int | None = None) -> HttpRespon
         workout=workout,
         movement=movement
     )
+    previous_lifts = list(movement.instances.exclude(pk=lift.pk).order_by('-workout__day__date')[:5])
+    first_previous = previous_lifts[0] if previous_lifts else None
+    if first_previous and first_previous.sets.exists():
+        pre_fill_forms = [SetForm(initial={'reps': s.reps, 'weight': s.weight}) for s in first_previous.sets.all()]
+    else:
+        pre_fill_forms = None
     form = SetForm()
-    # return the active lift
-    return render(request, 'workouts/active_lift.html', {"lift": lift, "editing": False, "set_form": form})
+    return render(request, 'workouts/active_lift.html', {
+        "lift": lift,
+        "editing": False,
+        "set_form": form,
+        "pre_fill_forms": pre_fill_forms,
+        "previous_lifts": previous_lifts,
+    })
+
+@login_required
+def prefill_sets(request: HttpRequest, lift_id: int) -> HttpResponse:
+    ''' return pre-filled set forms from a chosen previous lift '''
+    lift = get_object_or_404(Lift, pk=lift_id, workout__day__user=request.user)
+    previous_lift_id = request.GET.get('previous_lift_id')
+    previous_lift = get_object_or_404(Lift, pk=previous_lift_id, movement=lift.movement, workout__day__user=request.user)
+    forms = [SetForm(initial={'reps': s.reps, 'weight': s.weight}) for s in previous_lift.sets.all()]
+    return render(request, 'workouts/prefill_sets.html', {'forms': forms, 'lift': lift})
 
 @login_required
 def add_set(request: HttpRequest, lift_id: int) -> HttpResponse:
@@ -450,6 +471,7 @@ def delete_workout(request: HttpRequest, workout_id: int) -> HttpResponse:
     return get_workouts(request)
 
 @login_required
+@require_http_methods(["DELETE", "POST"])
 def delete_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     ''' if no lifts, delete movement, otherwise archive '''
     movement = get_object_or_404(Movement, pk=movement_id, user=request.user)
@@ -497,10 +519,14 @@ def end_workout(request: HttpRequest, workout_id: int) -> HttpResponse:
 def end_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
     ''' end the active lift : if no sets, delete lift '''
     lift = get_object_or_404(Lift, pk=lift_id, workout__day__user=request.user)
+    movement = lift.movement
     if lift.sets.count() == 0:
         lift.delete()
     workout = get_object_or_404(Workout, day__user=request.user, is_active=True)
-    return render(request, 'workouts/active_workout.html', {"workout": workout})
+    main_html = render_to_string('workouts/active_workout.html', {'workout': workout}, request=request)
+    movement_html = render_to_string('workouts/movement_details.html', {'movement': movement}, request=request)
+    oob_html = f'<div id="overview-target" hx-swap-oob="innerHTML">{movement_html}</div>'
+    return HttpResponse(main_html + oob_html)
 
 # --- Load Areas / Helpers
 

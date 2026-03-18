@@ -1,8 +1,9 @@
 {% load static %}
-<div id="workout-{{workout.id}}" class="workout" 
+<div id="workout-{{workout.id}}" class="workout"
       hx-trigger="click"
       hx-get="{% url 'workouts:get_workout' workout.id %}"
-      hx-target="#modal-workout">
+      hx-target="#modal-workout"
+      hx-on:click="document.getElementById('modal-workout').classList.remove('hidden')">
      
 
   <div class="horizontal-group inline-workout">

@@ -24,6 +24,7 @@ urlpatterns = [
      path("movements/active/",      views.get_movements,     name="movements_active"),
      path("movements/available/",  views.get_movements,     name="movements_available"),
      path("movement/<int:movement_id>/", views.get_movement, name="movement"),
+     path("movement/<int:movement_id>/delete/", views.delete_movement, name="del_movement"),
      # filter chips
      path("bodyparts/",   views.get_bodyparts,    name="bodyparts"),
      path("categories/active/",  views.get_categories,   name="categories_active"),
@@ -31,6 +32,7 @@ urlpatterns = [
      # active workout
      path("workout/add/lift/", views.add_lift, name="lift_selection"),
      path("workout/add/lift/<int:movement_id>/", views.add_lift, name="add_lift"),
+     path("workout/lift/<int:lift_id>/prefill/", views.prefill_sets, name="prefill_sets"),
      path("workout/add/set/<int:lift_id>/", views.add_set, name="add_set"),
      path("workout/edit/lift/<int:lift_id>/", views.edit_lift, name="edit_lift"),
      path("workout/edit/set/<int:set_id>/", views.edit_set, name="edit_set"),

@@ -1,3 +1,4 @@
+{% load static %}
 <div class="horizontal-group overflow-auto manager-available-movements"
   style="padding: 0.5rem 0.2rem; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: center;">
   {% for mv in movements %}
@@ -8,6 +9,7 @@
     hx-swap="innerHTML"
     hx-include="[name='bodypart'], [name='category'], [name='q']">
     {{ mv.name }}
+    <div class="custom-icon" style="-webkit-mask-image: url('{% static "workouts/icons/"|add:mv.category|add:".svg" %}'); mask-image: url('{% static "workouts/icons/"|add:mv.category|add:".svg" %}');"></div>
   </div>
   {% empty %}
   <p class="movement-manager-empty">No movements found. Click the plus icon to create a new movement.</p>

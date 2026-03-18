@@ -3,6 +3,13 @@
   <div class="movement-details-header">
     <span class="movement-details-name">{{ movement.name }}</span>
     <span class="movement-details-level">Lv {{ movement.level|stringformat:"d" }}</span>
+    <button class="outline movement-delete-btn"
+      hx-delete="{% url 'workouts:del_movement' movement.id %}"
+      hx-target="#overview-target"
+      hx-swap="innerHTML"
+      hx-confirm="{% if movement.instances.all %}This movement has history and will be archived.{% else %}Delete this movement?{% endif %}">
+      <i class="fa-solid fa-trash"></i>
+    </button>
   </div>
 
   <div class="movement-graph-container">
