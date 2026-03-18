@@ -4,12 +4,12 @@
     - Workouts          : Collection of lifts with a type on a day
     - Lifts             : name ('bench') & list of sets assigned to workout
     - Sets              : reps x weight belonging to a lift (set_row.html)
-    - Movement Library  : Global library of movements 
-    - Movement          : defines a type of lift 
-    - Weekly Volume     : Weekly volume of sets performed 
+    - Movement Library  : Global library of movements
+    - Movement          : defines a type of lift
+    - Weekly Volume     : Weekly volume of sets performed
 """
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render,  get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.http import require_http_methods
 from django.template.loader import render_to_string
@@ -23,16 +23,14 @@ from .models import (
     Movement,
     MovementLibrary,
     BODYPARTS,
-    LIFT_TYPES
+    LIFT_TYPES,
+    bodypart_map,
 )
 from core.utils import get_or_create_day
 from .forms import SetForm, MovementForm, WTypeForm
-#from copy import copy
 from datetime import datetime, timezone, timedelta
 from random import randint
-from django.db.models import Q, F, Sum
-
-bodypart_map = dict(BODYPARTS)
+from django.db.models import Q, F, Sum, Prefetch
 
 # --- C_R_UD : get_X
 
@@ -40,12 +38,9 @@ bodypart_map = dict(BODYPARTS)
 def get_workouts(request: HttpRequest,
                  mode: str = 'history') -> HttpResponse:
     ''' workouts for a user (workout history) '''
-    # Check if user has an active workout
     active_workout = Workout.objects.filter(day__user=request.user, is_active=True).first()
     if active_workout:
-        # Render a different view for the active workout
         return render(request, 'workouts/active_workout.html', {"workout": active_workout, "active_workout": True})
-
     else:
         workouts = Workout.objects.filter(day__user=request.user).annotate(
             total_vol=Sum(F('lifts__sets__weight') * F('lifts__sets__reps'))
@@ -55,7 +50,11 @@ def get_workouts(request: HttpRequest,
 @login_required
 def get_workout(request: HttpRequest, workout_id: int) -> HttpResponse:
     ''' returns a specific workout (inspected workout) '''
-    workout = get_object_or_404(Workout, pk=workout_id, day__user=request.user)
+    workout = get_object_or_404(
+        Workout.objects.select_related('day', 'workout_type')
+                       .prefetch_related('lifts__sets', 'lifts__movement'),
+        pk=workout_id, day__user=request.user
+    )
     return render(request, 'workouts/workout_details.html', {"workout": workout})
 
 @login_required
@@ -74,7 +73,6 @@ def get_movements(request: HttpRequest) -> HttpResponse:
     url_name = request.resolver_match.url_name
 
     if url_name == 'movements_available':
-        # Global library movements the user doesn't have yet
         user_has_ids = Movement.objects.filter(
             user=request.user, base_movement__isnull=False
         ).values_list('base_movement_id', flat=True)
@@ -87,9 +85,6 @@ def get_movements(request: HttpRequest) -> HttpResponse:
         queryset = Movement.objects.filter(user=request.user, is_archived=False)
 
     filters = Q()
-    # Workout type filter applies both in the dashboard "all movements" view
-    # (url_name == 'movements') and in the active workout selector
-    # (url_name == 'movements_active')
     if wtype_id and url_name in ('movements_active', 'movements'):
         wtype = get_object_or_404(WorkoutType, pk=wtype_id)
         allowed_codes = wtype.target_muscles.values_list('bodypart', flat=True)
@@ -121,8 +116,22 @@ def get_movements(request: HttpRequest) -> HttpResponse:
 @login_required
 def get_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
     ''' specific movement overview'''
-    mvment = get_object_or_404(Movement, pk=movement_id, user=request.user)
-    return render(request, 'workouts/movement_details.html', {"movement": mvment})
+    mvment = get_object_or_404(
+        Movement.objects.prefetch_related(
+            Prefetch(
+                'instances',
+                queryset=Lift.objects.select_related('workout__day', 'workout__workout_type')
+                                     .prefetch_related('sets')
+                                     .order_by('-workout__day__date')
+            )
+        ),
+        pk=movement_id, user=request.user
+    )
+    latest_lift = mvment.instances.all().first()
+    return render(request, 'workouts/movement_details.html', {
+        "movement": mvment,
+        "latest_lift": latest_lift,
+    })
 
 @login_required
 def get_wtypes(request: HttpRequest) -> HttpResponse:
@@ -132,7 +141,7 @@ def get_wtypes(request: HttpRequest) -> HttpResponse:
         "wtypes": request.user.workout_types.all(),
         "mode": 'dash' if url_name == 'workout_types' else 'active'
     }
-    return render(request, "workouts/workout_types.html", context) 
+    return render(request, "workouts/workout_types.html", context)
 
 @login_required
 def get_weekly_sets(request: HttpRequest) -> HttpResponse:
@@ -144,23 +153,14 @@ def get_weekly_sets(request: HttpRequest) -> HttpResponse:
         today = datetime.strptime(date, "%Y-%m-%d").date()
     except ValueError:
         return HttpResponse(status=400)
-    print(f"{today=}")
     this_sunday = today - timedelta(days=(today.weekday() + 1) % 7)
-    # Get the user's goal
     goal = request.user.profile.weekly_set_goal
-    # Get volumes from our WeeklyVolume model
     volumes = WeeklyVolume.objects.filter(user=request.user, start_date=this_sunday)
+    volumes_map = {v.muscle_group: v.set_count for v in volumes}
     stats = []
-    # Loop through your BODYPARTS constant to ensure all muscles show up
-    # aggregate shoulder
     for code, name in BODYPARTS:
-        # Find the count for this specific muscle
-        volume_entry = volumes.filter(muscle_group=code).first()
-        count = volume_entry.set_count if volume_entry else 0
-        
-        # Calculate percentage (capped at 100% for the bar height)
+        count = volumes_map.get(code, 0)
         percent = min((count / goal) * 100, 100) if goal > 0 else 0
-        print(f"{percent=} for {name=}")
         stats.append({
             'name': name,
             'count': count,
@@ -229,19 +229,17 @@ def _manager_available_list_response(request: HttpRequest) -> HttpResponse:
     mvments = queryset.filter(filters).distinct()
     return render(request, 'workouts/manager_available_movements_list.html', {"movements": mvments})
 
+@login_required
 def add_movement(request: HttpRequest,
                  mv_id: int | None = None) -> HttpResponse:
     ''' user registers movement '''
     url_name = request.resolver_match.url_name
-    print(f"{url_name=}")
     if url_name == 'start':
-        # return movement manager with filter options
         return render(request, "workouts/movement_manager.html", {
             "bodyparts": BODYPARTS,
             "categories": LIFT_TYPES,
         })
     elif url_name == 'add_mv':
-        # add the movement from global library to user
         if Movement.objects.filter(user=request.user, base_movement__pk=mv_id).exists():
             if request.GET.get('from') == 'manager':
                 return _manager_available_list_response(request)
@@ -264,9 +262,6 @@ def add_movement(request: HttpRequest,
             movement.user = request.user
             movement.save()
             if request.GET.get('from') == 'lift':
-                workout = Workout.objects.filter(day__user=request.user, is_active=True).first()
-                bodyparts = workout.bodypart_list()
-                categories = LIFT_TYPES
                 return add_lift(request, movement.id)
             return get_movements(request)
         else:
@@ -279,7 +274,6 @@ def add_movement(request: HttpRequest,
         category = request.GET.get('category')
         name = request.GET.get('q')
         from_ = request.GET.get('from')
-        print(f"found filters {bodypart=} | {category=}")
         bodypart_name = bodypart_map.get(bodypart) if bodypart is not None else ''
         form = MovementForm(initial={
             'name': name,
@@ -299,7 +293,6 @@ def add_movement(request: HttpRequest,
 def add_lift(request: HttpRequest, movement_id: int | None = None) -> HttpResponse:
     ''' instantiate a movement for current workout '''
     if request.method == "GET" and movement_id is None:
-        # return the lift selection panel (slide-up with bodypart + equipment filters)
         workout = Workout.objects.filter(day__user=request.user, is_active=True).first()
         if not workout:
             return HttpResponse(status=404)
@@ -316,12 +309,16 @@ def add_lift(request: HttpRequest, movement_id: int | None = None) -> HttpRespon
         workout=workout,
         movement=movement
     )
-    previous_lifts = list(movement.instances.exclude(pk=lift.pk).order_by('-workout__day__date')[:5])
+    previous_lifts = list(
+        movement.instances
+        .exclude(pk=lift.pk)
+        .select_related('workout__day', 'workout__workout_type')
+        .prefetch_related('sets')
+        .order_by('-workout__day__date')[:5]
+    )
     first_previous = previous_lifts[0] if previous_lifts else None
-    if first_previous and first_previous.sets.exists():
-        pre_fill_forms = [SetForm(initial={'reps': s.reps, 'weight': s.weight}) for s in first_previous.sets.all()]
-    else:
-        pre_fill_forms = None
+    first_sets = list(first_previous.sets.all()) if first_previous else []
+    pre_fill_forms = [SetForm(initial={'reps': s.reps, 'weight': s.weight}) for s in first_sets] if first_sets else None
     form = SetForm()
     return render(request, 'workouts/active_lift.html', {
         "lift": lift,
@@ -350,14 +347,11 @@ def add_set(request: HttpRequest, lift_id: int) -> HttpResponse:
             set_obj = form.save(commit=False)
             set_obj.lift = lift
             set_obj.save()
-            return render(request,
-                          "workouts/set_row.html",
-                          {"set": set_obj})
+            return render(request, "workouts/set_row.html", {"set": set_obj})
     form = SetForm()
-    return render(request,
-                  "workouts/set_entry.html",
-                  {"form": form, "lift": lift, "editing": False})
+    return render(request, "workouts/set_entry.html", {"form": form, "lift": lift, "editing": False})
 
+@login_required
 def add_workout_type(request):
     '''
         POST: adds the type
@@ -389,11 +383,6 @@ def add_workout_type(request):
     })
 
 # --- CR_U_D : edit_X
-
-@login_required
-def edit_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
-    ''' edit movement info (name/bodypart)'''
-    pass
 
 @login_required
 def edit_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
@@ -490,7 +479,7 @@ def delete_set(request: HttpRequest, set_id: int) -> HttpResponse:
 
 @login_required
 def delete_workout_type(request: HttpRequest, w_type: int) -> HttpResponse:
-    workout_t = WorkoutType.objects.get(pk=w_type)
+    workout_t = get_object_or_404(WorkoutType, pk=w_type, user=request.user)
     workout_t.delete()
     types = request.user.workout_types.all()
     response = render(request, 'workouts/workout_types.html', {"wtypes": types})
@@ -502,7 +491,7 @@ def delete_workout_type(request: HttpRequest, w_type: int) -> HttpResponse:
 
 @login_required
 def wtype_selection(request: HttpRequest) -> HttpResponse:
-    ''' returns `type_entry.html` for user to choose this workout's type ''' 
+    ''' returns `type_entry.html` for user to choose this workout's type '''
     wtypes = request.user.workout_types.all()
     return render(request, 'workouts/type_entry.html', {"workout_types": wtypes})
 
@@ -523,8 +512,12 @@ def end_lift(request: HttpRequest, lift_id: int) -> HttpResponse:
     if lift.sets.count() == 0:
         lift.delete()
     workout = get_object_or_404(Workout, day__user=request.user, is_active=True)
+    latest_lift = movement.instances.order_by('-workout__day__date').first()
     main_html = render_to_string('workouts/active_workout.html', {'workout': workout}, request=request)
-    movement_html = render_to_string('workouts/movement_details.html', {'movement': movement}, request=request)
+    movement_html = render_to_string('workouts/movement_details.html', {
+        'movement': movement,
+        'latest_lift': latest_lift,
+    }, request=request)
     oob_html = f'<div id="overview-target" hx-swap-oob="innerHTML">{movement_html}</div>'
     return HttpResponse(main_html + oob_html)
 
