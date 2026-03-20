@@ -1696,6 +1696,7 @@ text {
     font-size: 0.6rem;
   }
 }
+.timeframe-buttons button,
 .header-buttons button {
   font-size: 1rem;
   padding: 0 0.25rem;
@@ -1717,7 +1718,13 @@ text {
   transition: color 0.2s ease;
 }
 
+.timeframe-buttons button.active {
+  color: var(--pico-primary);
+  transform: scale(1.1);
+  box-shadow: 0 0 0 0 black;
+}
 .nav-dashboard-links a:hover,
+.timeframe-buttons button:hover,
 .header-buttons button:hover,
 .food-edit-button:hover,
 .recipe-edit-button:hover {
