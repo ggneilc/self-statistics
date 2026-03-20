@@ -838,11 +838,19 @@ main {
   border-radius: var(--pico-border-radius);
   justify-content: flex-start;
   align-items: stretch;
-  flex: 1;
   min-height: 0;
   /* margin-left: 1rem; */
   /* gap: 1rem; */
   /* max-height: 45vh; */
+  /* align-self: center; */
+}
+
+@media (min-width: 769px) {
+  #goals-placeholder {
+    max-height: 45vh;
+    align-self: center;
+    min-width: 75%;
+  }
 }
 
 #goals-table-container {
