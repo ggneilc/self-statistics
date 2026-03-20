@@ -22,14 +22,18 @@
   <!-- Numerical Goals Placeholder & Inputs -->
   <div id="goals-placeholder" class="vertical-group">
 
-    <h3 style="color: var(--pico-muted-color); text-align: center; margin-top: 0;margin-bottom: 0;">Daily Goals</h3>
-
-    <div class="goal-section" style="flex: 1;">
-      <div id="goals-table-container" style="overflow-y: auto; flex: 2;">
-        <!-- Filled dynamically by all-nutrients.html chart render -->
-      </div>
-
-      <!-- Inputs for Sleep and Water -->
+    <button class="ingredients-toggle" 
+    hx-on:click="event.stopPropagation(); 
+    const list = this.closest('.vertical-group').querySelector('#goals-table-container'); 
+    list.classList.toggle('hidden');">
+      <span class="ingredients-line" style="background: linear-gradient(90deg, transparent, var(--pico-secondary), transparent);"></span>
+      <span style="margin-bottom: 0; text-align: center;">Daily Goals</span>
+      <i class="fa-solid fa-chevron-down ingredients-arrow"></i>
+      <span class="ingredients-line" style="background: linear-gradient(90deg, transparent, var(--pico-secondary), transparent);"></span>
+    </button>
+    
+    <div id="goals-table-container" style="overflow-y: auto; flex: 2;" class="hidden">
+      <!-- Filled dynamically by all-nutrients.html chart render -->
     </div>
   </div>
 </div>
