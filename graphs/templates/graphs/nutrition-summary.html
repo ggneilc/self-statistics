@@ -1,0 +1,70 @@
+<header style="font-weight: bold;">
+    <i class="fa-solid fa-plate-wheat"
+        style="color: var(--pico-primary);margin-right: 0.5rem;"></i>Nutrition Stats
+</header>
+<div class="vertical-group" style="flex:1;">
+    <div class="main-stat" style="flex: 2;">
+        <div class="split-stat">
+            <div class="vertical-group" style="gap:0;">
+                <div class="stat-header"> Average Calories </div>
+                <div class="horizontal-group"
+                    style="border-bottom: 1px solid var(--pico-muted-color);">
+                    <div class="stat-value"> {{stats.mean_c|floatformat:0}} </div>
+                    <div class="stat-unit"> kcal </div>
+                </div>
+            </div>
+            <div class="vertical-group" style="gap:0;">
+                <div class="horizontal-group">
+                    <div class="stat-value"> {{stats.7d_avg_c|floatformat:0}} </div>
+                    <div class="stat-unit"> kcal </div>
+                </div>
+                <div class="stat-header"> 7d Average </div>
+            </div>
+        </div>
+        <div class="split-stat">
+            <div class="vertical-group" style="gap:0;">
+                <div class="stat-header"> Average Protein </div>
+                <div class="horizontal-group"
+                    style="border-bottom: 1px solid var(--pico-muted-color);">
+                    <div class="stat-value"> {{stats.mean_p|floatformat:0}} </div>
+                    <div class="stat-unit"> g </div>
+                </div>
+            </div>
+            <div class="vertical-group" style="gap:0;">
+                <div class="horizontal-group">
+                    <div class="stat-value"> {{stats.7d_avg_p|floatformat:0}} </div>
+                    <div class="stat-unit"> g </div>
+                </div>
+                <div class="stat-header"> 7d Average </div>
+            </div>
+        </div>
+    </div>
+    <div class="split-stat" style="flex-direction: row;">
+        <div class="vertical-group" style="gap:0;border-right: 1px solid var(--pico-muted-color)">
+            <div class="stat-header"> fat </div>
+            <div class="horizontal-group">
+                <div class="stat-value"> {{stats.mean_f|floatformat:0}} </div>
+            </div>
+        </div>
+        <div class="vertical-group" style="gap:0;border-right: 1px solid var(--pico-muted-color)">
+            <div class="stat-header"> carbs </div>
+            <div class="horizontal-group">
+                <div class="stat-value"> {{stats.mean_carb|floatformat:0}} </div>
+            </div>
+        </div>
+        <div class="vertical-group" style="gap:0;">
+            <div class="stat-header"> water </div>
+            <div class="horizontal-group">
+                <div class="stat-value"> {{stats.mean_water|floatformat:0}} </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat">
+        <div class="stat-header">avg deviation from goal</div>
+        <div class="horizontal-group">
+            <div class="stat-value"> +/- {{stats.stddev_c|floatformat:0}} </div>
+            <div class="stat-unit"> kcal </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,54 @@
+<header style="font-weight: bold;"><i class="fa-solid fa-weight-scale"></i>Bodyweight Stats
+</header>
+<div class="vertical-group" style="flex:1;">
+    <div class="main-stat" style="flex: 2;">
+        <div class="split-stat">
+            <div class="vertical-group" style="gap:0;">
+                <div class="stat-header"> Average Weight </div>
+                <div class="horizontal-group"
+                    style="border-bottom: 1px solid var(--pico-muted-color);">
+                    <div class="stat-value"> {{stats.avg_weight|floatformat:1}} </div>
+                    <div class="stat-unit"> lbs </div>
+                </div>
+            </div>
+            <div class="vertical-group" style="gap:0;">
+                <div class="horizontal-group">
+                    <div class="stat-value"> {{stats.7d_avg|floatformat:1}} </div>
+                    <div class="stat-unit"> lbs </div>
+                </div>
+                <div class="stat-header"> 7d Average </div>
+            </div>
+        </div>
+        <div class="split-stat">
+            <div class="vertical-group" style="gap:0;">
+                <div class="stat-header"> All Time Diff </div>
+                <div class="horizontal-group"
+                    style="border-bottom: 1px solid var(--pico-muted-color);">
+                    <div class="stat-value"> {{stats.total_change|floatformat:1}} </div>
+                    <div class="stat-unit"> lbs </div>
+                </div>
+            </div>
+            <div class="vertical-group" style="gap:0;">
+                <div class="horizontal-group">
+                    <div class="stat-value"> - </div>
+                    <div class="stat-unit"> lbs </div>
+                </div>
+                <div class="stat-header"> Goal Diff </div>
+            </div>
+        </div>
+    </div>
+    <div class="stat">
+        <div class="stat-header">fluctations</div>
+        <div class="horizontal-group">
+            <div class="stat-value"> +/- {{stats.stddev|floatformat:1}} </div>
+            <div class="stat-unit"> lbs </div>
+        </div>
+    </div>
+    <div class="stat">
+        <div class="stat-header"> lbs +/- per week </div>
+        <div class="horizontal-group">
+            <div class="stat-value"> {{stats.pm_per_week|floatformat:1}} </div>
+            <div class="stat-unit"> lbs </div>
+        </div>
+    </div>
+</div>

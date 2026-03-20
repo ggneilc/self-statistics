@@ -106,6 +106,7 @@ def get_bw_cal_time(request):
     context = {"day_data": json.dumps(out_data)}
     return render(request, 'graphs/bw-cal-time.html', context)
 
+# Unused
 @login_required
 def get_bw_graph(request):
     '''Time series of Bodyweight / Day'''
@@ -121,8 +122,6 @@ def get_bw_graph(request):
     ]
     context = {"day_data": json.dumps(data)}
     return render(request, 'graphs/bw-time.html', context)
-
-
 
 @login_required
 def get_cal_graph(request):
@@ -169,53 +168,6 @@ def get_volume_graph(request):
 
 
 # === Macro breakdown Pie Charts ===
-
-@login_required
-def get_macro_completion(request):
-    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
-    carbs, protein, fat = day.macro_breakdown
-    total = day.calories_consumed
-    goals = {}
-    data = {
-        'Sleep': day.sleep,
-        'Water': day.water_consumed,
-        'Fat': fat,
-        'Carbs': carbs,
-        'Protein': protein,
-        'Calories': total,
-    }   
-    goals = {
-        'Sleep': day.sleep_goal,
-        'Water': day.water_goal,
-        'Fat': round((day.calorie_goal - (day.protein_goal * 4)) * 0.3 / 9),
-        'Carbs': round((day.calorie_goal - (day.protein_goal * 4)) * 0.7 / 4),
-        'Protein': day.protein_goal,
-        'Calories': day.calorie_goal,
-    }
-    # return percentage of goals achieved: weighted average of goals and data
-    def safe_div(a, b, weight): return (a / b * weight) if b else 0
-    completion = (safe_div(data['Sleep'], goals['Sleep'], 0.1) +
-                  safe_div(data['Water'], goals['Water'], 0.1) +
-                  safe_div(data['Fat'], goals['Fat'], 0.2) +
-                  safe_div(data['Carbs'], goals['Carbs'], 0.4) +
-                  safe_div(data['Protein'], goals['Protein'], 0.1) +
-                  safe_div(data['Calories'], goals['Calories'], 0.1)) * 100
-    context = {"completion": round(completion)}
-    return render(request, 'core/completion.html', context)
-
-@login_required
-def get_mineral_completion(request):
-    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
-    completion = day.mineral_completion
-    context = {"completion": round(completion)}
-    return render(request, 'core/completion.html', context)
-
-@login_required
-def get_vitamin_completion(request):
-    day = get_object_or_404(Day, user=request.user, date=request.GET.get("selected_date"))
-    completion = day.vitamin_completion
-    context = {"completion": round(completion)}
-    return render(request, 'core/completion.html', context)
 
 @login_required
 def get_macro_breakdown(request):
@@ -321,7 +273,7 @@ def get_nutrient_overview(request):
 # === Statistics Computations ===
 
 
-def get_bodyweight_summary(request, time=7):
+def get_bw_summary(request):
     ''' fill summary statistics under bodyweight '''
     # -- create dataframe
     data = request.user.days.all().exclude(date=date(1, 1, 1))
@@ -331,113 +283,76 @@ def get_bodyweight_summary(request, time=7):
     ])
     df['date'] = pd.to_datetime(df['date'])
     df = df.set_index('date')
-    # -- timed intervals
-    if (time == 7):
-        weekly_weights = df["bodyweight"].resample("W").mean()
-    elif (time == 30):
-        weekly_weights = df["bodyweight"].resample("M").mean()
-    # -- moving average
-    df["weight_ma7"] = df["bodyweight"].rolling(7, min_periods=1).mean()
     # -- average weight (mean)
 #    data = [d.bodyweight for d in data if d.bodyweight is not None]
     avg_weight = df['bodyweight'].mean()
+    # this weeks 7d average
+    this_week = df.index.max() - timedelta(days=df.index.max().weekday())
+    this_week_avg = df.loc[:this_week].mean()['bodyweight']
     # -- daily weight fluctation (stddev of diff)
     df['diff'] = df['bodyweight'].diff()
     fluctation = df['diff'].std()
-    # -- 7d difference
-    df['weight_7d_ago'] = df['bodyweight'].shift(freq='7D')
-    if pd.notna(df['bodyweight'].iloc[0]) and pd.notna(df['weight_7d_ago'].iloc[0]):
-        bw_7d_diff = df['bodyweight'].iloc[0] - df['weight_7d_ago'].iloc[0]
-    else:
-        bw_7d_diff = 0
-    # -- biggest drop
-    max_drawdown = df['diff'].min() if pd.notna(df['diff'].min()) else 0
-    max_runup = df['diff'].max() if pd.notna(df['diff'].max()) else 0
+    # -- lbs +/- per week
+    weekly_weights = df["bodyweight"].resample("W").mean()
+    weekly_diff = weekly_weights.diff()
+    pm_per_week = weekly_diff.mean()
     # -- simple stats
     if pd.notna(df['bodyweight'].iloc[0]) and pd.notna(df['bodyweight'].min()):
-        total_change = df['bodyweight'].iloc[0] - df['bodyweight'].min()
+        total_change = df['bodyweight'].iloc[0] - df['bodyweight'].iloc[-1]
     else:
         total_change = 0
-    # -- linear regression slope (trend)
-    df_cleaned = df['bodyweight'].dropna()
-    if len(df_cleaned) >= 2:
-        x = np.arange(len(df_cleaned))
-        y = df_cleaned.values
-        slope, intercept = np.polyfit(x, y, 1)
-    else:
-        slope, intercept = 0, 0
+    
     stats = {
-        "mean": round(float(avg_weight), 2),
-        "stddev": round(float(fluctation), 2),
-        "trend": round(float(slope), 2),
-        "intercept": round(float(intercept), 2),
-        "7d": round(float(bw_7d_diff), 2),
-        "max_drawdown": round(float(max_drawdown), 2),
-        "max_runup": round(float(max_runup), 2),
-        "max": df['bodyweight'].max(),
-        "min": df['bodyweight'].min(),
-        "total_change": round(float(total_change), 2)
+        "avg_weight": float(avg_weight),
+        "7d_avg": float(this_week_avg),
+        "stddev": float(fluctation),
+        "total_change": float(total_change),
+        "pm_per_week": float(pm_per_week),
     }
-    return df, weekly_weights, stats
+    return render(request, 'graphs/bw-summary.html', {'stats': stats})
 
 
-def get_calorie_summary(request, time=7):
+def get_nutrition_summary(request, time=7):
     # -- create dataframe
     data = request.user.days.all().exclude(date=date(1, 1, 1))
     df = pd.DataFrame([
         {"date": d.date,
          "cals": d.calories_consumed,
-         "pro": d.protein_consumed}
+         "goal": d.calorie_goal,
+         "pro": d.protein_consumed,
+         "water": d.water_consumed,
+         "carb": d.macro_breakdown[0],
+         "fat": d.macro_breakdown[2],
+         }
         for d in data
         if d.calories_consumed != 0
     ])
     df['date'] = pd.to_datetime(df['date'])
     df = df.set_index('date')
-    # -- timed intervals
-    if (time == 7):
-        weekly_weights = df["cals"].resample("W").mean()
-    elif (time == 30):
-        weekly_weights = df["cals"].resample("M").mean()
-    # -- moving average
-    df["weight_ma7"] = df["cals"].rolling(7, min_periods=1).mean()
-    # -- average weight (mean)
+    # -- simple averages
     avg_cals = df['cals'].mean()
     avg_pro = df['pro'].mean()
-    # -- daily weight fluctation (stddev of diff)
-    df['diff_c'] = df['cals'].diff()
-    fluctation_c = df['diff_c'].std()
-    df['diff_p'] = df['pro'].diff()
-    fluctation_p = df['diff_p'].std()
-    # -- most eaten meal
-
-    from django.db.models import Count
-
-    top_meal = (
-        Food.objects.filter(day__user=request.user)
-        .values("name")
-        .annotate(count=Count("id"))
-        .order_by("-count")
-        .first()
-    )
-    # -- biggest drop
-    max_drawdown = df['diff_c'].min()
-    max_runup = df['diff_c'].max()
+    avg_water = df['water'].mean()
+    avg_carb = df['carb'].mean()
+    avg_fat = df['fat'].mean()
+    avg_goal_diff = df['goal'].mean() - df['cals'].mean()
+    # -- 7d averages
+    weekly_cals = df['cals'].resample("W").mean()
+    weekly_pro = df['pro'].resample("W").mean()
+    _7d_avg_cals = weekly_cals.dropna().mean()
+    _7d_avg_pro = weekly_pro.dropna().mean()
     # -- simple stats
-    total_change = df['cals'].iloc[0] - df['cals'].min()
     stats = {
-        "mean_c": round(float(avg_cals), 2),
-        "mean_p": round(float(avg_pro), 2),
-        "stddev_c": round(float(fluctation_c), 2),
-        "stddev_p": round(float(fluctation_p), 2),
-        "meal": top_meal['name'] if top_meal else None,
-        "count": top_meal['count'] if top_meal else 0,
-        "max_drawdown": round(float(max_drawdown), 2),
-        "max_runup": round(float(max_runup), 2),
-        "max": df['cals'].max(),
-        "min": df['cals'].min(),
-        "total_change": round(float(total_change), 2)
+        "mean_c": float(avg_cals),
+        "mean_p": float(avg_pro),
+        "mean_carb": float(avg_carb),
+        "mean_f": float(avg_fat),
+        "mean_water": float(avg_water),
+        "7d_avg_c": float(_7d_avg_cals),
+        "7d_avg_p": float(_7d_avg_pro),
+        "stddev_c": float(avg_goal_diff),
     }
-    return df, weekly_weights, stats
+    return render(request, 'graphs/nutrition-summary.html', {'stats': stats})
 
 
 def get_volume_summary(request):

@@ -432,7 +432,6 @@ def get_units_for_ingredient(request):
     print(f"{units=}")
     return render(request, 'calcounter/unit_options.html', {'units': units})
 
-
 @login_required
 def typeahead_foods(request):
     q = (request.GET.get('q') or '').strip()
@@ -784,6 +783,7 @@ def get_food_input(request):
 def get_search_area(request):
     return render(request, 'calcounter/ingred_search_area.html')
 
+
 def get_recipe_area(request):
     return render(request, 'calcounter/recipe_area.html')
 
@@ -791,7 +791,6 @@ def get_recipe_area(request):
 def cancel_form_m(request):
     ''' Returns `entry_buttons` template '''
     return clear(request)
-
 
 @login_required
 def cancel_form_f(request):
@@ -845,14 +844,12 @@ def delete_food(request, pantry_id):
     print(f"deleted {pantry_id=}")
     return clear(request)
     
-
 @login_required
 def delete_unit(request, pantry_id, unit_id):
     pantry_item = get_object_or_404(PantryItem, id=pantry_id, user=request.user)
     unit = get_object_or_404(FoodUnit, id=unit_id, food=pantry_item.food)
     unit.delete()
     return clear(request)
-
 
 @login_required
 def delete_recipe(request, recipe_id):
