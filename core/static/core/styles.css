@@ -838,9 +838,36 @@ main {
   border-radius: var(--pico-border-radius);
   justify-content: flex-start;
   align-items: stretch;
+  flex: 1;
+  min-height: 0;
   /* margin-left: 1rem; */
   /* gap: 1rem; */
   /* max-height: 45vh; */
+}
+
+#goals-table-container {
+  /* Animated accordion: keep element in DOM so JS can populate it */
+  flex: 2;
+  min-height: 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    transform 0.35s ease;
+  will-change: max-height, opacity, transform;
+}
+
+#goals-table-container.goals-table-open {
+  overflow-y: auto;
+  max-height: 100dvh;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .full {
