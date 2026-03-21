@@ -36,6 +36,6 @@ class SetForm(forms.ModelForm):
         model = Set
         fields = ['reps', 'weight']
         widgets = {
-            'reps': forms.NumberInput(attrs={'class': 'input', 'placeholder': 'Reps', 'style': 'flex: 3;'}),
-            'weight': forms.NumberInput(attrs={'class': 'input', 'placeholder': 'Weight', 'style': 'flex: 3;'}),
+            'reps': forms.NumberInput(attrs={'class': 'input', 'placeholder': 'Reps', 'style': 'flex: 3;', 'min': 0}),
+            'weight': forms.NumberInput(attrs={'class': 'input', 'placeholder': 'Weight', 'style': 'flex: 3;', 'min': 0}),
         }

@@ -265,14 +265,15 @@
         const goalsTableContainer = document.getElementById("goals-table-container");
         if (goalsTableContainer) {
             const tableData = data.filter(d => !d.isGap);
-            let html = '<table class="striped" style="font-size: 0.85rem; margin: 0; width: 100%; text-align: left;">';
-            html += '<thead><tr><th>Nutrient</th><th style="text-align: right;">Target</th></tr></thead><tbody>';
+            let html = '';
             let currentGroup = "";
             for (const d of tableData) {
                 if (d.group !== currentGroup) {
-                    html += `<tr><th colspan="2" style="text-align:center; padding: 0.4rem; background: var(--pico-muted-border-color);">${d.group}</th></tr>`;
+                    html += `<div class="goal-group-header">${d.group}</div>`;
                     currentGroup = d.group;
                 }
+
+                const color = colorMap[d.name] || 'var(--pico-muted-color)';
 
                 let unit = " mg";
                 if (d.group === "Macros") {
@@ -284,11 +285,12 @@
                     if (d.name === "Vitamin A" || d.name === "Vitamin B12" || d.name === "Vitamin D") unit = " mcg";
                 }
 
-                // strip "Vitamin " for table view
                 let displayName = d.name.startsWith("Vitamin ") ? d.name.replace("Vitamin ", "") : d.name;
-                html += `<tr><td><strong>${displayName}</strong></td><td style="text-align: right;">${d.goal}${unit}</td></tr>`;
+                html += `<div class="goal-row" style="--goal-color: ${color};">` +
+                    `<span class="goal-row-name">${displayName}</span>` +
+                    `<span class="goal-row-value">${d.goal}${unit}</span>` +
+                    `</div>`;
             }
-            html += '</tbody></table>';
             goalsTableContainer.innerHTML = html;
         }
 

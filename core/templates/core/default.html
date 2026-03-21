@@ -91,6 +91,36 @@ document.body.addEventListener('workoutTypeDeleted', () => {
     showToast('Workout type deleted!', 'success');
 });
 
+// Listen for day inputs CRUD events
+document.body.addEventListener('bodyweightUpdated', () => {
+    showToast('Bodyweight saved!', 'success');
+});
+
+document.body.addEventListener('waterUpdated', () => {
+    showToast('Water added!', 'success');
+});
+
+document.body.addEventListener('sleepUpdated', () => {
+    showToast('Sleep saved!', 'success');
+});
+
+// Listen for pantry/recipe/meal CRUD events
+document.body.addEventListener('pantryItemAdded', () => {
+    showToast('Pantry item added!', 'success');
+});
+
+document.body.addEventListener('pantryItemUpdated', () => {
+    showToast('Pantry item updated!', 'success');
+});
+
+document.body.addEventListener('recipeCreated', () => {
+    showToast('Recipe created!', 'success');
+});
+
+document.body.addEventListener('mealCreated', () => {
+    showToast('Meal created!', 'success');
+});
+
 // Register Service Worker for PWA (required by Chrome on Android)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

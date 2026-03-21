@@ -20,22 +20,13 @@ def set_macro_goal(sender, instance, created, **kwargs):
         # Handles 'YYYY-MM-DD'
         today = datetime.strptime(today, '%Y-%m-%d').date()
 
-    if (today == '0001-01-01'):
-        return
-    yesterday = today - timedelta(days=1)
-
-    yesterday_obj = user.days.filter(date=yesterday).first()
-
-    # if no bodyweight or day, just use default
-    if not yesterday_obj:
-        print("No yesterday found: cannot set goals")
-        return
-    bw = yesterday_obj.bodyweight
-    if not bw:
-        print("No bodyweight found: cannot set goals")
-        return
+    if user.days.filter(date=today, bodyweight__isnull=False).exists():
+        most_recent_day = user.days.get(date=today)
+    else:
+        most_recent_day = user.days.filter(bodyweight__isnull=False).order_by('-date').first()
 
     print(f"Setting macros for {instance.date} for user {user}:")
+    bw = most_recent_day.bodyweight
     # Calories determined with Harris-Benedict
     if user.profile.gender == "M":
         bw_kg = bw * 0.45359237

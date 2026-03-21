@@ -12,6 +12,15 @@
   {% empty %}
   <p class="movement-manager-empty">No movements found. Click the plus icon to create a new movement.</p>
   {% endfor %}
+  {% for mv in archived_movements %}
+  <div class="smaller-movement"
+    hx-get="{% url 'workouts:unarchive-mv' mv.id %}?from=manager"
+    hx-target="#available-movements-list"
+    hx-trigger="click"
+    hx-swap="innerHTML">
+    {{ mv.name }}
+  </div>
+  {% endfor %}
   <div class="smaller-movement"
     hx-get="{% url 'workouts:mv_form' %}?from=manager"
     hx-target="#available-movements-list"

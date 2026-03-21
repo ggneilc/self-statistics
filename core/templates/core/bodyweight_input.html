@@ -3,9 +3,9 @@
 		data-tooltip="Bodyweight (lbs)" data-placement="top">
 		<fieldset role="group">
 			{% if edit %}
-			<input name="weight" type="number" step="0.1" value="{{bw}}">
+			<input name="weight" type="number" step="0.1" value="{{bw}}" min="0">
 			{% else %}
-			<input name="weight" type="number" step="0.1" placeholder="Weight">
+			<input name="weight" type="number" step="0.1" placeholder="Weight" min="0">
 			{% endif %}
 			<input type="submit" value=">">
 		</fieldset>

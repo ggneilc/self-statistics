@@ -29,7 +29,7 @@ class MealConsumptionForm(forms.ModelForm):
                   'vitamin_a', 'vitamin_c', 'vitamin_d', 'vitamin_b6', 'vitamin_b12', 'vitamin_e']
         widgets = {
             'food': forms.HiddenInput(attrs={'class': 'food-typeahead-hidden'}),
-            'amount': forms.NumberInput(attrs={'placeholder': 'Amount', 'class': 'ingred-input'}),
+            'amount': forms.NumberInput(attrs={'placeholder': 'Amount', 'class': 'ingred-input', 'min': 0}),
             'unit': forms.Select(attrs={'class': 'unit-selector ingred-input'}),
 
             # manual
@@ -139,7 +139,7 @@ class IngredientForm(forms.ModelForm):
         fields = ['ingredient', 'amount', 'unit']
         widgets = {
             'ingredient': forms.HiddenInput(attrs={'class': 'food-typeahead-hidden'}),
-            'amount': forms.NumberInput(attrs={'placeholder': 'Amount', 'class': 'ingred-input'}),
+            'amount': forms.NumberInput(attrs={'placeholder': 'Amount', 'class': 'ingred-input', 'min': 0}),
             'unit': forms.Select(attrs={'class': 'unit-selector ingred-input'}),
         }
 
@@ -178,7 +178,7 @@ class FoodUnitForm(forms.ModelForm):
         fields = ['name', 'gram_weight']
         widgets = {
             'name': forms.TextInput(attrs={'placeholder': 'Name', 'style': 'flex: 1;'}),
-            'gram_weight': forms.NumberInput(attrs={'placeholder': 'Gram Weight', 'style': 'flex: 5;'}),
+            'gram_weight': forms.NumberInput(attrs={'placeholder': 'Gram Weight', 'style': 'flex: 5;', 'min': 0}),
         }
 
 
@@ -193,8 +193,8 @@ class RecipeForm(forms.ModelForm):
                 'placeholder': '1. Dice the onions...\n2. Sauté until translucent...',
                 'style': 'resize: vertical;' # Allows user to pull the corner down
             }),
-            'prep_time': forms.NumberInput(attrs={'placeholder': 'Mins'}),
-            'cook_time': forms.NumberInput(attrs={'placeholder': 'Mins'}),
+            'prep_time': forms.NumberInput(attrs={'placeholder': 'Mins', 'min': 0}),
+            'cook_time': forms.NumberInput(attrs={'placeholder': 'Mins', 'min': 0}),
         }
 
     def __init__(self, *args, **kwargs):

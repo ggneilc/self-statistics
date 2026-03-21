@@ -13,26 +13,7 @@
         z-index: 1000;
     }
 
-    .timeframe-buttons {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-    }
 </style>
-
-<div class="timeframe-buttons" aria-label="Bodyweight/Calories timeframe">
-    <button class="outline secondary bw-timeframe-btn active" type="button" data-range="all">
-        All Time
-    </button>
-    <button class="outline secondary bw-timeframe-btn" type="button" data-range="30">
-        Monthly
-    </button>
-    <button class="outline secondary bw-timeframe-btn" type="button" data-range="7">
-        Weekly
-    </button>
-</div>
-
 <div id="d3-combo-line-bar" data-days='{{ day_data|safe }}' style="width:100%; height:100%; display:flex;"></div>
 
 <script>

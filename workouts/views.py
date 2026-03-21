@@ -114,6 +114,12 @@ def get_movements(request: HttpRequest) -> HttpResponse:
     if request.GET.get('partial') == 'list' and url_name == 'movements_active':
         return render(request, 'workouts/active_movements_list.html', context)
     if request.GET.get('partial') == 'list' and url_name == 'movements_available':
+        archived_mvments = Movement.objects.filter(
+            user=request.user, base_movement__isnull=False, is_archived=True
+        )
+        context['archived_movements'] = archived_mvments
+        print(f"{context['archived_movements']=}")
+        print(f"{context['movements']=}")
         return render(request, 'workouts/manager_available_movements_list.html', context)
     return render(request, 'workouts/movements.html', context)
 
@@ -226,7 +232,10 @@ def _manager_available_list_response(request: HttpRequest) -> HttpResponse:
     if search_q:
         filters &= Q(name__icontains=search_q)
     mvments = queryset.filter(filters).distinct()
-    return render(request, 'workouts/manager_available_movements_list.html', {"movements": mvments})
+    archived_mvments = Movement.objects.filter(
+        user=request.user, base_movement__isnull=False, is_archived=True
+    )
+    return render(request, 'workouts/manager_available_movements_list.html', {"movements": mvments, "archived_movements": archived_mvments})
 
 def add_movement(request: HttpRequest,
                  mv_id: int | None = None) -> HttpResponse:
@@ -293,6 +302,15 @@ def add_movement(request: HttpRequest,
             "from": from_
         }
         return render(request, 'workouts/movement_form.html', context)
+
+def unarchive_movement(request: HttpRequest, movement_id: int) -> HttpResponse:
+    ''' unarchive a movement '''
+    movement = get_object_or_404(Movement, pk=movement_id, user=request.user)
+    movement.is_archived = False
+    movement.save()
+    if request.GET.get('from') == 'manager':
+        return _manager_available_list_response(request)
+    return get_movements(request)
 
 @login_required
 def add_lift(request: HttpRequest, movement_id: int | None = None) -> HttpResponse:

@@ -3,7 +3,7 @@
   </div>
 
   <div id="water-input" hx-get="{% url 'core:get_water' %}?selected_date={{ day.date|date:'Y-m-d' }}" hx-trigger="load"
-    class="day-header-item" hx-swap="outerHTML"></div>
+    class="day-header-bw"></div>
   <div id="sleep-input" hx-get="{% url 'core:get_sleep' %}?selected_date={{ day.date|date:'Y-m-d' }}" hx-trigger="load"
     class="day-header-item" hx-swap="outerHTML"></div>
   <span class="day-card-flip">

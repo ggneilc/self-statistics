@@ -271,6 +271,9 @@ def add_water(request):
         day.water_consumed += float(water)
         day.save()
         print(f"added new water: {water}L")
+        response = render(request, 'core/water_input.html')
+        response['HX-Trigger'] = 'waterUpdated'
+        return response
     return render(request, 'core/water_input.html')
 
 
@@ -302,7 +305,9 @@ def add_sleep(request):
     day.sleep = sleep
     day.save()
     print(f"added new sleep: {request.POST.get('sleep')}")
-    return render(request, 'core/sleep_update.html', context={"sleep": sleep})
+    response = render(request, 'core/sleep_update.html', context={"sleep": sleep})
+    response['HX-Trigger'] = 'sleepUpdated'
+    return response
 
 @login_required
 def get_bodyweight(request):
@@ -337,7 +342,9 @@ def add_bodyweight(request):
     day.bodyweight = bw
     day.save()
     print(f"added new bodyweight: {request.POST.get('weight')}")
-    return render(request, 'core/bodyweight_update.html', context={"bodyweight": bw})
+    response = render(request, 'core/bodyweight_update.html', context={"bodyweight": bw})
+    response['HX-Trigger'] = 'bodyweightUpdated'
+    return response
 
 
 @login_required

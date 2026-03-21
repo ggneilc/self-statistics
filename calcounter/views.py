@@ -299,7 +299,9 @@ def new_recipe(request):
     form = RecipeForm(request.POST or None, user=request.user)
     if request.POST and form.is_valid():
         form.save()
-        return render(request, 'calcounter/recipe_area.html')
+        response = render(request, 'calcounter/recipe_area.html')
+        response['HX-Trigger'] = 'recipeCreated'
+        return response
     return render(request, 'calcounter/recipe_entry.html', {'form': form, 'editing': False})
 
 @login_required
@@ -325,7 +327,9 @@ def add_meal(request):
                 instance.meal = meal
                 instance.save()
             formset.save_m2m() # Required if there are ManyToMany relationships
-            return list_meals(request, True)
+            response = list_meals(request, True)
+            response['HX-Trigger'] = 'mealCreated'
+            return response
         else:
             return render(request, 'calcounter/meal_entry.html', {'form': form, 'formset': formset})
     form = MealForm()
@@ -405,7 +409,9 @@ def new_complex_food(request):
                 defaults={'gram_weight': total_grams, 'is_standard': False}
             )
             formset.save_m2m() # Required if there are ManyToMany relationships
-            return list_foods(request, 'complex', True)
+            response = list_foods(request, 'complex', True)
+            response['HX-Trigger'] = 'pantryItemAdded'
+            return response
         else:
             print("form invalid")
             print(form.errors)
@@ -471,7 +477,9 @@ def add_pantry_food(request, food_id):
         unit=FoodUnit.objects.get(food=food, name="grams"),
         amount=1
     )
-    return list_foods(request, 'all')
+    response = list_foods(request, 'all')
+    response['HX-Trigger'] = 'pantryItemAdded'
+    return response
 
 @login_required
 def food_unit_modal(request, food_id):
@@ -693,7 +701,9 @@ def update_pantry_name(request, pantry_id):
     if pantry_item and new_name:
         pantry_item.name = new_name
         pantry_item.save()
-    return HttpResponse(200)
+    resp = HttpResponse(200)
+    resp['HX-Trigger'] = 'pantryItemUpdated'
+    return resp
 
 @login_required
 def update_pantry_item(request, item_id, action):
@@ -728,7 +738,9 @@ def update_pantry_item(request, item_id, action):
     pantry_item.mineral_script_id = f"minerals-{pantry_item.id}"
     pantry_item.vitamin_script_id = f"vitamins-{pantry_item.id}"
 
-    return render(request, 'calcounter/food.html', {'pantry': pantry_item, 'open': True})
+    response = render(request, 'calcounter/food.html', {'pantry': pantry_item, 'open': True})
+    response['HX-Trigger'] = 'pantryItemUpdated'
+    return response
 
 @login_required
 def edit_unit(request, pantry_id, unit_id):

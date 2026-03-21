@@ -27,6 +27,21 @@
 			<i class="fa-solid fa-chart-line"></i>
 			Analytics
 			<span class="header-buttons" style="position:absolute; right:1rem;">
+
+				<button class="bw-timeframe-btn active" type="button" data-range="all"
+					data-tooltip="All Time" data-placement="bottom">
+					<i class="fa-solid fa-calendar-days"></i>
+				</button>
+				<button class="bw-timeframe-btn" type="button" data-range="30"
+					data-tooltip="Monthly" data-placement="bottom">
+					<i class="fa-solid fa-calendar-week"></i>
+				</button>
+				<button class="bw-timeframe-btn" type="button" data-range="7"
+					data-tooltip="Weekly" data-placement="bottom">
+					<i class="fa-solid fa-calendar-day"></i>
+				</button>
+
+
 				<button data-tooltip="Coming Soon" data-placement="bottom" style="padding:0 0.3rem;">
 					<i class="fa-solid fa-chart-column"></i>
 				</button>
@@ -35,11 +50,11 @@
 
 		<div class="vertical-group" style="flex: 1;">
 
-			<div id="graph" hx-get="{% url 'graphs:main-graph' %}" hx-trigger="load" style="position:relative;"></div>
+			<div id="graph" hx-get="{% url 'graphs:main-graph' %}" hx-trigger="load, bodyweightUpdated from:body" style="position:relative;"></div>
 
 			<div class="horizontal-group" style="flex:2;">
 				<article id="bw-summary" class="vertical-group" style="height: revert;margin-bottom: 0;"
-				hx-get="{% url 'graphs:bw-summary' %}" hx-trigger="load">
+				hx-get="{% url 'graphs:bw-summary' %}" hx-trigger="load, bodyweightUpdated from:body">
 				</article>
 				<article id="cal-summary" class="vertical-group" style="height: revert;margin-bottom: 0;"
 				hx-get="{% url 'graphs:nutrition-summary' %}" hx-trigger="load">

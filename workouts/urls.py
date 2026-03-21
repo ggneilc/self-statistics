@@ -24,6 +24,8 @@ urlpatterns = [
      path("movements/active/",      views.get_movements,     name="movements_active"),
      path("movements/available/",  views.get_movements,     name="movements_available"),
      path("movement/<int:movement_id>/", views.get_movement, name="movement"),
+     path("movement/delete/<int:movement_id>/", views.delete_movement, name="delete-movement"),
+     path("movement/unarchive/<int:movement_id>/", views.unarchive_movement, name="unarchive-mv"),
      # filter chips
      path("bodyparts/",   views.get_bodyparts,    name="bodyparts"),
      path("categories/active/",  views.get_categories,   name="categories_active"),

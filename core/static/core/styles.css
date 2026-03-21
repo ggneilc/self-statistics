@@ -583,8 +583,7 @@ main {
 
 
 .fa-bed,
-.fa-weight-scale,
-.fa-calendar-day {
+.fa-weight-scale {
   color: var(--pico-primary);
 }
 
@@ -600,12 +599,10 @@ main {
 .fa-weight-hanging,
 .fa-bed,
 .fa-weight-scale,
-.fa-calendar-day,
 .fa-arrow-trend-up,
 .fa-crosshairs,
 .fa-chart-simple,
 .fa-weight-scale,
-.fa-calendar-day,
 .fa-bulleye {
   margin-right: 10px;
 }
@@ -839,18 +836,11 @@ main {
   justify-content: flex-start;
   align-items: stretch;
   min-height: 0;
+  align-self: center;
+  min-width: 75%;
   /* margin-left: 1rem; */
   /* gap: 1rem; */
   /* max-height: 45vh; */
-  /* align-self: center; */
-}
-
-@media (min-width: 769px) {
-  #goals-placeholder {
-    max-height: 45vh;
-    align-self: center;
-    min-width: 75%;
-  }
 }
 
 #goals-table-container {
@@ -868,6 +858,9 @@ main {
     opacity 0.25s ease,
     transform 0.35s ease;
   will-change: max-height, opacity, transform;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 #goals-table-container.goals-table-open {
@@ -876,6 +869,53 @@ main {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+.goal-group-header {
+  text-align: center;
+  padding: 0.25rem 0;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: var(--pico-muted-color);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.goal-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.6rem 0.35rem 0.75rem;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid #0d0f0f;
+  box-shadow: -2px 2px 0px 0px #0d0d0f;
+  font-size: 0.8rem;
+  background:
+    linear-gradient(90deg, transparent 60%, color-mix(in srgb, var(--goal-color) 25%, transparent)),
+    var(--pico-card-background-color);
+}
+
+.goal-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--goal-color);
+  border-top-left-radius: var(--pico-border-radius);
+  border-bottom-left-radius: var(--pico-border-radius);
+}
+
+.goal-row-name {
+  font-weight: bold;
+  color: var(--pico-color);
+}
+
+.goal-row-value {
+  color: var(--pico-muted-color);
+  font-size: 0.75rem;
 }
 
 .full {
@@ -1130,6 +1170,7 @@ text {
   gap: 1rem;
   min-height: 0;
 }
+
 
 /* Mobile: bottom nav, full-width swipeable dashboard columns */
 @media (max-width: 768px) {
@@ -1753,7 +1794,7 @@ text {
   transition: color 0.2s ease;
 }
 
-.timeframe-buttons button.active {
+.bw-timeframe-btn.active {
   color: var(--pico-primary);
   transform: scale(1.1);
   box-shadow: 0 0 0 0 black;
