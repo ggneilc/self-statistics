@@ -62,13 +62,25 @@ Don't just look at the past; forecast the future. With everything in one place, 
 Focus on leveling up the true main character in the game of life.
 1. Built-in "XP" and "Quest" systems turn the grind of a caloric deficit into a leveling experience.
 2. Visualize your "Match History" for every lift you've performed since Day 1.
-3. Level up lifts everytime you perform them 
+3. Level up lifts everytime you perform them.
 4. Receive real life buffs and debuffs for foods you eat and what you did during the day. 
 
-> Leveling is intrisinc to the amount of data you've inputted; as you level up, you'll unlock more features of the app. 
+> Leveling is intrinsic to the amount of data you've inputted; as you level up, you'll unlock more features of the app. 
 
+## Progressive Web App
+
+This application is designed to be everywhere:
+- Open it on your desktop and get the true analytical glance of everything you have and do.
+- Use it from your phone to make the data input smooth.
+- Setup a tablet in kiosk mode and have your nutrition panel always online and available in your kitchen.
+
+Its as easy as going to **selfstats.me**
 
 # Download 
+
+## Mobile Phone Download
+
+This app is not on traditional app stores, instead you can navigate to our website, **selfstats.me**, and *save the site to the home screen*. This will prompt you to install the app and in one click you are all set; it will look, feel, and behave exactly like a native app you got off the app store.
 
 ## Development Setup
 
