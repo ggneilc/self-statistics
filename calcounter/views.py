@@ -621,7 +621,7 @@ def parse_usda_nutrients(item):
         if servingSize > 0:
             servings.append({
                 "gram_weight": servingSize,
-                "modifier": "1 serving"
+                "modifier": "serving"
             })
 
     return all_nutrients, servings
