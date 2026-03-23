@@ -28,6 +28,10 @@ Most trackers fail because of friction. Self-Statistics treats food as a full-sp
 5. **Pantry & Inventory**: Track quantity and stock status with automatic threshold heuristics (in stock / low / out), per-user custom units, and inline HTMX editing — all backed by `select_related`/`Prefetch` strategies to eliminate N+1 queries.
 6. **Recipe Layer**: Attach structured instructions, prep time, and cook time to any user-owned composite food, surfaced alongside the ingredient breakdown in accordion UIs.
 
+<img width="500" height="350" alt="image" src="https://github.com/user-attachments/assets/d3c80bcf-33c9-4971-a86d-c726e1c42b5e" />
+<img width="500" height="350" alt="image" src="https://github.com/user-attachments/assets/c9d38568-db4c-4530-9e97-2d4fab58800e" />
+
+
 ## Engineered Workouts
 
 Track any movement you want: Self-Statistics treats training as a structured, signal-driven data pipeline:
@@ -35,12 +39,23 @@ Track any movement you want: Self-Statistics treats training as a structured, si
 2. **Dual Movement System**: A curated global Movement Library seeds new users with a "Starter Pack," while fully custom movements let advanced lifters track anything — with soft-archiving so historical data is never lost.
 3. **Weekly Volume Accountability**: Per-muscle set counts are maintained in real-time via Django signals and compared against a configurable weekly goal, surfaced as progress bars so you always know if you're under-training a muscle group.
 
+<img width="500" height="350" alt="image" src="https://github.com/user-attachments/assets/f2a6385b-f839-41a0-84c7-b73a399924d6" />
+<img width="500" height="350" alt="image" src="https://github.com/user-attachments/assets/5cff6905-f2e3-4951-92ca-4eb98f05dafe" />
+<img width="500" height="350" alt="image" src="https://github.com/user-attachments/assets/8be53e47-5175-44c5-9212-1f4dc69fd7e8" />
+<img width="500" height="350" alt="image" src="https://github.com/user-attachments/assets/88a0e1ea-bc36-4c9f-b8f2-dc9ba2d0c451" />
+
+
 ## Predictive Biomechanics
 
 Don't just look at the past; forecast the future. With everything in one place, you can truly see how everything you do is intertwined. 
 1. **Automatic Metric Calculation**: Every day receives automatic daily allowances for all nutrients based on your current standings; gender, weight, height, and activity.
 2. **ML Forecasting**: Uses Autoregressive Transformers and ARIMA models to predict bodyweight and strength responses to caloric shifts.
 3. **Biometric Correlation**: See how 50mg of Magnesium impacts your sleep quality, or how a 200kcal deficit impacts your Bench Press 1RM
+
+
+<img width="500" height="350" alt="image" src="https://github.com/user-attachments/assets/de04e6b5-0e5d-4897-a4c3-388ef5553623" />
+<img width="500" height="350" alt="image" src="https://github.com/user-attachments/assets/ac7cdd2e-cfba-4003-9f36-9f632cfb55e0" />
+
 
 ## Gamified Progression
 
