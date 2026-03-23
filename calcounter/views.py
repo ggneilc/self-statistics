@@ -3,7 +3,7 @@
 """
 from django.shortcuts import get_object_or_404, render, HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Sum, Prefetch
 from .models import Food, Meal, Ingredient, MealConsumption, PantryItem, FoodUnit, Recipe
 from .forms import FoodForm, FoodUnitForm, MealForm, IngredientForm, MealConsumptionForm, RecipeForm
 from core.utils import get_or_create_day
@@ -19,42 +19,42 @@ USDA_KEY = os.getenv('USDA_API_KEY')
 
 NUTRIENT_MAP = {
     # Macros
-    "Energy":        208,   # calories
-    "Protein":       203,
-    "Fat":           204,
-    "Carbohydrates": 205,
-    "Sugar":         269,
-    "Fiber":         291,
-    "Cholesterol":   601,
+    "Energy":        "208",   # calories
+    "Protein":       "203",
+    "Fat":           "204",
+    "Carbohydrates": "205",
+    "Sugar":         "269",
+    "Fiber":         "291",
+    "Cholesterol":   "601",
     # Minerals
-    "Calcium":      301,
-    "Iron":         303,
-    "Magnesium":    304,
-    "Potassium":    306,
-    "Sodium":       307,
-    "Zinc":         309,
+    "Calcium":       "301",
+    "Iron":          "303",
+    "Magnesium":     "304",
+    "Potassium":     "306",
+    "Sodium":        "307",
+    "Zinc":          "309",
     # Vitamins (A-E Complex)
-    "Vitamin A":    320,
-    "Vitamin B-6":  415,
-    "Vitamin B-12": 418,
-    "Vitamin C":    401,
-    "Vitamin D":    328,
-    "Vitamin E":    323,
+    "Vitamin A":     "320",
+    "Vitamin B-6":   "415",
+    "Vitamin B-12":  "418",
+    "Vitamin C":     "401",
+    "Vitamin D":     "328",
+    "Vitamin E":     "323",
     # Branded food alternate vitamin IDs (IU instead of µg)
-    "Vitamin A (IU)": 318,
-    "Vitamin D (IU)": 324,
+    "Vitamin A (IU)": "318",
+    "Vitamin D (IU)": "324",
     # Alcohol: 221
     # Caffiene: 262
 }
-MACRO = [208, 203, 204, 205, 269, 291, 601]
-MINERAL = [301, 303, 304, 306, 307, 309]
-VITAMIN = [320, 415, 418, 401, 328, 323]
+MACRO = ["208", "203", "204", "205", "269", "291", "601"]
+MINERAL = ["301", "303", "304", "306", "307", "309"]
+VITAMIN = ["320", "415", "418", "401", "328", "323"]
 
 # Branded foods report some vitamins in IU with different nutrient IDs.
 # Map branded IDs to their standard IDs and provide conversion to µg.
 BRANDED_VITAMIN_FALLBACKS = {
-    318: {"standard_id": 320, "convert": lambda iu: iu * 0.3},    # Vitamin A: IU -> µg RAE
-    324: {"standard_id": 328, "convert": lambda iu: iu * 0.025},  # Vitamin D: IU -> µg
+    "318": {"standard_id": "320", "convert": lambda iu: iu * 0.3},    # Vitamin A: IU -> µg RAE
+    "324": {"standard_id": "328", "convert": lambda iu: iu * 0.025},  # Vitamin D: IU -> µg
 }
 
 IngredientFormSet = inlineformset_factory(
@@ -239,27 +239,30 @@ def meal_fingerprint(user, meal):
 
 @login_required
 def list_foods(request, action, just_added=False):
-    ''' Returns `food_list.html` with the `selected_date` '''
+    accessible_units = FoodUnit.objects.accessible_to(request.user)
+    queryset = PantryItem.objects.filter(user=request.user).select_related('food', 'unit')
+
     if action == 'all':
-        foods = PantryItem.objects.prefetch_related(
+        foods = queryset.prefetch_related(
+            Prefetch('food__units', queryset=accessible_units),
+            Prefetch('food__ingredient_set__unit', queryset=accessible_units),
             'food__ingredient_set__ingredient',
-            'food__ingredient_set__unit'
-        ).all()
-    elif action == 'in_stock':
-        foods = PantryItem.objects.select_related(
-            'food', 'unit'
-        ).exclude(status='o')
-    elif action == 'complex':
-        foods = PantryItem.objects.select_related(
-            'food', 'unit'
-        ).filter(
-            food__ingredient__isnull=False
-        ).distinct()
-    elif action == 'simple':
-        foods = PantryItem.objects.select_related('food', 'unit').filter(
-        food__ingredient__isnull=True
         )
-    print(f"{foods=}")
+    elif action == 'in_stock':
+        foods = queryset.exclude(status='o').prefetch_related(
+            Prefetch('food__units', queryset=accessible_units)
+        )
+    elif action == 'complex':
+        foods = queryset.filter(food__ingredient__isnull=False).distinct().prefetch_related(
+            Prefetch('food__units', queryset=accessible_units)
+        )
+    elif action == 'simple':
+        foods = queryset.filter(food__ingredient__isnull=True).prefetch_related(
+            Prefetch('food__units', queryset=accessible_units)
+        )
+    else:
+        foods = queryset.none()
+    print(f"Fetched {foods.count()} items for action: {action}")
 
     for pantry_item in foods:
         macros, minerals, vitamins = food_fingerprint(request.user, pantry_item)
@@ -432,9 +435,7 @@ def get_units_for_ingredient(request):
     food_id = request.GET.get('food_id')
     if not food_id:
         return HttpResponse('<option value="">Select food first</option>')
-    units = FoodUnit.objects.filter(food_id=food_id).filter(
-        food__in=Food.objects.available_to_user(request.user)
-    )
+    units = FoodUnit.objects.accessible_to(request.user).filter(food_id=food_id)
     print(f"{units=}")
     return render(request, 'calcounter/unit_options.html', {'units': units})
 
@@ -470,7 +471,7 @@ def add_pantry_food(request, food_id):
         food_name = food_name[1] + ' ' + food_name[0]
     else:
         food_name = food.name
-    PantryItem.objects.create(
+    PantryItem.objects.get_or_create(
         user=request.user,
         food=food,
         name=food_name,
@@ -489,6 +490,7 @@ def food_unit_modal(request, food_id):
         form = FoodUnitForm(request.POST)
         if form.is_valid():
             food_unit = form.save(commit=False)
+            food_unit.creator = request.user
             food_unit.food = pantry_item.food
             food_unit.save()
             return render(request, 'calcounter/unit_display_row.html', {'unit': food_unit, 'pantry_id': pantry_item.id})
@@ -500,7 +502,7 @@ def food_unit_modal(request, food_id):
     pantry_item.macro_script_id = f"macros-{pantry_item.id}"
     pantry_item.mineral_script_id = f"minerals-{pantry_item.id}"
     pantry_item.vitamin_script_id = f"vitamins-{pantry_item.id}"
-    foodunits = pantry_item.food.units.all()
+    foodunits = pantry_item.food.units.accessible_to(request.user)
     form = FoodUnitForm()
     context = {
         'foodunits': foodunits,
@@ -539,7 +541,8 @@ def query_ingredient(request):
         f"api_key={USDA_KEY}&"
         f"query='{query}'&"
         f"dataType={','.join(data_types)}&"
-        f"pageSize=50"
+        f"pageSize=50&"
+        f"format=abridged"
     )
     print(f"{url=}")
     r = requests.get(url)
@@ -564,7 +567,7 @@ def parse_usda_nutrients(item):
         # n = {amounts, nutrient{number, name, unitName}}
         # n_info = nutrient{number, name, unitName}
         n_info = n.get("nutrient", n)
-        nutrient_id = int(float(n_info.get("number", 0)))
+        nutrient_id = n_info.get("number", "")
         if nutrient_id in NUTRIENT_MAP.values():
             # Branded vitamin fallback: convert IU -> µg and store under standard ID
             if nutrient_id in BRANDED_VITAMIN_FALLBACKS:
@@ -587,13 +590,13 @@ def parse_usda_nutrients(item):
                 }
                 print(f"{all_nutrients[nutrient_id]=}")
     # --- Some foods don't have energy values, calculate instead ---
-    cals = all_nutrients.get(208, {}).get("value", 0.0)
+    cals = all_nutrients.get("208", {}).get("value", 0.0)
     if (cals == {} or cals == 0.0):
         # Atwater Factors calorie calculation 4-9-4
-        protein = all_nutrients.get(203, {}).get('value', 0)
-        fat = all_nutrients.get(204, {}).get('value', 0)
-        carbs = all_nutrients.get(205, {}).get('value', 0)
-        all_nutrients[208] = {
+        protein = all_nutrients.get("203", {}).get('value', 0)
+        fat = all_nutrients.get("204", {}).get('value', 0)
+        carbs = all_nutrients.get("205", {}).get('value', 0)
+        all_nutrients["208"] = {
             "name": "Energy",
             "value": (protein * 4) + (fat * 9) + (carbs * 4),
             "unit": "kcal"
@@ -615,53 +618,72 @@ def parse_usda_nutrients(item):
     else:
         # branded food
         servingSize = item.get("servingSize", 0)
-        servingSizeUnit = item.get("servingSizeUnit", "")
-        if servingSize > 0 and servingSizeUnit:
+        if servingSize > 0:
             servings.append({
                 "gram_weight": servingSize,
-                "modifier": "1 " + servingSizeUnit
+                "modifier": "1 serving"
             })
 
     return all_nutrients, servings
+
+def query_usda_food(fdcId: str, abridged: bool = False) -> requests.Response:
+    nutrient_ids = list(NUTRIENT_MAP.values())
+    params = {
+        'fdcIds': [fdcId],
+        'api_key': USDA_KEY,
+        'nutrients': nutrient_ids  
+    }
+    if abridged:
+        params['format'] = 'abridged'
+    response = requests.get("https://api.nal.usda.gov/fdc/v1/foods", params=params)
+    return response
 
 @login_required
 def get_specific_usda_item(request, fdcId):
     foodItem = Food.objects.filter(fdc_id=fdcId).first()
     if not foodItem:
         # Attempt to query full API first, then fallback to abridged
-        url = f"https://api.nal.usda.gov/fdc/v1/food/{fdcId}?api_key={USDA_KEY}"
-        response = requests.get(url)
+
+        response = query_usda_food(fdcId)
         if response.status_code != 200:
-            url += "&format=abridged"
-            response = requests.get(url)
+            print(f"Error fetching USDA data: {response.status_code}")
+            return HttpResponse("Error fetching USDA data")
+        # returns in format : [ {food} ] : need error handling for empty list
+        foods = response.json()
+        if len(foods) == 0:
+            response = query_usda_food(fdcId, abridged=True)
             if response.status_code != 200:
                 print(f"Error fetching USDA data: {response.status_code}")
                 return HttpResponse("Error fetching USDA data")
-        item = response.json()
-        all_nutrients, servings = parse_usda_nutrients(item)
+            foods = response.json()
+            if len(foods) == 0:
+                print(f"No food found for fdcId: {fdcId}")
+                return HttpResponse("No food found for fdcId")
+        food = foods[0]
+        all_nutrients, servings = parse_usda_nutrients(food)
         # --- Save the Food Item for future use
         foodItem = Food.objects.create(
-            name=item.get("description"),
+            name=food.get("description"),
             fdc_id=fdcId,
-            calories=int(all_nutrients.get(208, {}).get('value', 0)),
-            protein=int(all_nutrients.get(203, {}).get('value', 0)),
-            fat=int(all_nutrients.get(204, {}).get('value', 0)),
-            carb=int(all_nutrients.get(205, {}).get('value', 0)),
-            sugar=int(all_nutrients.get(269, {}).get('value', 0)),
-            fiber=int(all_nutrients.get(291, {}).get('value', 0)),
-            cholesterol=int(all_nutrients.get(601, {}).get('value', 0)),
-            calcium=all_nutrients.get(301, {}).get('value', 0),
-            iron=all_nutrients.get(303, {}).get('value', 0),
-            magnesium=all_nutrients.get(304, {}).get('value', 0),
-            potassium=all_nutrients.get(306, {}).get('value', 0),
-            sodium=all_nutrients.get(307, {}).get('value', 0),
-            zinc=all_nutrients.get(309, {}).get('value', 0),
-            vitamin_a=all_nutrients.get(320, {}).get('value', 0),
-            vitamin_b6=all_nutrients.get(415, {}).get('value', 0),
-            vitamin_b12=all_nutrients.get(418, {}).get('value', 0),
-            vitamin_c=all_nutrients.get(401, {}).get('value', 0),
-            vitamin_d=all_nutrients.get(328, {}).get('value', 0),
-            vitamin_e=all_nutrients.get(323, {}).get('value', 0),
+            calories=int(all_nutrients.get("208", {}).get('value', 0)),
+            protein=int(all_nutrients.get("203", {}).get('value', 0)),
+            fat=int(all_nutrients.get("204", {}).get('value', 0)),
+            carb=int(all_nutrients.get("205", {}).get('value', 0)),
+            sugar=int(all_nutrients.get("269", {}).get('value', 0)),
+            fiber=int(all_nutrients.get("291", {}).get('value', 0)),
+            cholesterol=int(all_nutrients.get("601", {}).get('value', 0)),
+            calcium=all_nutrients.get("301", {}).get('value', 0),
+            iron=all_nutrients.get("303", {}).get('value', 0),
+            magnesium=all_nutrients.get("304", {}).get('value', 0),
+            potassium=all_nutrients.get("306", {}).get('value', 0),
+            sodium=all_nutrients.get("307", {}).get('value', 0),
+            zinc=all_nutrients.get("309", {}).get('value', 0),
+            vitamin_a=all_nutrients.get("320", {}).get('value', 0),
+            vitamin_b6=all_nutrients.get("415", {}).get('value', 0),
+            vitamin_b12=all_nutrients.get("418", {}).get('value', 0),
+            vitamin_c=all_nutrients.get("401", {}).get('value', 0),
+            vitamin_d=all_nutrients.get("328", {}).get('value', 0),
+            vitamin_e=all_nutrients.get("323", {}).get('value', 0),
         )
         # create standard grams unit for food
         FoodUnit.objects.get_or_create(
@@ -738,9 +760,7 @@ def update_pantry_item(request, item_id, action):
     pantry_item.mineral_script_id = f"minerals-{pantry_item.id}"
     pantry_item.vitamin_script_id = f"vitamins-{pantry_item.id}"
 
-    response = render(request, 'calcounter/food.html', {'pantry': pantry_item, 'open': True})
-    response['HX-Trigger'] = 'pantryItemUpdated'
-    return response
+    return render(request, 'calcounter/food.html', {'pantry': pantry_item, 'open': True})
 
 @login_required
 def edit_unit(request, pantry_id, unit_id):
@@ -752,7 +772,9 @@ def edit_unit(request, pantry_id, unit_id):
         unit.gram_weight = request.POST.get('gram_weight')
         unit.save()
         # Return the READ-ONLY snippet (the code from Step 1)
-        return render(request, 'calcounter/unit_display_row.html', {'unit': unit, 'pantry_id': pantry_id})
+        response = render(request, 'calcounter/unit_display_row.html', {'unit': unit, 'pantry_id': pantry_id})
+        response['HX-Trigger'] = 'pantryItemUpdated'
+        return response
     
     # Return the EDIT FORM snippet (Step 2)
     return render(request, 'calcounter/unit_edit_form.html', {'unit': unit, 'pantry_id': pantry_id})

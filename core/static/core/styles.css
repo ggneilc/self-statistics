@@ -830,8 +830,6 @@ main {
 
 #goals-placeholder {
   padding: 1rem;
-  border: 1px dashed var(--pico-muted-border-color);
-  box-shadow: -2px 2px 1px 0px #0d0d0f; 
   border-radius: var(--pico-border-radius);
   justify-content: flex-start;
   align-items: stretch;

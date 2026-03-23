@@ -6,6 +6,7 @@
 '''
 from django.db import models
 from django.conf import settings
+from django.db.models import Q
 from core.models import Day
 
 
@@ -353,6 +354,11 @@ class Food(models.Model):
         }
 
 
+class FoodUnitManager(models.Manager):
+    def accessible_to(self, user):
+        return self.filter(Q(creator__isnull=True) | Q(creator=user))
+
+
 class FoodUnit(models.Model):
     ''' 
     Maps a descriptive name to a gram weight for a specific food.
@@ -379,6 +385,9 @@ class FoodUnit(models.Model):
         null=True,
         blank=True
     )
+    
+    objects = FoodUnitManager()
+
     class Meta:
         # Prevents duplicate units for the same food (e.g., two "cups")
         unique_together = ('food', 'name', 'creator')

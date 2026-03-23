@@ -24,6 +24,9 @@ def set_macro_goal(sender, instance, created, **kwargs):
         most_recent_day = user.days.get(date=today)
     else:
         most_recent_day = user.days.filter(bodyweight__isnull=False).order_by('-date').first()
+    if not most_recent_day:
+        print("No bodyweight found: set default goals")
+        return
 
     print(f"Setting macros for {instance.date} for user {user}:")
     bw = most_recent_day.bodyweight
