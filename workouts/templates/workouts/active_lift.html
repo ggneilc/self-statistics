@@ -1,13 +1,41 @@
 <div id="workout-name" hx-swap-oob="true"> {{lift.movement.name}} </div>
 
 <div id="set-list" class="vertical-group" style="flex: 10;">
+	{% if previous_lifts %}
+	<div class="prefill-selector">
+		<i class="fa-solid fa-clock-rotate-left prefill-icon"></i>
+		<div class="prefill-dropdown" id="prefill-dropdown-{{ lift.id }}">
+			<button type="button" class="prefill-trigger" onclick="togglePrefillDropdown('{{ lift.id }}')">
+				<span>{{ previous_lifts.0.workout.day.date|date:"m/d/Y" }}</span>
+				<span class="prefill-top-set">{% if previous_lifts.0.get_best_set %}Top Set: {{ previous_lifts.0.get_best_set.weight }}lb x {{ previous_lifts.0.get_best_set.reps }}{% endif %}</span>
+				<i class="fa-solid fa-chevron-down prefill-chevron"></i>
+			</button>
+			<div class="prefill-options" id="prefill-options-{{ lift.id }}" style="display: none;">
+				{% for prev in previous_lifts %}
+				<div class="prefill-option"
+					hx-get="{% url 'workouts:prefill_sets' lift.id %}?previous_lift_id={{ prev.id }}"
+					hx-target="#sets"
+					hx-swap="innerHTML"
+					hx-on::after-request="selectPrefillOption('{{ lift.id }}', '{{ prev.workout.day.date|date:"m/d/Y" }}', '{% if prev.get_best_set %}Top Set: {{ prev.get_best_set.weight }}lb x {{ prev.get_best_set.reps }}{% endif %}')">
+					<span>{{ prev.workout.day.date|date:"m/d/Y" }}</span>
+					<span class="prefill-top-set">{% if prev.get_best_set %}Top Set: {{ prev.get_best_set.weight }}lb x {{ prev.get_best_set.reps }}{% endif %}</span>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	{% endif %}
 	<div id="sets">
 		{% if editing %}
 			{% for form in set_forms %}
 				{% include 'workouts/set_entry.html' with form=form set=form.instance editing=True %}
 			{% endfor %}
-		{% else %} {# new lift #}
-		{% include 'workouts/set_entry.html' with form=set_form lift=lift editing=False %}
+		{% elif pre_fill_forms %}
+			{% for form in pre_fill_forms %}
+				{% include 'workouts/set_entry.html' with form=form lift=lift editing=False %}
+			{% endfor %}
+		{% else %} {# new lift, no history #}
+			{% include 'workouts/set_entry.html' with form=set_form lift=lift editing=False %}
 		{% endif %}
 	</div>
 
@@ -63,5 +91,91 @@
 	min-width: 3ch;
 	text-align: center;
 }
+
+.prefill-selector {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: small;
+	padding: 0 0.25rem;
+	position: relative;
+}
+.prefill-icon {
+	color: var(--pico-muted-color);
+	flex-shrink: 0;
+}
+.prefill-dropdown {
+	position: relative;
+	flex: 1;
+}
+.prefill-trigger {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	background: var(--pico-card-background-color);
+	border: 1px solid var(--pico-muted-border-color);
+	border-radius: var(--pico-border-radius);
+	padding: 0.25rem 0.5rem;
+	cursor: pointer;
+	font-size: small;
+	margin-bottom: 0;
+}
+.prefill-trigger span:first-child {
+	flex: 0 0 auto;
+}
+.prefill-top-set {
+	flex: 1;
+	text-align: right;
+	color: var(--pico-muted-color);
+	margin-right: 0.5rem;
+}
+.prefill-chevron {
+	flex-shrink: 0;
+	font-size: 0.65rem;
+	color: var(--pico-muted-color);
+}
+.prefill-options {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: var(--pico-card-background-color);
+	border: 1px solid var(--pico-muted-border-color);
+	border-radius: var(--pico-border-radius);
+	z-index: 100;
+	margin-top: 2px;
+	overflow: hidden;
+}
+.prefill-option {
+	display: flex;
+	align-items: center;
+	padding: 0.4rem 0.5rem;
+	cursor: pointer;
+	font-size: small;
+}
+.prefill-option:hover {
+	background: var(--pico-muted-border-color);
+}
+.prefill-option span:first-child {
+	flex: 0 0 auto;
+}
 </style>
 
+<script>
+function togglePrefillDropdown(liftId) {
+	const opts = document.getElementById('prefill-options-' + liftId);
+	opts.style.display = opts.style.display === 'none' ? 'block' : 'none';
+}
+function selectPrefillOption(liftId, date, topSet) {
+	const trigger = document.querySelector('#prefill-dropdown-' + liftId + ' .prefill-trigger');
+	trigger.querySelector('span:first-child').textContent = date;
+	trigger.querySelector('.prefill-top-set').textContent = topSet;
+	document.getElementById('prefill-options-' + liftId).style.display = 'none';
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+	if (!e.target.closest('.prefill-dropdown')) {
+		document.querySelectorAll('.prefill-options').forEach(el => el.style.display = 'none');
+	}
+});
+</script>

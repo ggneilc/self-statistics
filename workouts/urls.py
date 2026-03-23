@@ -39,6 +39,7 @@ urlpatterns = [
      path("workout/delete/set/<int:set_id>/", views.delete_set, name="del_set"),
      path("workout/<int:workout_id>/end/", views.end_workout, name="end_workout"),
      path("workout/lift/<int:lift_id>/end/", views.end_lift, name="end_lift"),
+     path("workout/lift/<int:lift_id>/prefill/", views.prefill_sets, name="prefill_sets"),
      # workout types
      path("delete/type/<int:w_type>", views.delete_workout_type, name="del_type"),
      path("add/type", views.add_workout_type, name="addt"),

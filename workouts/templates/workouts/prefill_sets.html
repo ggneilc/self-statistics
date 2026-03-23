@@ -1,0 +1,3 @@
+{% for form in forms %}
+    {% include 'workouts/set_entry.html' with form=form lift=lift editing=False %}
+{% endfor %}
