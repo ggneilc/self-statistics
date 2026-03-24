@@ -1,0 +1,10 @@
+.git
+.github
+.vscode
+env/
+__pycache__
+db.sqlite3
+.env
+*.pyc
+*.png
+assets/

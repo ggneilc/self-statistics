@@ -1,0 +1,9 @@
+services:
+  web:
+    build: .
+    env_file:
+      - .env 
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=selfstats.settings.prod

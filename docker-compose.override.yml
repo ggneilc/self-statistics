@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    env_file:
+      - .env 
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=selfstats.settings.dev
+      - DEBUG=True
+    volumes:
+      - .:/app
+    command: python manage.py runserver 0.0.0.0:8000
