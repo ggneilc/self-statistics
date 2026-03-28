@@ -3,7 +3,7 @@ services:
       build: .
       container_name: selfstats-web
       env_file:
-        - .env
+        - /home/github-runner/selfstats.env
       environment:
         - DJANGO_SETTINGS_MODULE=selfstats.settings.prod
       volumes:
