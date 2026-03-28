@@ -9,7 +9,6 @@ from django.conf import settings
 from django.db.models import Q
 from core.models import Day
 
-
 FRUIT_CLASSES = [
     'apple',
     'apples',
@@ -463,7 +462,7 @@ class Meal(models.Model):
             'vitamin_d': 0,
             'vitamin_e': 0,
         }
-        for item in self.items.all():
+        for item in self.items.prefetch_related('food', 'unit').all():
             if item.food:
                 serving_size = item.amount * float(item.unit.gram_weight)
                 nutrients = item.food.get_nutrition_consumed(serving_size)

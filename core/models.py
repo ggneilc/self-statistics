@@ -182,7 +182,7 @@ class Day(models.Model):
             'potassium': 0,
             'sodium': 0,
         }
-        for meal in self.meals.all():
+        for meal in self.meals.prefetch_related('items__food').all():
             nutrients = meal.get_nutrients_consumed()
             minerals['sodium'] = minerals.get('sodium') + nutrients.get('sodium', 0)
             minerals['potassium'] = minerals.get('potassium') + nutrients.get('potassium', 0)
@@ -205,7 +205,7 @@ class Day(models.Model):
             'D': 0,
             'E': 0,
         }
-        for meal in self.meals.all():
+        for meal in self.meals.prefetch_related('items__food').all():
             nutrients = meal.get_nutrients_consumed()
             vitamins['A'] = vitamins.get('A') + nutrients.get('vitamin_a', 0)
             vitamins['B6'] = vitamins.get('B6') + nutrients.get('vitamin_b6', 0)

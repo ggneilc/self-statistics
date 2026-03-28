@@ -7,6 +7,7 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = False
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "selfstats.me").split(",")
+CSRF_TRUSTED_ORIGINS = os.getenv("ALLOWED_HOSTS", "selfstats.me").split(",")
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STORAGES = {
     "staticfiles": {
@@ -31,6 +32,4 @@ DATABASES = {
     }
 }
 
-#SECURE_SSL_REDIRECT = True
-#CSRF_COOKIE_SECURE = True
-#SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

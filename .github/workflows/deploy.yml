@@ -1,0 +1,18 @@
+name: Deploy Self-Stats
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build & Restart Containers
+        run: |
+          docker compose up -d --build
+
+      - name: Prune Old Images
+        run: docker image prune -f
