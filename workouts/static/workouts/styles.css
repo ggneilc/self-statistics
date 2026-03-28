@@ -92,7 +92,7 @@
 .lift {
     min-width: 110px;
     min-height: 100px;
-    background-color: var(--pico-card-background-color);
+    background-color: #05050557;
     padding: 5px;
     position: relative;
     font-size: 0.7em;
@@ -130,14 +130,14 @@
 
 .lift_name {
   color: var(--main);
-  background-color: var(--pico-card-sectionning-background-color);
+  background-color: rgba(5,5,5,0.5);
   margin: 5px;
   padding: 2px;
   border-radius: 2px;
 }
 .lift_weight { flex: 2; font-size: medium; }
 .lift_set {
-  background-color: var(--pico-card-sectionning-background-color);
+  background-color: rgba(10,10,10,0.5);
   border-radius: 2px;
   flex: 1;
   display: flex;
@@ -153,7 +153,7 @@
 
 .lift:hover {
     transform: translateY(-2px);
-    box-shadow: -2px 2px 0px 0px var(--pico-muted-border-color);
+    box-shadow: -2px 2px 0px 0px rgba(0, 0, 0, 1);
     transition: all 0.1s ease-in-out;
 }
 
@@ -176,7 +176,7 @@
 }
 
 .lift-chart {
-  background-color: var(--pico-card-sectionning-background-color);
+  background-color: rgba(10,10,10,0.5);
   margin: 5px;
   margin-top:-5px;
   padding: 2px;
@@ -282,7 +282,7 @@
     position: absolute;
     right: 0;
     bottom: 0;
-    color: var(--pico-color);
+    color: black;
 }
 
 .color-patch i {
