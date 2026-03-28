@@ -12,7 +12,7 @@ jobs:
 
       - name: Build & Restart Containers
         run: |
-          docker compose -f docker-compose.yml up -d --build
+          docker compose --env-file /home/github-runner/selfstats.env -f docker-compose.yml up -d --build
 
       - name: Prune Old Images
         run: docker image prune -f
