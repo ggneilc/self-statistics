@@ -80,27 +80,20 @@ Its as easy as going to **selfstats.me**
 
 ## Mobile Phone Download
 
-This app is not on traditional app stores, instead you can navigate to our website, **selfstats.me**, and *save the site to the home screen*. This will prompt you to install the app and in one click you are all set; it will look, feel, and behave exactly like a native app you got off the app store.
+This app is not on traditional app stores, instead you can navigate to our [website](https://selfstats.me), and **save the site to the home screen**. This will prompt you to install the app and in one click you are all set; it will look, feel, and behave exactly like a native app you got off the app store.
 
 ## Development Setup
 
 1. Clone & Setup Environment
 ```
 git clone https://github.com/ggneilc/self-statistics.git && cd self-statistics
-python -m venv env && source env/bin/activate
-pip install -r requirements.txt
-```
-
-2. Database & Dev environment
-```
-source ./load_env.sh dev
-python manage.py migrate
+docker build -t self-statistics .
 ```
 
 3. Running Server
 
 ```
-python manage.py runserver
+docker-compose up
 ```
 
 to then perform mobile testing, run
