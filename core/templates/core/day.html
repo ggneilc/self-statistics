@@ -1,7 +1,7 @@
 <header class="day-header">
   <div id="day-weight" class="day-header-item"
     hx-get="{% url 'core:get_bw' %}"
-    hx-trigger="revealed delay:0.2s"
+    hx-trigger="load delay:0.2s"
     hx-swap="outerHTML"></div>
   <div id="water-input" class="day-header-bw"
     hx-get="{% url 'core:get_water' %}?selected_date={{ day.date|date:'Y-m-d' }}"
