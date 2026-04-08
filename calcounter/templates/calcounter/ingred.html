@@ -5,65 +5,18 @@
   <p>(per 100g)</p>
 </hgroup>
 
-<h2>Macro Nutrients </h2>
-<table>
-    <thead>
-        <tr>
-            <th>Nutrient</th>
-            <th>Value (g)</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for name, value in food.macros.items %}
-            <tr>
-                <td>{{ name }}</td>
-                <td>{{ value.value|floatformat:2 }}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="goal-group-header">Macros</div>
+{% include "calcounter/nutrient_goal_rows.html" with nutrient_items=food.macros %}
 
-<h2>Mineral Profile</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Mineral</th>
-            <th>Amount</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for name, value in food.minerals.items %}
-            <tr>
-                <td>{{ name }}</td>
-                <td>{{ value.value|floatformat:2 }} {{value.unit}}</td>
-            </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="goal-group-header">Minerals</div>
+{% include "calcounter/nutrient_goal_rows.html" with nutrient_items=food.minerals %}
 
+<div class="goal-group-header">Vitamins</div>
+{% include "calcounter/nutrient_goal_rows.html" with nutrient_items=food.vitamins %}
 
+<hr>
 
-<h2>Vitamins</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Vitamin</th>
-            <th>Amount</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for name, value in food.vitamins.items %}
-            <tr>
-                <td>{{ name }}</td>
-                <td>{{ value.value|floatformat:2 }} {{value.unit}}</td>
-            </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
-<h2>Serving Info</h2>
-
-<p> Standard Serving: {{ gram }} grams per {{ amount }} {{modifier}}</p>
+{# need list of available units here #}
 
 <div class="horizontal-group">
 <button style="flex: 1;"

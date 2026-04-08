@@ -937,6 +937,7 @@ main {
 }
 
 #search-results {
+  padding: 3px;
   flex: 1;
   min-height: 0;
 }

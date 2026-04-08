@@ -44,15 +44,11 @@ MealConsumptionFormSet = inlineformset_factory(
 
 
 # --- Listing foods ---
-# i dont think just_added is used ; post never called
 @login_required
 def list_meals(request, just_added=False):
     ''' Returns `meal_list.html` with the `selected_date` '''
-    if just_added:
-        datestr = request.POST.get('selected_date')
-    else:
-        datestr = request.GET.get('selected_date')
-    day = get_or_create_day(request.user, datestr)
+    datestr = request.GET.get('selected_date') if not just_added else request.POST.get('selected_date')
+    day = request.user.days.get(date=datestr)
     meals = day.meals.prefetch_related('items__food', 'items__unit').all()
     print(f"{meals=}")
     for meal in meals:
@@ -329,16 +325,11 @@ def food_unit_modal(request, food_id):
             food_unit.save()
             return render(request, 'calcounter/unit_display_row.html', {'unit': food_unit, 'pantry_id': pantry_item.id})
 
-    macros, minerals, vitamins = food_fingerprint(request.user, pantry_item)
-    pantry_item.macros = macros
-    pantry_item.minerals = minerals
-    pantry_item.vitamins = vitamins
-    pantry_item.macro_script_id = f"macros-{pantry_item.id}"
-    pantry_item.mineral_script_id = f"minerals-{pantry_item.id}"
-    pantry_item.vitamin_script_id = f"vitamins-{pantry_item.id}"
+    food = pantry_item.food.to_formatted_dict()
     foodunits = pantry_item.food.units.accessible_to(request.user)
     form = FoodUnitForm()
     context = {
+        'food': food,
         'foodunits': foodunits,
         'form': form,
         'pantry_item': pantry_item
@@ -382,15 +373,22 @@ def query_ingredient(request):
     r = requests.get(url)
     foods = r.json().get("foods", [])
     results = []
+    nutrient_keys = {"208": "calories", "203": "protein", "204": "fat", "205": "carbs"}
     for food in foods:
-        print(f"food description={food['description']}")
-        print(f"food fdcId={food['fdcId']}\n")
         brand = food.get("brandName") or food.get("brandOwner") or ""
-        name = f"{brand} - {food['description']}" if brand else food["description"]
-        results.append({
-            "name": name,
-            "fdcId": food["fdcId"]
-        })
+        entry = {
+            "name": food["description"],
+            "brand": brand,
+            "fdcId": food["fdcId"],
+            "calories": 0, "protein": 0, "fat": 0, "carbs": 0,
+        }
+        for n in food.get("foodNutrients", []):
+            key = nutrient_keys.get(str(n.get("nutrientNumber", "")))
+            if key:
+                entry[key] = int(n.get("value", 0))
+        if entry["calories"] == 0:
+            entry["calories"] = entry["protein"] * 4 + entry["fat"] * 9 + entry["carbs"] * 4
+        results.append(entry)
     return render(request, 'calcounter/ingred_search.html', {"foods": results})
 
 
@@ -650,7 +648,6 @@ def get_food_input(request):
 @login_required
 def get_search_area(request):
     return render(request, 'calcounter/ingred_search_area.html')
-
 
 def get_recipe_area(request):
     return render(request, 'calcounter/recipe_area.html')

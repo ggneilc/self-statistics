@@ -1,0 +1,9 @@
+{% load nutrient_style %}
+<div class="nutrient-goal-rows vertical-group" style="gap: 0.3rem;">
+{% for name, value in nutrient_items.items %}
+<div class="goal-row" style="--goal-color: {{ name|nutrient_goal_color }};">
+  <span class="goal-row-name">{{ name }}</span>
+  <span class="goal-row-value">{{ value.value|floatformat:2 }}{% if value.unit %} {{ value.unit }}{% endif %}</span>
+</div>
+{% endfor %}
+</div>

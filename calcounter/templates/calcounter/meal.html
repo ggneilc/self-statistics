@@ -1,5 +1,5 @@
 {% load static %}
-<li class="food food-card food-class-{{ meal.food_class }} vertical-group"
+<li class="food food-class-{{ meal.food_class }} vertical-group"
     id="meal-item-{{ meal.id }}"
     style="list-style: none;"
     hx-on:click="this.querySelector('.details').classList.toggle('hidden');
@@ -34,12 +34,7 @@
     </div>
   </div>
 
-  {% if open %}
-  <div class="details vertical-group" style="align-items: center;">
-  {% else %}
   <div class="details hidden vertical-group" style="align-items: center;" hx-on:click="event.stopPropagation();">
-  {% endif %}
-
 
   <div class="nutrition vertical-group">
     <div class="horizontal-group nutrition-pies-row">

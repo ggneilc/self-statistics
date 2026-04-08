@@ -90,11 +90,16 @@
         hx-trigger="keyup changed delay:500ms"
         hx-swap="none"> <small>This updates how the item appears in your pantry list.</small>
  
-    <div class="horizontal-group nutrition-pies-row" style="flex: 1;">
-        <div id="macro-{{ pantry_item.id }}" class="nutrition-pie-container"></div>
-        <div id="mineral-{{ pantry_item.id }}" class="nutrition-pie-container"></div>
-        <div id="vitamin-{{ pantry_item.id }}" class="nutrition-pie-container"></div>
-    </div>
+    <div class="goal-group-header">Macros</div>
+    {% include "calcounter/nutrient_goal_rows.html" with nutrient_items=food.macros %}
+
+    <div class="goal-group-header">Minerals</div>
+    {% include "calcounter/nutrient_goal_rows.html" with nutrient_items=food.minerals %}
+
+    <div class="goal-group-header">Vitamins</div>
+    {% include "calcounter/nutrient_goal_rows.html" with nutrient_items=food.vitamins %}
+
+    <hr>
     <p>Add New Unit</p>
     <form id="unit-form" style="position:relative;">
         <span class="header-buttons" style="position: absolute; left: 4.5rem;top:-2.2rem;">
@@ -126,18 +131,3 @@
     {% endfor%}
     </div>
 </div>
-
-
-{{ pantry_item.macros|json_script:pantry_item.macro_script_id }}
-{{ pantry_item.minerals|json_script:pantry_item.mineral_script_id }}
-{{ pantry_item.vitamins|json_script:pantry_item.vitamin_script_id }}
-<script>
-(function() {
-  const macros = JSON.parse(document.getElementById('{{ pantry_item.macro_script_id }}').textContent);
-  const minerals = JSON.parse(document.getElementById('{{ pantry_item.mineral_script_id }}').textContent);
-  const vitamins = JSON.parse(document.getElementById('{{ pantry_item.vitamin_script_id }}').textContent);
-  drawNutrientPie("#macro-{{ pantry_item.id }}", macros, "Macros", ["var(--protein-color)", "var(--fat-color)", "var(--carb-color)"]);
-  drawNutrientPie("#mineral-{{ pantry_item.id }}", minerals, "Minerals", ["var(--sodium-color)", "var(--potassium-color)", "var(--calcium-color)", "var(--magnesium-color)", "var(--zinc-color)", "var(--iron-color)"]);
-  drawNutrientPie("#vitamin-{{ pantry_item.id }}", vitamins, "Vitamins", ["var(--vitamin-a-color)", "var(--vitamin-b6-color)", "var(--vitamin-b12-color)", "var(--vitamin-c-color)", "var(--vitamin-d-color)", "var(--vitamin-e-color)"]);
-})();
-</script>

@@ -1,10 +1,29 @@
 {% for food in foods %}
-<button class="form_btn"
+<li class="food vertical-group"
+    style="list-style: none; cursor: pointer;"
     hx-get="{% url 'calcounter:get_ingred' food.fdcId %}"
     hx-trigger="click"
     hx-target="#selected-food"
     hx-on:click="
-    document.getElementById('search-results').classList.toggle('hidden');
-    document.getElementById('selected-food').classList.toggle('hidden');
-    "> {{ food.name }}</button>
+      document.getElementById('search-results').classList.toggle('hidden');
+      document.getElementById('selected-food').classList.toggle('hidden');
+    ">
+  <div class="inline-food" style="flex: 1; min-width: 0; align-items: center;">
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.15rem;">
+      <span class="workout-name food-name">{{ food.name|upper }}</span>
+      {% if food.brand %}
+      <span class="food-info" style="color: var(--food-card-color); font-style: italic;">{{ food.brand }}</span>
+      {% endif %}
+      <span class="food-info" style="color: var(--food-card-color);">
+        <span style="color: var(--calorie-color);">{{ food.calories }} kcal</span>
+        · <span style="color: var(--protein-color);">{{ food.protein }}g</span>
+        · <span style="color: var(--fat-color);">{{ food.fat }}g</span>
+        · <span style="color: var(--carb-color);">{{ food.carbs }}g</span>
+        <span style="opacity: 0.5;">/ 100g</span>
+      </span>
+    </div>
+  </div>
+</li>
+{% empty %}
+<li class="food blank-inspect" style="list-style: none;">No results found</li>
 {% endfor %}
